@@ -8,7 +8,6 @@ To-Do List
 
 * Implement single-node splitting function
 	* Write test for case with >1 variables, with one test for a best split on not the first variable and one test for a best split on not the last variable
-	* Write test for base cases
 * Implement decision tree growing in single-threading
 	* Implement recursive components and node pointing
 	* Implement grow function
