@@ -5,12 +5,18 @@ module classification
 !------------------------------------------------------------------------------
 
 implicit none
+
 integer, parameter :: dp = kind(0.d0)  ! double precision
 
-! TODO: create a node type that stores for this node
-! 1. pointer to the parent node
-! 2. pointers to the two children nodes
-! 3. constants to store variable, variable split, level
+type node
+    type (node), pointer :: parentnode
+    type (node), pointer :: leftnode, rightnode
+    integer :: splitvarnum
+    real(dp) :: splitvalue
+    integer :: level
+    integer :: majority
+end type
+
 
 contains
 
@@ -61,7 +67,7 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
     logical, optional :: build_tree
-    real(dp) :: thisnode(3)  ! TODO: later change this to node type
+    type (node) :: thisnode
     integer :: varnum, rownum
     integer :: bestsplit_varnum, bestsplit_rownum
     real(dp) :: bestsplit_loss_val
@@ -176,7 +182,8 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     endif
 
     ! debugging/testing
-    thisnode = (/ real(bestsplit_varnum, dp), real(bestsplit_rownum, dp), sortedX(bestsplit_rownum,bestsplit_varnum)/)
+    thisnode%splitvarnum = bestsplit_varnum
+    thisnode%splitvalue  = sortedX(bestsplit_rownum, bestsplit_varnum)
     
 end function
 
@@ -188,7 +195,7 @@ function test_splitnode_01() result(exitflag)
     integer :: sortedYcorresp(N,P)
     integer :: bestsplit_varnum_correct
     real(dp) :: bestsplit_value_correct
-    real(dp) :: thisnode(3)  ! TODO: later change this to node type
+    type (node) :: thisnode
     integer :: exitflag
 
     exitflag = -1
@@ -202,18 +209,17 @@ function test_splitnode_01() result(exitflag)
     bestsplit_varnum_correct = 1
     bestsplit_value_correct = 0.7_dp
 
-    ! debugging/testing: fix once splitnode outputs a node
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
 
     print *, "---------- Test Function test_splitnode_01 -------------------"
-    print *, "Fitted Var to Split = ", nint(thisnode(1)), &
-        "Correct Split Val = ", bestsplit_varnum_correct
-    print *, "Fitted Value to Split = ", thisnode(3), &
-        "Correct Value to Split = ", bestsplit_value_correct
+    print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
+        thisnode%splitvarnum, bestsplit_varnum_correct
+    print '("Fitted Value to Split = ", f5.3, ";  Correct Value to Split = ", f5.3)', &
+        thisnode%splitvalue, bestsplit_value_correct
 
-    if(nint(thisnode(1)) /= bestsplit_varnum_correct) &
+    if(thisnode%splitvarnum /= bestsplit_varnum_correct) &
         stop "Test failed: Wrong splitting variable"
-    if(thisnode(3) /= bestsplit_value_correct) &
+    if(thisnode%splitvalue /= bestsplit_value_correct) &
         stop "Test failed: Wrong value to split variable at"
 
     exitflag = 0
