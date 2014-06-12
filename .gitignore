@@ -1,0 +1,8 @@
+NOCOMMIT/
+
+*.exe
+*.o
+*.mod
+
+*.sublime-workspace
+
