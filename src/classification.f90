@@ -9,12 +9,15 @@ implicit none
 integer, parameter :: dp = kind(0.d0)  ! double precision
 
 type node
+    ! variables set regardless of whether this node has subnodes
     type (node), pointer :: parentnode
+    integer :: depth
+    integer :: majority
+    logical :: has_subnodes
+    ! variables only not null when node has subnodes
     type (node), pointer :: leftnode, rightnode
     integer :: splitvarnum
     real(dp) :: splitvalue
-    integer :: level
-    integer :: majority
 end type
 
 
@@ -74,9 +77,28 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     real(dp) :: impurity_left, impurity_right, loss_val
     logical :: first_split_computed
     logical :: base1, base2, base3
+    integer :: num1s
+
     logical, parameter :: debug01 = .false.
 
     if(.not. present(build_tree)) build_tree = .false.
+
+    num1s = sum(sortedYcorresp(:,1))
+
+    ! add pointer to parent node
+    ! ...
+
+    ! set majority flag for this node
+    ! TODO: figure what to do if tie
+    if( max(num1s, N-num1s)==num1s ) then
+        thisnode%majority = 1
+    else
+        thisnode%majority = 0
+    endif
+
+
+    ! set depth for this node
+    thisnode%depth = thisdepth
 
 
     if(debug01 .eqv. .true.) then
@@ -96,7 +118,7 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
 
     base1 = (N>min_node_obs)  ! min node size not met
     base2 = (thisdepth<max_depth)  ! max depth not met
-    base3 = (( sum(sortedYcorresp(:,1))>0 .and. sum(sortedYcorresp(:,1))<N ))  ! homogenous node not met
+    base3 = ( num1s>0 .and. num1s<N )  ! homogenous node not met
 
     if(debug01 .eqv. .true.) then
         print *, "------------------------"
@@ -181,17 +203,21 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
             enddo
         enddo
 
+        ! set the splitting variable and splitting value for this node
+        thisnode%splitvarnum = bestsplit_varnum
+        thisnode%splitvalue  = sortedX(bestsplit_rownum, bestsplit_varnum)
+
         ! create subnodes and attach
+        thisnode%has_subnodes = .true.
         ! ...
 
     else
-        ! otherwise, this is the terminal node, so determine the prediction at this terminal node
-        ! ...
+        ! otherwise, this is a terminal node
+        thisnode%has_subnodes = .false.
+
     endif
 
-    ! debugging/testing
-    thisnode%splitvarnum = bestsplit_varnum
-    thisnode%splitvalue  = sortedX(bestsplit_rownum, bestsplit_varnum)
+
     
 end function
 
