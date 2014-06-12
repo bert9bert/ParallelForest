@@ -73,6 +73,7 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     real(dp) :: bestsplit_loss_val
     real(dp) :: impurity_left, impurity_right, loss_val
     logical :: first_split_computed
+    logical :: base1, base2, base3
     logical, parameter :: debug01 = .false.
 
     if(.not. present(build_tree)) build_tree = .false.
@@ -89,17 +90,23 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     ! check that sortedX and sortedYcorresp are N x P
 
 
-    ! If tree growth can continue, then find split and recursively call this function
+    ! Check base cases to see if tree growth can continue, 
+    ! then find split and recursively call this function
     ! to attach two subnodes to this node. Otherwise, this is a terminal node.
-    if(.true.) then ! TODO
 
-    
+    base1 = (N>min_node_obs)  ! min node size not met
+    base2 = (thisdepth<max_depth)  ! max depth not met
+    base3 = (( sum(sortedYcorresp(:,1))>0 .and. sum(sortedYcorresp(:,1))<N ))  ! homogenous node not met
 
-    ! check base cases
-    ! min node size
-    ! max depth
-    ! homgenous
-    ! ...
+    if(debug01 .eqv. .true.) then
+        print *, "------------------------"
+        print *, "DEBUG: Min Mode Size OK to Grow?: ", base1
+        print *, "DEBUG: Max Depth OK to Grow?: ", base2
+        print *, "DEBUG: Homogenous OK to Grow?: ", base3
+    endif
+
+
+    if(base1 .and. base2 .and. base3) then
 
         ! loop through all variables and possible splits of variables to find
         ! the node split (variable, split value tuple) that
@@ -155,15 +162,14 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
                 endif
 
             else if(loss_val < bestsplit_loss_val) then
-                if(min(rownum,N-rownum)>min_node_obs) then
-                        bestsplit_varnum = varnum
-                        bestsplit_rownum = rownum
-                        bestsplit_loss_val = loss_val
-                endif
+                bestsplit_varnum = varnum
+                bestsplit_rownum = rownum
+                bestsplit_loss_val = loss_val
 
                 if(debug01 .eqv. .true.) then
                     print *, "DEBUG: Better bests set"
                 endif
+
             endif
 
             if(debug01 .eqv. .true.) then
