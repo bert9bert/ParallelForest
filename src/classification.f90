@@ -228,8 +228,8 @@ end function
 
 !-----  TESTING AND DEBUGGING FUNCTIONS AND SUBROUTINES  -----
 function test_splitnode_01() result(exitflag)
-    ! test the ability of the splitnode function to split a node ONCE
-    ! on a dataset with just one variable
+    ! Test the ability of the splitnode function to split a node ONCE
+    ! on a dataset with just one variable. Test will be with sorted data.
 
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
@@ -238,6 +238,8 @@ function test_splitnode_01() result(exitflag)
     real(dp) :: bestsplit_value_correct
     type (node) :: thisnode
     integer :: exitflag
+
+    logical, parameter :: verbose = .false.
 
     exitflag = -1
 
@@ -257,10 +259,12 @@ function test_splitnode_01() result(exitflag)
 
     ! print results
     print *, "---------- Test Function test_splitnode_01 -------------------"
-    print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
-        thisnode%splitvarnum, bestsplit_varnum_correct
-    print '("Fitted Value to Split = ", f5.3, ";  Correct Value to Split = ", f5.3)', &
-        thisnode%splitvalue, bestsplit_value_correct
+    if(verbose) then
+        print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
+            thisnode%splitvarnum, bestsplit_varnum_correct
+        print '("Fitted Value to Split = ", f5.3, ";  Correct Value to Split = ", f5.3)', &
+            thisnode%splitvalue, bestsplit_value_correct
+    endif
 
     ! test failure conditions
     if(thisnode%splitvarnum /= bestsplit_varnum_correct) &
@@ -274,12 +278,72 @@ function test_splitnode_01() result(exitflag)
 end function
 
 
-function test_splitnode_02() result(exitflag)
+function test_splitnode_02() result(exitflag)  ! TODO
+! Test the ability of the splitnode function to split a node ONCE
+! on a dataset with two variables. One test will be for when the proper
+! split is on the first variable, and a second test will be for when
+! the proper split is on the second variable. Test will be with sorted data.
+
+    integer, parameter :: N=10, P=2
+    real(dp) :: sortedX(N,P) 
+    integer :: sortedYcorresp(N,P)
+    integer :: bestsplit_varnum_correct
+    real(dp) :: bestsplit_value_correct
+    type (node) :: thisnode
     integer :: exitflag
+    integer :: i,j
+
+    logical, parameter :: verbose = .false.
 
     exitflag = -1
 
-    ! ...
+    print *, "---------- Test Function test_splitnode_02 -------------------"
+
+    ! set up sorted Y and X data
+    sortedYcorresp = reshape((/ &
+        1,1,1,0,0,0,0,1,1,1, &
+        1,1,1,1,1,1,0,0,0,0 &
+        /), &
+        (/size(sortedYcorresp,1),size(sortedYcorresp,2)/) )
+    sortedX = reshape((/ &
+        0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, 0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp, &
+        0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, 0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp  &
+        /), &
+        (/size(sortedX,1),size(sortedX,2)/) )
+
+    if(verbose) then
+        print *, "sortedYcorresp = "
+        do i=1,size(sortedYcorresp,1)
+            write(*,'("    ",i1,"        ",i1)') ( sortedYcorresp(i,j), j=1,size(sortedYcorresp,2) )
+        enddo
+        print *, "sortedX = "
+        do i=1,size(sortedX,1)
+            write(*,'(f5.3,"    ",f5.3)') ( sortedX(i,j), j=1,size(sortedX,2) )
+        enddo
+    endif
+
+    ! set correct splits for this data
+    bestsplit_varnum_correct = 2
+    bestsplit_value_correct = 0.6_dp
+
+    ! get node split
+    thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
+
+    ! print results
+    if(verbose) then
+        print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
+            thisnode%splitvarnum, bestsplit_varnum_correct
+        print '("Fitted Value to Split = ", f5.3, ";  Correct Value to Split = ", f5.3)', &
+            thisnode%splitvalue, bestsplit_value_correct
+    endif
+
+    ! test failure conditions
+    if(thisnode%splitvarnum /= bestsplit_varnum_correct) &
+        stop "Test failed: Wrong splitting variable"
+    if(thisnode%splitvalue /= bestsplit_value_correct) &
+        stop "Test failed: Wrong value to split variable at"
+
+    print *, "Test successful if test executed without error."
 
     exitflag = 0
 end function
