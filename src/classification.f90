@@ -281,6 +281,7 @@ function test_splitnode_01() result(exitflag)
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
 
     ! print results
+    print *, " "
     print *, "---------- Test Function test_splitnode_01 -------------------"
     if(verbose) then
         print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
@@ -320,6 +321,7 @@ function test_splitnode_02() result(exitflag)
 
     exitflag = -1
 
+    print *, " "
     print *, "---------- Test Function test_splitnode_02 -------------------"
 
     ! set up sorted Y and X data
@@ -398,6 +400,7 @@ function test_splitnode_03() result(exitflag)
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, min_node_obs, 2, 1, .false.)
 
     ! print results
+    print *, " "
     print *, "---------- Test Function test_splitnode_03 -------------------"
 
     ! test failure conditions
@@ -436,6 +439,7 @@ function test_splitnode_04() result(exitflag)
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, max_depth, max_depth, .false.)
 
     ! print results
+    print *, " "
     print *, "---------- Test Function test_splitnode_04 -------------------"
 
     ! test failure conditions
@@ -475,6 +479,7 @@ function test_splitnode_05() result(exitflag)
     thisnode1 = splitnode(sortedYcorresp1, sortedX, P, N, 2, 2, 1, .false.)
 
     ! print results
+    print *, " "
     print *, "---------- Test Function test_splitnode_05 -------------------"
 
     ! test failure conditions
@@ -489,11 +494,78 @@ function test_splitnode_05() result(exitflag)
 end function
 
 function test_splitnode_06() result(exitflag)  ! TODO
-    ! test that splitnode correct points to its parent node if given, and
-    ! points to nothing if not given
+    ! test that splitnode correctly points to its parent node if given, and
+    ! points to nothing if not given; and that subnodes are correct
+
+    integer, parameter :: N=10, P=1
+    real(dp) :: sortedX(N,P) 
+    integer :: sortedYcorresp(N,P)
 
     integer :: exitflag
 
+    type (node) :: node1, node2
+
+    character(len=50) :: fmt
+
+    logical :: verbose = .true.
+
+    print *, " "
+    print *, "---------- Test Function test_splitnode_06 -------------------"
+
+    node1%depth = 87
+    node1%majority = 1
+    node1%has_subnodes = .false.
+    node1%splitvarnum = 76
+    node1%splitvalue = 42
+
+    ! set up sorted Y and X data
+    sortedYcorresp = reshape((/1,1,1,1,1,1,1,0,0,0/), &
+        shape(sortedYcorresp))
+    sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
+        0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp /), &
+        shape(sortedX))
+
+    ! get node split
+    node2 = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false., node1)
+
+    ! Below comment is for reference to attributes in node type
+    !type (node), pointer :: parentnode
+    !integer :: depth
+    !integer :: majority
+    !logical :: has_subnodes
+    !type (node), pointer :: leftnode, rightnode
+    !integer :: splitvarnum
+    !real(dp) :: splitvalue
+
+    if(verbose) then
+        fmt = '(i6, i11, l15, i16, f14.2)'
+
+        print *, "Depth | Majority | Has Subnodes | Split Var Num | Split Value"
+
+        print *, "For NODE1"
+        print fmt, node1%depth, node1%majority, node1%has_subnodes, &
+            node1%splitvarnum, node1%splitvalue
+
+        print *, "For NODE2"
+        print *, "parent node (should be NODE1)"
+        print fmt, node2%parentnode%depth, node2%parentnode%majority, node2%parentnode%has_subnodes, &
+            node2%parentnode%splitvarnum, node2%parentnode%splitvalue
+        print *, "this node (NODE 2)"
+        print fmt, node2%depth, node2%majority, node2%has_subnodes, &
+            node2%splitvarnum, node2%splitvalue
+        print *, "left node (NODE 2's left subnode)"
+        print fmt, node2%leftnode%depth, node2%leftnode%majority, node2%leftnode%has_subnodes, &
+            node2%leftnode%splitvarnum, node2%leftnode%splitvalue
+        print *, "right node (NODE 2's right subnode)"
+        print fmt, node2%rightnode%depth, node2%rightnode%majority, node2%rightnode%has_subnodes, &
+            node2%rightnode%splitvarnum, node2%rightnode%splitvalue
+    endif
+
+    ! test for failure conditions
+    if(node2%leftnode%depth /= node2%depth+1) stop "Test failed"
+    ! ...
+
+    print *, "Test successful if test executed without error."
 end function
 
 function test_splitnode_07() result(exitflag)  ! TODO

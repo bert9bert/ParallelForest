@@ -13,4 +13,6 @@ exitflag = test_splitnode_03()
 exitflag = test_splitnode_04()
 exitflag = test_splitnode_05()
 
+exitflag = test_splitnode_06()
+
 end program
