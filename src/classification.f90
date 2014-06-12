@@ -60,7 +60,7 @@ function loss(impurity_left, impurity_right) result(loss_val)
 end function
 
 
-function splitnode(sortedYcorresp, sortedX, P, N, &
+recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     min_node_obs, max_depth, &
     thisdepth, build_tree, parentnode) &
     result(thisnode)
@@ -74,6 +74,8 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
 
     type (node) :: thisnode
     
+    type (node), target :: leftnode, rightnode
+
     integer :: varnum, rownum
     integer :: bestsplit_varnum, bestsplit_rownum
     real(dp) :: bestsplit_loss_val
@@ -212,7 +214,28 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
 
         ! create subnodes and attach
         thisnode%has_subnodes = .true.
-        ! ...
+
+        ! TODO: this is inefficient splicing; see if this can be made to splice column-wise
+        
+        ! construct and attach left node
+        leftnode = splitnode( &
+            sortedYcorresp(1:bestsplit_rownum,:), sortedX(1:bestsplit_rownum,:), &
+            P, bestsplit_rownum, &
+            min_node_obs, max_depth, &
+            thisdepth+1, .true., thisnode)
+
+        thisnode%leftnode => leftnode
+
+        ! construct and attach right node
+        rightnode = splitnode( &
+            sortedYcorresp(bestsplit_rownum+1:N,:), sortedX(bestsplit_rownum+1:N,:), &
+            P, N-bestsplit_rownum, &
+            min_node_obs, max_depth, &
+            thisdepth+1, .true., thisnode)
+        
+        thisnode%rightnode => rightnode
+
+
 
     else
         ! otherwise, this is a terminal node
