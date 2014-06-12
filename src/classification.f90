@@ -70,7 +70,7 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
     logical, optional :: build_tree
-    type (node), optional :: parentnode
+    type (node), target, optional :: parentnode
 
     type (node) :: thisnode
     
@@ -88,8 +88,8 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
 
     num1s = sum(sortedYcorresp(:,1))
 
-    ! add pointer to parent node
-    ! ...
+    ! add pointer to parent node if parent node is given in input
+    if(present(parentnode)) thisnode%parentnode => parentnode
 
     ! set majority flag for this node
     ! TODO: figure what to do if tie
@@ -465,6 +465,22 @@ function test_splitnode_05() result(exitflag)
     exitflag = 0
 end function
 
+function test_splitnode_06() result(exitflag)
+    ! test that splitnode correct points to its parent node if given, and
+    ! points to nothing if not given
+
+    integer :: exitflag
+
+end function
+
+function test_splitnode_07() result(exitflag)
+    ! test that splitnode correct creates subnodes that both point to 
+    ! the constructed node if node was split, and
+    ! points to nothing if not split
+
+    integer :: exitflag
+
+end function
 
 end module classification
 
