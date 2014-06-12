@@ -7,9 +7,8 @@ To-Do List
 ==========
 
 * Implement single-node splitting function
-	* Implement node type
-	* Implement base case checking
 	* Write test for case with >1 variables
+	* Write test for base cases
 * Implement decision tree fitting in single-threading
 	* Implement recursive components and node pointing
 	* Implement grow function
