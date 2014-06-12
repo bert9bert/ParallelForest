@@ -74,8 +74,6 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
 
     type (node) :: thisnode
     
-    type (node), target :: leftnode, rightnode
-
     integer :: varnum, rownum
     integer :: bestsplit_varnum, bestsplit_rownum
     real(dp) :: bestsplit_loss_val
@@ -218,22 +216,24 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
         ! TODO: this is inefficient splicing; see if this can be made to splice column-wise
         
         ! construct and attach left node
-        leftnode = splitnode( &
+        allocate(thisnode%leftnode)
+
+        thisnode%leftnode = splitnode( &
             sortedYcorresp(1:bestsplit_rownum,:), sortedX(1:bestsplit_rownum,:), &
             P, bestsplit_rownum, &
             min_node_obs, max_depth, &
             thisdepth+1, .true., thisnode)
 
-        thisnode%leftnode => leftnode
 
         ! construct and attach right node
-        rightnode = splitnode( &
+        allocate(thisnode%rightnode)
+
+        thisnode%rightnode = splitnode( &
             sortedYcorresp(bestsplit_rownum+1:N,:), sortedX(bestsplit_rownum+1:N,:), &
             P, N-bestsplit_rownum, &
             min_node_obs, max_depth, &
             thisdepth+1, .true., thisnode)
         
-        thisnode%rightnode => rightnode
 
 
 

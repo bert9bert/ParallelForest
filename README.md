@@ -7,7 +7,6 @@ To-Do List
 ==========
 
 * Implement decision tree growing in single-threading
-	* Implement recursive components
 	* Implement grow function
 	* Write tests
 * Implement decision tree prediction in single-threading
