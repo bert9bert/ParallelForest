@@ -88,20 +88,22 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     ! ...
     ! check that sortedX and sortedYcorresp are N x P
 
+
+    ! If tree growth can continue, then find split and recursively call this function
+    ! to attach two subnodes to this node. Otherwise, this is a terminal node.
+    if(.true.) then ! TODO
+
+    
+
     ! check base cases
     ! min node size
     ! max depth
     ! homgenous
     ! ...
 
-
-    ! if tree growth can continue, then find split and recursively call this function
-    ! to attach two subnodes to this node
-    if(.true.) then ! TODO
-
         ! loop through all variables and possible splits of variables to find
-        ! the node split (variable, split value, direction tuple) that
-        ! minimizes the impurity function
+        ! the node split (variable, split value tuple) that
+        ! minimizes the loss function
 
         first_split_computed = .false.
 
@@ -126,7 +128,7 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
                 endif
             endif
 
-            ! compute impurity that results from this Xi<=Sj,Xi>Sj split
+            ! compute loss that results from this split
             impurity_left = gini_impurity_measure( &
             	sortedYcorresp(1:rownum,varnum), rownum)
             impurity_right = gini_impurity_measure( &
@@ -140,7 +142,7 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
             endif
 
             ! if this split has a lower loss than any previous split, then store it
-            ! if tree growing stop condition has not been met
+            ! and discard the previous best split
             if(first_split_computed .eqv. .false.) then
                 bestsplit_varnum = 1
                 bestsplit_rownum  = rownum
@@ -190,6 +192,9 @@ end function
 
 !-----  TESTING AND DEBUGGING FUNCTIONS AND SUBROUTINES  -----
 function test_splitnode_01() result(exitflag)
+    ! test the ability of the splitnode function to split a node ONCE
+    ! on a dataset with just one variable
+
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
     integer :: sortedYcorresp(N,P)
@@ -200,23 +205,28 @@ function test_splitnode_01() result(exitflag)
 
     exitflag = -1
 
+    ! set up sorted Y and X data
     sortedYcorresp = reshape((/1,1,1,1,1,1,1,0,0,0/), &
     	shape(sortedYcorresp))
     sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
     	0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp /), &
     	shape(sortedX))
 
+    ! set correct splits for this data
     bestsplit_varnum_correct = 1
     bestsplit_value_correct = 0.7_dp
 
+    ! get node split
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
 
+    ! print results
     print *, "---------- Test Function test_splitnode_01 -------------------"
     print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
         thisnode%splitvarnum, bestsplit_varnum_correct
     print '("Fitted Value to Split = ", f5.3, ";  Correct Value to Split = ", f5.3)', &
         thisnode%splitvalue, bestsplit_value_correct
 
+    ! test failure conditions
     if(thisnode%splitvarnum /= bestsplit_varnum_correct) &
         stop "Test failed: Wrong splitting variable"
     if(thisnode%splitvalue /= bestsplit_value_correct) &
