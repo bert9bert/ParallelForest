@@ -278,7 +278,7 @@ function test_splitnode_01() result(exitflag)
 end function
 
 
-function test_splitnode_02() result(exitflag)  ! TODO
+function test_splitnode_02() result(exitflag)
 ! Test the ability of the splitnode function to split a node ONCE
 ! on a dataset with two variables. One test will be for when the proper
 ! split is on the first variable, and a second test will be for when
@@ -465,7 +465,7 @@ function test_splitnode_05() result(exitflag)
     exitflag = 0
 end function
 
-function test_splitnode_06() result(exitflag)
+function test_splitnode_06() result(exitflag)  ! TODO
     ! test that splitnode correct points to its parent node if given, and
     ! points to nothing if not given
 
@@ -473,7 +473,7 @@ function test_splitnode_06() result(exitflag)
 
 end function
 
-function test_splitnode_07() result(exitflag)
+function test_splitnode_07() result(exitflag)  ! TODO
     ! test that splitnode correct creates subnodes that both point to 
     ! the constructed node if node was split, and
     ! points to nothing if not split
