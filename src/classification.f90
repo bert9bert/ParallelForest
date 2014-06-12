@@ -62,7 +62,7 @@ end function
 
 function splitnode(sortedYcorresp, sortedX, P, N, &
     min_node_obs, max_depth, &
-    thisdepth, build_tree) &
+    thisdepth, build_tree, parentnode) &
     result(thisnode)
 
     real(dp), intent(in) :: sortedX(N,P) 
@@ -70,7 +70,10 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
     integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
     logical, optional :: build_tree
+    type (node), optional :: parentnode
+
     type (node) :: thisnode
+    
     integer :: varnum, rownum
     integer :: bestsplit_varnum, bestsplit_rownum
     real(dp) :: bestsplit_loss_val
@@ -222,6 +225,7 @@ function splitnode(sortedYcorresp, sortedX, P, N, &
 end function
 
 
+
 !-----  TESTING AND DEBUGGING FUNCTIONS AND SUBROUTINES  -----
 function test_splitnode_01() result(exitflag)
     ! test the ability of the splitnode function to split a node ONCE
@@ -264,8 +268,11 @@ function test_splitnode_01() result(exitflag)
     if(thisnode%splitvalue /= bestsplit_value_correct) &
         stop "Test failed: Wrong value to split variable at"
 
+    print *, "Test successful if test executed without error."
+
     exitflag = 0
 end function
+
 
 function test_splitnode_02() result(exitflag)
     integer :: exitflag
@@ -276,6 +283,124 @@ function test_splitnode_02() result(exitflag)
 
     exitflag = 0
 end function
+
+
+function test_splitnode_03() result(exitflag)
+    ! test that the minimum node size base case works
+
+    integer, parameter :: N=10, P=1
+    real(dp) :: sortedX(N,P) 
+    integer :: sortedYcorresp(N,P)
+    integer :: bestsplit_varnum_correct
+    real(dp) :: bestsplit_value_correct
+    type (node) :: thisnode
+    integer :: min_node_obs
+    integer :: exitflag
+
+    exitflag = -1
+
+    ! set up sorted Y and X data
+    sortedYcorresp = reshape((/1,1,1,1,1,1,1,0,0,0/), &
+        shape(sortedYcorresp))
+    sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
+        0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp /), &
+        shape(sortedX))
+
+    ! get node split
+    min_node_obs = N
+    thisnode = splitnode(sortedYcorresp, sortedX, P, N, min_node_obs, 2, 1, .false.)
+
+    ! print results
+    print *, "---------- Test Function test_splitnode_03 -------------------"
+
+    ! test failure conditions
+    if(thisnode%has_subnodes .eqv. .true.) &
+        stop "Test failed: Node has same as min number of obs per node but was split."
+
+    print *, "Test successful if test executed without error."
+
+    exitflag = 0
+end function
+
+
+function test_splitnode_04() result(exitflag)
+    ! test that the maximum depth node size base case works
+
+    integer, parameter :: N=10, P=1
+    real(dp) :: sortedX(N,P) 
+    integer :: sortedYcorresp(N,P)
+    integer :: bestsplit_varnum_correct
+    real(dp) :: bestsplit_value_correct
+    type (node) :: thisnode
+    integer :: max_depth
+    integer :: exitflag
+
+    exitflag = -1
+
+    ! set up sorted Y and X data
+    sortedYcorresp = reshape((/1,1,1,1,1,1,1,0,0,0/), &
+        shape(sortedYcorresp))
+    sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
+        0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp /), &
+        shape(sortedX))
+
+    ! get node split
+    max_depth = 5
+    thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, max_depth, max_depth, .false.)
+
+    ! print results
+    print *, "---------- Test Function test_splitnode_04 -------------------"
+
+    ! test failure conditions
+    if(thisnode%has_subnodes .eqv. .true.) &
+        stop "Test failed: Node at max depth but was split."
+
+    print *, "Test successful if test executed without error."
+
+    exitflag = 0
+end function
+
+
+function test_splitnode_05() result(exitflag)
+    ! test that the homogenous node base case works
+
+    integer, parameter :: N=10, P=1
+    real(dp) :: sortedX(N,P) 
+    integer :: sortedYcorresp0(N,P), sortedYcorresp1(N,P)
+    integer :: bestsplit_varnum_correct
+    real(dp) :: bestsplit_value_correct
+    type (node) :: thisnode0, thisnode1
+    integer :: exitflag
+
+    exitflag = -1
+
+    ! set up homogenous Y with all 0s, homogenous Y with all 1s, and X data
+    sortedYcorresp0 = reshape((/0,0,0,0,0,0,0,0,0,0/), &
+        shape(sortedYcorresp0))
+    sortedYcorresp1 = reshape((/1,1,1,1,1,1,1,1,1,1/), &
+        shape(sortedYcorresp1))
+    sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
+        0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp /), &
+        shape(sortedX))
+
+    ! get node split for the two homogenous Y arrays
+    thisnode0 = splitnode(sortedYcorresp0, sortedX, P, N, 2, 2, 1, .false.)
+    thisnode1 = splitnode(sortedYcorresp1, sortedX, P, N, 2, 2, 1, .false.)
+
+    ! print results
+    print *, "---------- Test Function test_splitnode_05 -------------------"
+
+    ! test failure conditions
+    if(thisnode0%has_subnodes .eqv. .true.) &
+        stop "Test failed: Homogenous node but was split."
+    if(thisnode1%has_subnodes .eqv. .true.) &
+        stop "Test failed: Homogenous node but was split."
+
+    print *, "Test successful if test executed without error."
+
+    exitflag = 0
+end function
+
 
 end module classification
 
