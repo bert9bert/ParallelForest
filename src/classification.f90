@@ -72,7 +72,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     logical, optional :: build_tree
     type (node), target, optional :: parentnode
 
-    type (node) :: thisnode
+    type (node), pointer :: thisnode
     
     integer :: varnum, rownum
     integer :: bestsplit_varnum, bestsplit_rownum
@@ -83,6 +83,9 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     integer :: num1s
 
     logical, parameter :: debug01 = .false.
+    character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
+
+    allocate(thisnode)
 
     if(.not. present(build_tree)) build_tree = .false.
 
@@ -233,8 +236,6 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
             P, N-bestsplit_rownum, &
             min_node_obs, max_depth, &
             thisdepth+1, .true., thisnode)
-        
-
 
 
     else
@@ -242,7 +243,6 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
         thisnode%has_subnodes = .false.
 
     endif
-
 
     
 end function
@@ -493,7 +493,7 @@ function test_splitnode_05() result(exitflag)
     exitflag = 0
 end function
 
-function test_splitnode_06() result(exitflag)  ! TODO
+function test_splitnode_06() result(exitflag)
     ! test that splitnode correctly points to its parent node if given, and
     ! points to nothing if not given; and that subnodes are correct
 
@@ -528,26 +528,17 @@ function test_splitnode_06() result(exitflag)  ! TODO
     ! get node split
     node2 = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false., node1)
 
-    ! Below comment is for reference to attributes in node type
-    !type (node), pointer :: parentnode
-    !integer :: depth
-    !integer :: majority
-    !logical :: has_subnodes
-    !type (node), pointer :: leftnode, rightnode
-    !integer :: splitvarnum
-    !real(dp) :: splitvalue
-
     if(verbose) then
         fmt = '(i6, i11, l15, i16, f14.2)'
 
         print *, "Depth | Majority | Has Subnodes | Split Var Num | Split Value"
 
-        print *, "For NODE1"
+        print *, "For NODE 1"
         print fmt, node1%depth, node1%majority, node1%has_subnodes, &
             node1%splitvarnum, node1%splitvalue
 
-        print *, "For NODE2"
-        print *, "parent node (should be NODE1)"
+        print *, "For NODE 2"
+        print *, "parent node (should be NODE 1)"
         print fmt, node2%parentnode%depth, node2%parentnode%majority, node2%parentnode%has_subnodes, &
             node2%parentnode%splitvarnum, node2%parentnode%splitvalue
         print *, "this node (NODE 2)"
@@ -561,12 +552,72 @@ function test_splitnode_06() result(exitflag)  ! TODO
             node2%rightnode%splitvarnum, node2%rightnode%splitvalue
     endif
 
-    ! test for failure conditions
-    if(node2%leftnode%depth /= node2%depth+1) stop "Test failed"
-    ! ...
+    !-- test for failure conditions --
+    ! check that node2's parentnode points to node 1
+    if( (node2%parentnode%depth        /= node1%depth) .or. &
+        (node2%parentnode%majority     /= node1%majority) .or. &
+        (node2%parentnode%has_subnodes .neqv. node1%has_subnodes) .or. &
+        (node2%parentnode%splitvarnum  /= node1%splitvarnum) .or. &
+        (node2%parentnode%splitvalue   /= node1%splitvalue) ) then
+
+        stop "Test failed: node 2's parent attributes do not match those of node 1"
+    endif
+
+
+
+    ! check that node2's left subnode's parentnode points to node 2
+    if( (node2%leftnode%parentnode%depth        /= node2%depth) .or. &
+        (node2%leftnode%parentnode%majority     /= node2%majority) .or. &
+        (node2%leftnode%parentnode%has_subnodes .neqv. node2%has_subnodes) .or. &
+        (node2%leftnode%parentnode%splitvarnum  /= node2%splitvarnum) .or. &
+        (node2%leftnode%parentnode%splitvalue   /= node2%splitvalue) ) then
+
+        print *, "Test failed, program stop coming..."
+
+        print *, "left node's (NODE 2's left subnode) parent node's attributes:"
+        print fmt, node2%leftnode%parentnode%depth, &
+            node2%leftnode%parentnode%majority, &
+            node2%leftnode%parentnode%has_subnodes, &
+            node2%leftnode%parentnode%splitvarnum, &
+            node2%leftnode%parentnode%splitvalue
+
+        stop "Test failed: node 2's left subnode's parentnode attributes do not match those of node 2"
+    endif
+
+    ! check that node2's right subnode's parentnode points to node 2
+    if( (node2%rightnode%parentnode%depth        /= node2%depth) .or. &
+        (node2%rightnode%parentnode%majority     /= node2%majority) .or. &
+        (node2%rightnode%parentnode%has_subnodes .neqv. node2%has_subnodes) .or. &
+        (node2%rightnode%parentnode%splitvarnum  /= node2%splitvarnum) .or. &
+        (node2%rightnode%parentnode%splitvalue   /= node2%splitvalue) ) then
+        stop "Test failed: node 2's right subnode's parentnode attributes do not match those of node 2"
+    endif
+
+    ! miscellaneous additional tests on node2
+    if( (node2%majority /= 1) .or. &
+        (node2%has_subnodes .neqv. .true.) .or. &
+        (node2%splitvarnum /= 1) .or. &
+        (node2%splitvalue /= 0.7_dp) ) then
+        stop "Test failed: miscellaneous additional tests on node2"
+    endif
+
+    ! miscellaneous additional tests on node2's left subnode
+    if( (node2%leftnode%depth /= node2%depth+1) .or. &
+        (node2%leftnode%majority /= 1) .or. &
+        (node2%leftnode%has_subnodes .neqv. .false.) ) then
+        stop "Test failed: miscellaneous additional tests on node2's left subnode"
+    endif
+
+    ! miscellaneous additional tests on node2's right subnode
+    if( (node2%rightnode%depth /= node2%depth+1) .or. &
+        (node2%rightnode%majority /= 0) .or. &
+        (node2%rightnode%has_subnodes .neqv. .false.) ) then
+        stop "Test failed: miscellaneous additional tests on node2's right subnode"
+    endif
 
     print *, "Test successful if test executed without error."
 end function
+
 
 function test_splitnode_07() result(exitflag)  ! TODO
     ! test that splitnode correct creates subnodes that both point to 
