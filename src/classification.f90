@@ -34,6 +34,36 @@ end function
 
 !-----  PRIVATE FUNCTIONS AND SUBROUTINES  -----
 
+
+
+! TODO: Will use basic, but very slow, insertion sort with carry for now. This will 
+! be replaced by a better sort later and this subroutine will be deleted.
+subroutine insertion_sort(N, arr, arrcarry)
+    integer, intent(in) :: N
+    real(dp), intent(inout) :: arr(N), arrcarry(N)
+
+
+    real(dp) :: elem, elemcarry
+    integer :: i,j
+
+    do i=2,N
+        elem = arr(i)
+        elemcarry = arrcarry(i)
+
+        do j=i-1,1,-1
+            if(arr(j)<=elem) then
+                arr(j+1)      = elem
+                arrcarry(j+1) = elemcarry
+            else
+                arr(j+1)      = arr(j)
+                arrcarry(j+1) = arrcarry(j)
+            endif
+        enddo
+    enddo
+
+end subroutine
+
+
 function gini_impurity_measure(Y, N) result(impurity)
     integer, intent(in) :: N
     integer, intent(in) :: Y(N)
