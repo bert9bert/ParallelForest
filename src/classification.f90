@@ -120,10 +120,10 @@ end function
 ! TODO: Will use basic, but very slow, insertion sort with carry 
 ! for integer vec for now. This will 
 ! be replaced by a better sort later and this subroutine will be deleted.
-subroutine insertion_sort(N, arr, arrcarry)
+pure subroutine insertion_sort(N, arr, arrcarry)
     integer, intent(in) :: N
     real(dp), intent(inout) :: arr(N)
-    integer, intent(inout) ::arrcarry(N)
+    integer, intent(inout) :: arrcarry(N)
 
 
     real(dp) :: elem, elemcarry
@@ -133,18 +133,19 @@ subroutine insertion_sort(N, arr, arrcarry)
         elem = arr(i)
         elemcarry = arrcarry(i)
 
-        do j=i-1,1,-1
-            if(arr(j)<=elem) then
-                arr(j+1)      = elem
-                arrcarry(j+1) = elemcarry
-            else
-                arr(j+1)      = arr(j)
-                arrcarry(j+1) = arrcarry(j)
-            endif
+        j = i - 1
+        do while (j>=1 .and. arr(j)>elem)
+            arr(j+1) = arr(j)
+            arrcarry(j+1) = arrcarry(j)
+            j = j - 1
         enddo
+        arr(j+1) = elem
+        arrcarry(j+1) = elemcarry
     enddo
 
 end subroutine
+
+
 
 
 subroutine sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
@@ -762,12 +763,45 @@ end function
 
 
 function test_splitnode_07() result(exitflag)  ! TODO
-    ! test that splitnode correct creates subnodes that both point to 
-    ! the constructed node if node was split, and
-    ! points to nothing if not split
-
+    ! test that insertion_sort() works
+    integer, parameter :: N = 20
+    real(dp) :: arr(N), arr_correct(N)
+    integer :: arrcarry(N), arrcarry_correct(N)
     integer :: exitflag
 
+    print *, " "
+    print *, "---------- Test Function test_splitnode_07 -------------------"
+
+    ! define real array to sort, integer array to carry, and corresponding
+    ! sorted arrays
+    arr = (/0.92_dp, 0.80_dp, 0.51_dp, 0.03_dp, 0.99_dp, &
+            0.40_dp, 0.66_dp, 0.83_dp, 0.61_dp, 0.35_dp, &
+            0.47_dp, 0.37_dp, 0.25_dp, 0.84_dp, 0.70_dp, &
+            0.19_dp, 0.41_dp, 0.28_dp, 0.29_dp, 0.96_dp/)
+
+    arrcarry = (/109, 106, 102, 112, 111, &
+                 119, 104, 107, 103, 117, &
+                 101, 118, 114, 108, 105, &
+                 113, 120, 115, 116, 110/)
+
+    arr_correct = (/0.03_dp, 0.19_dp, 0.25_dp, 0.28_dp, 0.29_dp, &
+                    0.35_dp, 0.37_dp, 0.40_dp, 0.41_dp, 0.47_dp, &
+                    0.51_dp, 0.61_dp, 0.66_dp, 0.70_dp, 0.80_dp, &
+                    0.83_dp, 0.84_dp, 0.92_dp, 0.96_dp, 0.99_dp/)
+
+    arrcarry_correct = (/112, 113, 114, 115, 116, &
+                         117, 118, 119, 120, 101, &
+                         102, 103, 104, 105, 106, &
+                         107, 108, 109, 110, 111/)
+
+    ! sort
+    call insertion_sort(N, arr, arrcarry)
+
+    ! check failure conditions
+    if(any(arr .ne. arr_correct)) stop "Sort failed."
+    if(any(arrcarry .ne. arrcarry_correct)) stop "Sort carry failed."
+
+    print *, "Test successful if test executed without error."
 end function
 
 end module classification
