@@ -62,9 +62,60 @@ function grow(Y, X, min_node_obs, max_depth) result(fittedtree)
 
 end function
 
+function predict(fittedtree, X) result(Ypred)
+    ! variable declarations
+    type (node), intent(in) :: fittedtree
+    real(dp), intent(in) :: X(:,:)
+    real(dp), allocatable :: Ypred(:)
+
+    integer :: N, P
+    integer :: obs
+
+    ! find out number of variables and number of observations
+    N = size(X,1)
+    P = size(X,2)
+
+    ! allocate array storing predictions
+    allocate(Ypred(N))
+
+    ! for each observation, go through fitted tree to get prediction
+    do obs = 1,N
+        ! TODO: might be possible to rewrite below to make column-wise so
+        ! it is more efficient
+        Ypred(obs) = predict_rec_hlpr(fittedtree, X(obs,:), P)
+    enddo
+
+end function
+
+
 !-----  PRIVATE FUNCTIONS AND SUBROUTINES  -----
 
 
+recursive function predict_rec_hlpr(t, X_row, P) result(pred)
+    ! variable declarations
+    type (node), intent(in) :: t
+    real(dp), intent(in) :: X_row(:)
+    integer, intent(in) :: P
+    real(dp) :: pred
+
+    ! argument checks
+    if(size(X_row) /= P) stop "Error: Length of X_row is not P."
+
+    ! get prediction for this row of data
+    if(.not. t%has_subnodes) then 
+        ! this is a terminal node, so return prediction
+        pred = t%majority
+    else
+        ! this is not a terminal node, so keep recursing deeper to get prediction, so
+        ! need to choose left node or right node
+        if( X_row(t%splitvarnum) <= t%splitvalue ) then
+            pred = predict_rec_hlpr(t%leftnode, X_row, P)
+        else
+            pred = predict_rec_hlpr(t%rightnode, X_row, P)
+        endif
+    endif
+
+end function
 
 ! TODO: Will use basic, but very slow, insertion sort with carry 
 ! for integer vec for now. This will 
