@@ -24,23 +24,55 @@ end type
 contains
 
 !-----  PUBLIC FUNCTIONS AND SUBROUTINES  -----
-function grow(Y,X) result(fittedtree)
-    real(dp), intent(in) :: Y(:), X(:,:)
-    integer :: N, P
-    integer :: fittedtree  ! TODO
 
-    ! ...
+function grow(Y, X, min_node_obs, max_depth) result(fittedtree)
+    ! variable declarations
+    integer, intent(in) :: Y(:)
+    real(dp), intent(in) :: X(:,:)
+    integer, intent(in) :: min_node_obs, max_depth
+    type (node) :: fittedtree
+
+    integer :: N, P
+
+    integer, allocatable :: sortedYcorresp(:,:)
+    real(dp), allocatable :: sortedX(:,:)
+
+    integer, parameter :: TOP_NODE_NUM = 0
+
+    ! find out number of variables and number of observations
+    N = size(X,1)
+    P = size(X,2)
+
+    if(N /= size(Y)) stop "Y has different number of obs than X"
+
+    ! allocate allocatable arrays
+    allocate(sortedYcorresp(N,P))
+    allocate(sortedX(N,P))
+
+    ! get matrix where each variable is sorted, and a matrix where the dependent variable
+    ! is carried in the sort, with columns in both matrices corresponding to each other
+    sortedX = X
+    call sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
+    
+    ! fit decision tree classifier
+    fittedtree = splitnode(sortedYcorresp, sortedX, P, N, &
+    min_node_obs, max_depth, &
+    TOP_NODE_NUM, .true.)
+
+
 end function
 
 !-----  PRIVATE FUNCTIONS AND SUBROUTINES  -----
 
 
 
-! TODO: Will use basic, but very slow, insertion sort with carry for now. This will 
+! TODO: Will use basic, but very slow, insertion sort with carry 
+! for integer vec for now. This will 
 ! be replaced by a better sort later and this subroutine will be deleted.
 subroutine insertion_sort(N, arr, arrcarry)
     integer, intent(in) :: N
-    real(dp), intent(inout) :: arr(N), arrcarry(N)
+    real(dp), intent(inout) :: arr(N)
+    integer, intent(inout) ::arrcarry(N)
 
 
     real(dp) :: elem, elemcarry
@@ -70,8 +102,8 @@ subroutine sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
     ! sort of the Y vector
 
     integer, intent(in) :: N, P
-    real(dp), intent(in) :: Y(N)
-    real(dp), intent(out) :: sortedYcorresp(:,:)
+    integer, intent(in) :: Y(N)
+    integer, intent(out) :: sortedYcorresp(:,:)
     real(dp), intent(inout) :: sortedX(:,:)
 
     integer :: col
