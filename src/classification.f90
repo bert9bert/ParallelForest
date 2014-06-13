@@ -64,6 +64,34 @@ subroutine insertion_sort(N, arr, arrcarry)
 end subroutine
 
 
+subroutine sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
+    ! takes Y vector and X matrix, sorts X by column and outputs
+    ! a matrix with each column being the corresponding carried
+    ! sort of the Y vector
+
+    integer, intent(in) :: N, P
+    real(dp), intent(in) :: Y(N)
+    real(dp), intent(out) :: sortedYcorresp(:,:)
+    real(dp), intent(inout) :: sortedX(:,:)
+
+    integer :: col
+
+    if((size(sortedYcorresp,1)/=N) .or. (size(sortedYcorresp,2)/=P)) then
+        stop "Dimensions do not match"
+    else if((size(sortedX,1)/=N) .or. (size(sortedX,2)/=P)) then
+        stop "Dimensions do not match"
+    endif
+
+    do col=1,P
+        sortedYcorresp(:,P) = Y
+        call insertion_sort(N, sortedX(:,P), sortedYcorresp(:,P))
+    enddo
+
+end subroutine
+
+
+
+
 function gini_impurity_measure(Y, N) result(impurity)
     integer, intent(in) :: N
     integer, intent(in) :: Y(N)
