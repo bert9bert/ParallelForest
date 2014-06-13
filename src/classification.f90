@@ -267,10 +267,11 @@ function test_splitnode_01() result(exitflag)
     exitflag = -1
 
     ! set up sorted Y and X data
-    sortedYcorresp = reshape((/1,1,1,1,1,1,1,0,0,0/), &
+    sortedYcorresp = reshape((/1,1,1,1,1,1,1,1,1,0,0,0,0/), &
     	shape(sortedYcorresp))
-    sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
-    	0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp /), &
+    sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.2_dp, 0.2_dp, &
+        0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
+    	0.7_dp, 0.8_dp, 0.9_dp, 0.9_dp, 1.0_dp /), &
     	shape(sortedX))
 
     ! set correct splits for this data
@@ -494,8 +495,8 @@ function test_splitnode_05() result(exitflag)
 end function
 
 function test_splitnode_06() result(exitflag)
-    ! test that splitnode correctly points to its parent node if given, and
-    ! points to nothing if not given; and that subnodes are correct
+    ! test that splitnode correctly points to its parent node and
+    ! to its left and right subnodes
 
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
@@ -507,7 +508,7 @@ function test_splitnode_06() result(exitflag)
 
     character(len=50) :: fmt
 
-    logical :: verbose = .true.
+    logical :: verbose = .false.
 
     print *, " "
     print *, "---------- Test Function test_splitnode_06 -------------------"
