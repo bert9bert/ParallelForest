@@ -682,7 +682,7 @@ function test_splitnode_06() result(exitflag)
         shape(sortedX))
 
     ! get node split
-    node2 = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false., node1)
+    node2 = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .true., node1)
 
     if(verbose) then
         fmt = '(i6, i11, l15, i16, f14.2)'
