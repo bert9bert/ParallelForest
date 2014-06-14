@@ -2,9 +2,7 @@
 Big steps
 ---------
 * Implement decision tree growing in single-threading
-	* Write tests
-		* for sort_Xcols_Ycorresp()
-		* for grow()
+	* Write test for grow()
 * Implement decision tree prediction in single-threading
 	* write tests
 		* for predict_rec_hlpr()

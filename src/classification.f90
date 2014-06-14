@@ -224,8 +224,16 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     logical :: base1, base2, base3
     integer :: num1s
 
+    logical, parameter :: verbose = .true.
     logical, parameter :: debug01 = .false.
     character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
+
+    if(verbose) then
+        print *, "================================================================================"
+        print *, "Recursive function SPLITNODE invoked..."
+        print '("P=", i5, "; min_node_obs=", i5, "; max_depth=", i5, "; build_tree=", l5)', P, min_node_obs, max_depth, build_tree
+        print '("N=", i5, "; thisdepth=", i5)', N, thisdepth
+    endif
 
     allocate(thisnode)
 
@@ -249,10 +257,6 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     thisnode%depth = thisdepth
 
 
-    if(debug01 .eqv. .true.) then
-        print *, "------------------------"
-        print *, "DEBUG: Inside splitnode."
-    endif
 
     !----- Check input assertions -----
     ! check that sortedX is sorted
@@ -268,11 +272,12 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     base2 = (thisdepth<max_depth)  ! max depth not met
     base3 = ( num1s>0 .and. num1s<N )  ! homogenous node not met
 
-    if(debug01 .eqv. .true.) then
-        print *, "------------------------"
-        print *, "DEBUG: Min Mode Size OK to Grow?: ", base1
-        print *, "DEBUG: Max Depth OK to Grow?: ", base2
-        print *, "DEBUG: Homogenous OK to Grow?: ", base3
+
+
+    if(verbose) then
+        print *, "Pass base cases to grow?"
+        print *, " Min Node Size      Max Depth     Homogenous"
+        print '(3l15)', base1, base2, base3
     endif
 
 
@@ -284,6 +289,12 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
 
         first_split_computed = .false.
 
+        if(verbose) then
+            print *, "Base cases passed. Beginning exhaustive search loops..."
+            print *, " var  row      impL      impR      loss var* row*     loss*"
+        endif
+
+
         do varnum = 1,P
             if(debug01 .eqv. .true.) then
                 print *, "------------------------"
@@ -292,61 +303,57 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
 
             do rownum = 1,N
 
-            if(debug01 .eqv. .true.) then
-                print *, "------------------------"
-                print *, "DEBUG: Looping through splits, at N=", rownum
-            endif
-
-            ! skip to the next row if it has the same value for this variable as
-            ! this row, unless this is the last row
-            if(rownum < N) then
-                if(sortedX(rownum,varnum) == sortedX(rownum+1,varnum)) then
-                    cycle
-                endif
-            endif
-
-            ! compute loss that results from this split
-            impurity_left = gini_impurity_measure( &
-            	sortedYcorresp(1:rownum,varnum), rownum)
-            impurity_right = gini_impurity_measure( &
-            	sortedYcorresp(rownum+1:N,varnum), N-rownum)
-            loss_val = loss(impurity_left,impurity_right)
-
-            if(debug01 .eqv. .true.) then
-                print *, "DEBUG: impurity_left = ", impurity_left
-                print *, "      impurity_right = ", impurity_right
-                print *, "            loss_val = ", loss_val
-            endif
-
-            ! if this split has a lower loss than any previous split, then store it
-            ! and discard the previous best split
-            if(first_split_computed .eqv. .false.) then
-                bestsplit_varnum = 1
-                bestsplit_rownum  = rownum
-                bestsplit_loss_val = loss_val
-
-                first_split_computed = .true.
-                
                 if(debug01 .eqv. .true.) then
-                    print *, "DEBUG: Initial bests set"
+                    print *, "------------------------"
+                    print *, "DEBUG: Looping through splits, at N=", rownum
                 endif
 
-            else if(loss_val < bestsplit_loss_val) then
-                bestsplit_varnum = varnum
-                bestsplit_rownum = rownum
-                bestsplit_loss_val = loss_val
-
-                if(debug01 .eqv. .true.) then
-                    print *, "DEBUG: Better bests set"
+                ! skip to the next row if it has the same value for this variable as
+                ! this row, unless this is the last row
+                if(rownum < N) then
+                    if(sortedX(rownum,varnum) == sortedX(rownum+1,varnum)) then
+                        cycle
+                    endif
                 endif
 
-            endif
+                ! compute loss that results from this split
+                impurity_left = gini_impurity_measure( &
+                	sortedYcorresp(1:rownum,varnum), rownum)
+                impurity_right = gini_impurity_measure( &
+                	sortedYcorresp(rownum+1:N,varnum), N-rownum)
+                loss_val = loss(impurity_left,impurity_right)
 
-            if(debug01 .eqv. .true.) then
-                print *, "DEBUG: bestsplit_varnum = ", bestsplit_varnum
-                print *, "       bestsplit_rownum = ", bestsplit_rownum
-                print *, "     bestsplit_loss_val = ", bestsplit_loss_val
-            endif
+
+                ! if this split has a lower loss than any previous split, then store it
+                ! and discard the previous best split
+                if(first_split_computed .eqv. .false.) then
+                    bestsplit_varnum = 1
+                    bestsplit_rownum  = rownum
+                    bestsplit_loss_val = loss_val
+
+                    first_split_computed = .true.
+                    
+                    if(debug01 .eqv. .true.) then
+                        print *, "DEBUG: Initial bests set"
+                    endif
+
+                else if(loss_val < bestsplit_loss_val) then
+                    bestsplit_varnum = varnum
+                    bestsplit_rownum = rownum
+                    bestsplit_loss_val = loss_val
+
+                    if(debug01 .eqv. .true.) then
+                        print *, "DEBUG: Better bests set"
+                    endif
+
+                endif
+
+
+                if(verbose) then
+                    print '(i5, i5, 3f10.3, i5, i5, f10.3)', varnum, rownum, &
+                        impurity_left, impurity_right, loss_val, &
+                        bestsplit_varnum, bestsplit_rownum, bestsplit_loss_val
+                endif
 
             enddo
         enddo
@@ -408,6 +415,9 @@ function test_splitnode_01() result(exitflag)
 
     exitflag = -1
 
+    print *, " "
+    print *, "---------- Test Function test_splitnode_01 -------------------"
+
     ! set up sorted Y and X data
     sortedYcorresp = reshape((/1,1,1,1,1,1,1,1,1,0,0,0,0/), &
     	shape(sortedYcorresp))
@@ -424,8 +434,6 @@ function test_splitnode_01() result(exitflag)
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
 
     ! print results
-    print *, " "
-    print *, "---------- Test Function test_splitnode_01 -------------------"
     if(verbose) then
         print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
             thisnode%splitvarnum, bestsplit_varnum_correct
@@ -762,7 +770,7 @@ function test_splitnode_06() result(exitflag)
 end function
 
 
-function test_splitnode_07() result(exitflag)  ! TODO
+function test_splitnode_07() result(exitflag)
     ! test that insertion_sort() works
     integer, parameter :: N = 20
     real(dp) :: arr(N), arr_correct(N)
@@ -818,7 +826,7 @@ function test_sort_Xcols_Ycorresp_01() result(exitflag)
 
     integer :: i,j
 
-    logical, parameter :: verbose = .true.
+    logical, parameter :: verbose = .false.
 
     exitflag = -1
 
@@ -872,6 +880,7 @@ function test_sort_Xcols_Ycorresp_01() result(exitflag)
     if(verbose) then
         print *, "DEBUG: Before call to sort_Xcols_Ycorresp()"
 
+        ! print info about X data
         print *, " sX1     sX1C  |   sX2     sX2C"
         print *, "---------------+---------------"
 
@@ -889,6 +898,7 @@ function test_sort_Xcols_Ycorresp_01() result(exitflag)
         print *, ""
         print *, "DEBUG: After call to sort_Xcols_Ycorresp()"
 
+        ! print info about X data
         print *, " sX1     sX1C  |   sX2     sX2C"
         print *, "---------------+---------------"
 
@@ -896,6 +906,7 @@ function test_sort_Xcols_Ycorresp_01() result(exitflag)
             print '(f5.3, "    ", f5.3, "  | ",f5.3, "    ", f5.3)', ( sortedX(i,j), sortedX_correct(i,j), j=1,P )
         enddo
 
+        ! print info about Y data
         print *, ""
         print *, "sYc1    sYc1C  |  sYc2    sYc2C"
         print *, "---------------+---------------"
@@ -913,5 +924,7 @@ function test_sort_Xcols_Ycorresp_01() result(exitflag)
 
     exitflag = 0
 end function
+
+
 
 end module classification
