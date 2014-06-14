@@ -364,30 +364,33 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
         thisnode%splitvarnum = bestsplit_varnum
         thisnode%splitvalue  = sortedX(bestsplit_rownum, bestsplit_varnum)
 
-        ! create subnodes and attach
-        thisnode%has_subnodes = .true.
+        if(build_tree) then
+            ! create subnodes and attach
+            thisnode%has_subnodes = .true.
 
-        ! TODO: this is inefficient splicing; see if this can be made to splice column-wise
-        
-        ! construct and attach left node
-        allocate(thisnode%leftnode)
+            ! TODO: this is inefficient splicing; see if this can be made to splice column-wise
+            
+            ! construct and attach left node
+            allocate(thisnode%leftnode)
 
-        thisnode%leftnode = splitnode( &
-            sortedYcorresp(1:bestsplit_rownum,:), sortedX(1:bestsplit_rownum,:), &
-            P, bestsplit_rownum, &
-            min_node_obs, max_depth, &
-            thisdepth+1, .true., thisnode)
+            thisnode%leftnode = splitnode( &
+                sortedYcorresp(1:bestsplit_rownum,:), sortedX(1:bestsplit_rownum,:), &
+                P, bestsplit_rownum, &
+                min_node_obs, max_depth, &
+                thisdepth+1, .true., thisnode)
 
 
-        ! construct and attach right node
-        allocate(thisnode%rightnode)
+            ! construct and attach right node
+            allocate(thisnode%rightnode)
 
-        thisnode%rightnode = splitnode( &
-            sortedYcorresp(bestsplit_rownum+1:N,:), sortedX(bestsplit_rownum+1:N,:), &
-            P, N-bestsplit_rownum, &
-            min_node_obs, max_depth, &
-            thisdepth+1, .true., thisnode)
-
+            thisnode%rightnode = splitnode( &
+                sortedYcorresp(bestsplit_rownum+1:N,:), sortedX(bestsplit_rownum+1:N,:), &
+                P, N-bestsplit_rownum, &
+                min_node_obs, max_depth, &
+                thisdepth+1, .true., thisnode)
+        else
+            thisnode%has_subnodes = .false.
+        endif
 
     else
         ! otherwise, this is a terminal node
