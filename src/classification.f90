@@ -301,7 +301,9 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
                 print *, "DEBUG: Looping through variables, at variable num ", varnum
             endif
 
-            do rownum = 1,N
+            do rownum = 1,(N-1)  ! note that it doesn't make sense to split on
+                                 ! the last observation since then no split
+                                 ! has occured, so loop from 1 to N-1
 
                 if(debug01 .eqv. .true.) then
                     print *, "------------------------"
@@ -403,7 +405,7 @@ function test_splitnode_01() result(exitflag)
     ! Test the ability of the splitnode function to split a node ONCE
     ! on a dataset with just one variable. Test will be with sorted data.
 
-    integer, parameter :: N=10, P=1
+    integer, parameter :: N=13, P=1
     real(dp) :: sortedX(N,P) 
     integer :: sortedYcorresp(N,P)
     integer :: bestsplit_varnum_correct
