@@ -298,14 +298,14 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
         do varnum = 1,P
             if(debug01 .eqv. .true.) then
                 print *, "------------------------"
-                print *, "DEBUG: Looping through variables, at P=", varnum
+                print *, "DEBUG: Looping through variables, at variable num ", varnum
             endif
 
             do rownum = 1,N
 
                 if(debug01 .eqv. .true.) then
                     print *, "------------------------"
-                    print *, "DEBUG: Looping through splits, at N=", rownum
+                    print *, "DEBUG: Looping through splits, at row num ", rownum
                 endif
 
                 ! skip to the next row if it has the same value for this variable as
