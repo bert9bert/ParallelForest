@@ -193,36 +193,43 @@ function gini_impurity_measure(Y, N) result(impurity)
     impurity = f0*(1-f0) + f1*(1-f1)
 end function
 
-
-function loss(impurity_left, impurity_right) result(loss_val)
-    real(dp), intent(in) :: impurity_left, impurity_right
+! TODO
+function loss(impurity_this, impurity_left, impurity_right, prob_left) result(loss_val)
+    real(dp), intent(in) :: impurity_this, impurity_left, impurity_right, prob_left
     real(dp) :: loss_val
 
-    loss_val = impurity_left + impurity_right
+    if((prob_left<0) .or. (prob_left>1)) stop "Probability not between 0 and 1."
+
+    loss_val = prob_left*impurity_left + (1-prob_left)*impurity_right - impurity_this
 end function
 
 
 recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     min_node_obs, max_depth, &
-    thisdepth, build_tree, parentnode) &
+    thisdepth, build_tree, &
+    parentnode, opt_impurity_this) &
     result(thisnode)
 
     real(dp), intent(in) :: sortedX(N,P) 
     integer, intent(in) :: sortedYcorresp(N,P)
     integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
-    logical, optional :: build_tree
-    type (node), target, optional :: parentnode
+    logical, optional :: build_tree ! TODO: fix no opt
+    type (node), target, optional :: parentnode ! TODO: fix no opt
+    real(dp), optional :: opt_impurity_this
+
+    real(dp) :: impurity_this
 
     type (node), pointer :: thisnode
     
     integer :: varnum, rownum
     integer :: bestsplit_varnum, bestsplit_rownum
-    real(dp) :: bestsplit_loss_val
+    real(dp) :: bestsplit_impurity_left, bestsplit_impurity_right, bestsplit_loss_val
     real(dp) :: impurity_left, impurity_right, loss_val
     logical :: first_split_computed
     logical :: base1, base2, base3
     integer :: num1s
+    logical :: Xi_homog
 
     logical, parameter :: verbose = .true.
     logical, parameter :: debug01 = .false.
@@ -238,6 +245,16 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     allocate(thisnode)
 
     if(.not. present(build_tree)) build_tree = .false.
+
+    if(.not. present(opt_impurity_this)) then
+        impurity_this = gini_impurity_measure(sortedYcorresp(:,1), N)
+    else
+        impurity_this = opt_impurity_this
+    endif
+
+    if(verbose) then
+        print '("impurity of this node = ", f5.3)', impurity_this
+    endif
 
     num1s = sum(sortedYcorresp(:,1))
 
@@ -276,7 +293,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
 
     if(verbose) then
         print *, "Pass base cases to grow?"
-        print *, " Min Node Size      Max Depth     Homogenous"
+        print *, "!Min Node Size     !Max Depth    !Homogenous"
         print '(3l15)', base1, base2, base3
     endif
 
@@ -294,28 +311,23 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
             print *, " var  row      impL      impR      loss var* row*     loss*"
         endif
 
-
+        
         do varnum = 1,P
-            if(debug01 .eqv. .true.) then
-                print *, "------------------------"
-                print *, "DEBUG: Looping through variables, at variable num ", varnum
-            endif
-
-            do rownum = 1,(N-1)  ! note that it doesn't make sense to split on
-                                 ! the last observation since then no split
-                                 ! has occured, so loop from 1 to N-1
-
-                if(debug01 .eqv. .true.) then
-                    print *, "------------------------"
-                    print *, "DEBUG: Looping through splits, at row num ", rownum
-                endif
+            Xi_homog = .true.
+            do rownum = 1,N
 
                 ! skip to the next row if it has the same value for this variable as
                 ! this row, unless this is the last row that can be split on
-                if(rownum < (N-1)) then
+                
+
+                if(rownum < N) then
                     if(sortedX(rownum,varnum) == sortedX(rownum+1,varnum)) then
                         cycle
+                    else
+                        Xi_homog = .false.
                     endif
+                else if(rownum==N) then
+                    cycle
                 endif
 
                 ! compute loss that results from this split
@@ -323,7 +335,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
                 	sortedYcorresp(1:rownum,varnum), rownum)
                 impurity_right = gini_impurity_measure( &
                 	sortedYcorresp(rownum+1:N,varnum), N-rownum)
-                loss_val = loss(impurity_left,impurity_right)
+                loss_val = loss(impurity_this, impurity_left, impurity_right, real(rownum, dp)/N)
 
 
                 ! if this split has a lower loss than any previous split, then store it
@@ -331,22 +343,19 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
                 if(first_split_computed .eqv. .false.) then
                     bestsplit_varnum = 1
                     bestsplit_rownum  = rownum
+                    bestsplit_impurity_left = impurity_left
+                    bestsplit_impurity_right = impurity_right
                     bestsplit_loss_val = loss_val
 
                     first_split_computed = .true.
                     
-                    if(debug01 .eqv. .true.) then
-                        print *, "DEBUG: Initial bests set"
-                    endif
-
                 else if(loss_val < bestsplit_loss_val) then
                     bestsplit_varnum = varnum
                     bestsplit_rownum = rownum
+                    bestsplit_impurity_left = impurity_left
+                    bestsplit_impurity_right = impurity_right
                     bestsplit_loss_val = loss_val
 
-                    if(debug01 .eqv. .true.) then
-                        print *, "DEBUG: Better bests set"
-                    endif
 
                 endif
 
@@ -360,11 +369,19 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
             enddo
         enddo
 
-        ! set the splitting variable and splitting value for this node
-        thisnode%splitvarnum = bestsplit_varnum
-        thisnode%splitvalue  = sortedX(bestsplit_rownum, bestsplit_varnum)
+        if(verbose) then
+            if(Xi_homog) then
+                print *, "Xi homogeneous. Subnodes will not be attached."
+            endif
+        endif
 
-        if(build_tree) then
+        if(.not. Xi_homog) then
+            ! set the splitting variable and splitting value for this node
+            thisnode%splitvarnum = bestsplit_varnum
+            thisnode%splitvalue  = sortedX(bestsplit_rownum, bestsplit_varnum)
+        endif
+
+        if(build_tree .and. (.not. Xi_homog)) then          
             ! create subnodes and attach
             thisnode%has_subnodes = .true.
 
@@ -377,7 +394,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
                 sortedYcorresp(1:bestsplit_rownum,:), sortedX(1:bestsplit_rownum,:), &
                 P, bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode)
+                thisdepth+1, .true., thisnode, bestsplit_impurity_left)
 
 
             ! construct and attach right node
@@ -387,7 +404,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
                 sortedYcorresp(bestsplit_rownum+1:N,:), sortedX(bestsplit_rownum+1:N,:), &
                 P, N-bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode)
+                thisdepth+1, .true., thisnode, bestsplit_impurity_right)
         else
             thisnode%has_subnodes = .false.
         endif
@@ -398,7 +415,6 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
 
     endif
 
-    
 end function
 
 
