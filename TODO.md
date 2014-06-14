@@ -2,7 +2,8 @@
 Big steps
 ---------
 * Implement decision tree growing in single-threading
-	* Fix loss function
+	* fix carry issue
+	* redefine majority for unbalanced data
 	* Write test for grow()
 * Implement decision tree prediction in single-threading
 	* write tests

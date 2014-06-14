@@ -234,6 +234,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     logical, parameter :: verbose = .true.
     logical, parameter :: debug01 = .false.
     character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
+    integer :: i  ! ditto above
 
     if(verbose) then
         print *, "==============================================================================="
@@ -257,6 +258,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     endif
 
     num1s = sum(sortedYcorresp(:,1))
+
 
     ! add pointer to parent node if parent node is given in input
     if(present(parentnode)) thisnode%parentnode => parentnode
@@ -952,7 +954,7 @@ function test_grow_01() result(exitflag)
     ! tests the function that grows a decision tree using a simple example
 
     ! variable declarations
-    integer, parameter :: sqrtN=5, P=2
+    integer, parameter :: sqrtN=10, P=2
     integer, parameter :: N = sqrtN**2
     integer :: Y(N)
     real(dp) :: X(N,P)
@@ -986,14 +988,15 @@ function test_grow_01() result(exitflag)
     enddo
 
     do ctr=1,N
-        if(X(ctr,2)<=0.03_dp) then
+        if(X(ctr,2)>=0.04_dp) then
             Y(ctr) = 1
-        else if(X(ctr,1)<=0.02) then
+        else if(X(ctr,1)<=0.05) then
             Y(ctr) = 0
         else
             Y(ctr) = 1
         endif
     enddo
+
 
     if(verbose) then
         print *, "[X1 X2 | Y ] = ["
