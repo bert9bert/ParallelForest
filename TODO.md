@@ -2,6 +2,7 @@
 Big steps
 ---------
 * Implement decision tree growing in single-threading
+	* Fix loss function
 	* Write test for grow()
 * Implement decision tree prediction in single-threading
 	* write tests
