@@ -229,7 +229,7 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
 
     if(verbose) then
-        print *, "================================================================================"
+        print *, "==============================================================================="
         print *, "Recursive function SPLITNODE invoked..."
         print '("P=", i5, "; min_node_obs=", i5, "; max_depth=", i5, "; build_tree=", l5)', P, min_node_obs, max_depth, build_tree
         print '("N=", i5, "; thisdepth=", i5)', N, thisdepth
@@ -311,8 +311,8 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
                 endif
 
                 ! skip to the next row if it has the same value for this variable as
-                ! this row, unless this is the last row
-                if(rownum < N) then
+                ! this row, unless this is the last row that can be split on
+                if(rownum < (N-1)) then
                     if(sortedX(rownum,varnum) == sortedX(rownum+1,varnum)) then
                         cycle
                     endif
