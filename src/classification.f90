@@ -927,4 +927,114 @@ end function
 
 
 
+function test_grow_01() result(exitflag)
+    ! tests the function that grows a decision tree using a simple example
+
+    ! variable declarations
+    integer, parameter :: sqrtN=5, P=2
+    integer, parameter :: N = sqrtN**2
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer :: min_node_obs, max_depth
+    type (node) :: fittedtree
+    integer :: exitflag
+
+    logical, parameter :: verbose = .true.
+    character(len=50) :: fmt
+
+    integer :: i,j,ctr
+
+    exitflag = -1
+
+    print *, " "
+    print *, "--------- Running Test Function test_grow_01 ------------------"
+
+    ! set base conditions
+    min_node_obs = 1
+    max_depth = 10
+
+    ! fill in data
+    ctr = 1
+    do i=1,sqrtN
+        do j=1,sqrtN
+            X(ctr,1) = real(i,dp)/100
+            X(ctr,2) = real(j,dp)/100
+
+            ctr = ctr + 1
+        enddo
+    enddo
+
+    do ctr=1,N
+        if(X(ctr,2)<=0.03_dp) then
+            Y(ctr) = 1
+        else if(X(ctr,1)<=0.02) then
+            Y(ctr) = 0
+        else
+            Y(ctr) = 1
+        endif
+    enddo
+
+    if(verbose) then
+        print *, "[X1 X2 | Y ] = ["
+        do ctr=1,N
+            print '(f10.5, "    ", f10.5, "    ", i3)', X(ctr,1), X(ctr,2), Y(ctr)
+        enddo
+        print *, "]"
+    endif
+
+    ! fit tree
+    fittedtree = grow(Y, X, min_node_obs, max_depth)
+
+
+    if(verbose) then
+        fmt = '(i6, i11, l15, i16, f14.3)'
+
+        print *, ""
+        print *, "For fitted tree:"
+        print *, "-------------+--------+----------+--------------+---------------+------------"
+        print *, "Node         |  Depth | Majority | Has Subnodes | Split Var Num | Split Value"
+        print *, "-------------+--------+----------+--------------+---------------+------------"
+
+        write (*,'(A)',advance="no") "parent        | "
+        print fmt, fittedtree%parentnode%depth, fittedtree%parentnode%majority, fittedtree%parentnode%has_subnodes, &
+            fittedtree%parentnode%splitvarnum, fittedtree%parentnode%splitvalue
+        write (*,'(A)',advance="no") "this          | "
+        print fmt, fittedtree%depth, fittedtree%majority, fittedtree%has_subnodes, &
+            fittedtree%splitvarnum, fittedtree%splitvalue
+        write (*,'(A)',advance="no") "left          | "
+        print fmt, fittedtree%leftnode%depth, fittedtree%leftnode%majority, fittedtree%leftnode%has_subnodes, &
+            fittedtree%leftnode%splitvarnum, fittedtree%leftnode%splitvalue
+        write (*,'(A)',advance="no") "left's left   | "
+        print fmt, fittedtree%leftnode%leftnode%depth, fittedtree%leftnode%leftnode%majority, &
+            fittedtree%leftnode%leftnode%has_subnodes, &
+            fittedtree%leftnode%leftnode%splitvarnum, fittedtree%leftnode%leftnode%splitvalue
+        write (*,'(A)',advance="no") "left's right  | "
+        print fmt, fittedtree%leftnode%rightnode%depth, fittedtree%leftnode%rightnode%majority, &
+            fittedtree%leftnode%rightnode%has_subnodes, &
+            fittedtree%leftnode%rightnode%splitvarnum, fittedtree%leftnode%rightnode%splitvalue
+        write (*,'(A)',advance="no") "right         | "
+        print fmt, fittedtree%rightnode%depth, fittedtree%rightnode%majority, fittedtree%rightnode%has_subnodes, &
+            fittedtree%rightnode%splitvarnum, fittedtree%rightnode%splitvalue
+
+        print *, "-------------+--------+----------+--------------+---------------+------------"
+    endif
+
+
+
+
+    ! test for failure conditions
+    stop "Not finished writing this test function."
+
+    exitflag = 0
+
+    print *, ""
+    print *, "Test successful if test executed without error."
+
+    ! TODO: now add some impurities to the data
+end function
+
+
+! TODO: then test the stopping conditions for grow
+
+
 end module classification
