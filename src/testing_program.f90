@@ -13,7 +13,7 @@ exitflag = test_splitnode_03()
 exitflag = test_splitnode_04()
 exitflag = test_splitnode_05()
 exitflag = test_splitnode_06()
-exitflag = test_splitnode_07()
+exitflag = test_insertion_sort_01()
 exitflag = test_grow_01()
 
 end program

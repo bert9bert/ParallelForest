@@ -474,7 +474,7 @@ function test_splitnode_01() result(exitflag)
     exitflag = -1
 
     print *, " "
-    print *, "---------- Test Function test_splitnode_01 -------------------"
+    print *, "---------- Running Test Function test_splitnode_01 -------------------"
 
     ! set up sorted Y and X data
     sortedYcorresp = reshape((/1,1,1,1,1,1,1,1,1,0,0,0,0/), &
@@ -531,7 +531,7 @@ function test_splitnode_02() result(exitflag)
     exitflag = -1
 
     print *, " "
-    print *, "---------- Test Function test_splitnode_02 -------------------"
+    print *, "---------- Running Test Function test_splitnode_02 -------------------"
 
     ! set up sorted Y and X data
     sortedYcorresp = reshape((/ &
@@ -610,7 +610,7 @@ function test_splitnode_03() result(exitflag)
 
     ! print results
     print *, " "
-    print *, "---------- Test Function test_splitnode_03 -------------------"
+    print *, "---------- Running Test Function test_splitnode_03 -------------------"
 
     ! test failure conditions
     if(thisnode%has_subnodes .eqv. .true.) &
@@ -649,7 +649,7 @@ function test_splitnode_04() result(exitflag)
 
     ! print results
     print *, " "
-    print *, "---------- Test Function test_splitnode_04 -------------------"
+    print *, "---------- Running Test Function test_splitnode_04 -------------------"
 
     ! test failure conditions
     if(thisnode%has_subnodes .eqv. .true.) &
@@ -662,7 +662,7 @@ end function
 
 
 function test_splitnode_05() result(exitflag)
-    ! test that the homogenous node base case works
+    ! test that the homogeneous node base case works
 
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
@@ -689,7 +689,7 @@ function test_splitnode_05() result(exitflag)
 
     ! print results
     print *, " "
-    print *, "---------- Test Function test_splitnode_05 -------------------"
+    print *, "---------- Running Test Function test_splitnode_05 -------------------"
 
     ! test failure conditions
     if(thisnode0%has_subnodes .eqv. .true.) &
@@ -719,7 +719,7 @@ function test_splitnode_06() result(exitflag)
     logical :: verbose = .false.
 
     print *, " "
-    print *, "---------- Test Function test_splitnode_06 -------------------"
+    print *, "---------- Running Test Function test_splitnode_06 -------------------"
 
     node1%depth = 87
     node1%majority = 1
@@ -828,7 +828,7 @@ function test_splitnode_06() result(exitflag)
 end function
 
 
-function test_splitnode_07() result(exitflag)
+function test_insertion_sort_01() result(exitflag)
     ! test that insertion_sort() works
     integer, parameter :: N = 20
     real(dp) :: arr(N), arr_correct(N)
@@ -836,7 +836,7 @@ function test_splitnode_07() result(exitflag)
     integer :: exitflag
 
     print *, " "
-    print *, "---------- Test Function test_splitnode_07 -------------------"
+    print *, "---------- Running Test Function test_insertion_sort_01 -------------------"
 
     ! define real array to sort, integer array to carry, and corresponding
     ! sorted arrays
