@@ -216,7 +216,7 @@ recursive function splitnode(Y, X, P, N, &
     integer, allocatable :: Yleft(:), Yright(:)
     integer :: i,j,k
 
-    logical, parameter :: verbose = .true.
+    logical, parameter :: verbose = .false.
     logical, parameter :: debug01 = .false.
     character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
 
@@ -886,7 +886,7 @@ function test_grow_01() result(exitflag)
     type (node) :: fittedtree
     integer :: exitflag
 
-    logical, parameter :: verbose = .true.
+    logical, parameter :: verbose = .false.
     character(len=50) :: fmt
 
     integer :: i,j,ctr
@@ -900,7 +900,6 @@ function test_grow_01() result(exitflag)
     min_node_obs = 1
     max_depth = 10
 
-    ! fill in data
     ctr = 1
     do i=1,sqrtN
         do j=1,sqrtN
@@ -970,8 +969,83 @@ function test_grow_01() result(exitflag)
 
 
 
-    ! test for failure conditions
-    stop "Not finished writing this test function."
+    ! -- test for failure conditions --
+    ! - test that expected values of nodes are realized -
+    if((fittedtree%depth /= 0) .or. &
+        (fittedtree%splitvarnum /= 2) .or. &
+        (fittedtree%splitvalue /= 0.03_dp) .or. &
+        (fittedtree%has_subnodes .neqv. .true.) .or. &
+        (fittedtree%majority /= 1)) then
+        stop "Fitted tree does not have the expected attributes."
+    endif
+
+    if((fittedtree%leftnode%depth /= 1) .or. &
+        (fittedtree%leftnode%splitvarnum /= 1) .or. &
+        (fittedtree%leftnode%splitvalue /= 0.05_dp) .or. &
+        (fittedtree%leftnode%has_subnodes .neqv. .true.) .or. &
+        (fittedtree%leftnode%majority /= 1)) then
+        stop "Fitted tree's left subnode does not have the expected attributes."
+    endif
+
+    if((fittedtree%leftnode%leftnode%depth /= 2) .or. &
+        (fittedtree%leftnode%leftnode%has_subnodes .neqv. .false.) .or. &
+        (fittedtree%leftnode%leftnode%majority /= 0)) then
+        stop "Fitted tree's left subnode's left subnode does not have the expected attributes."
+    endif
+
+    if((fittedtree%leftnode%rightnode%depth /= 2) .or. &
+        (fittedtree%leftnode%rightnode%has_subnodes .neqv. .false.) .or. &
+        (fittedtree%leftnode%rightnode%majority /= 1)) then
+        stop "Fitted tree's left subnode's right subnode does not have the expected attributes."
+    endif
+
+    if((fittedtree%rightnode%depth /= 1) .or. &
+        (fittedtree%rightnode%has_subnodes .neqv. .false.) .or. &
+        (fittedtree%rightnode%majority /= 1)) then
+        stop "Fitted tree's right subnode does not have the expected attributes."
+    endif
+
+
+    ! - test that subnodes refer correctly to parent nodes -
+    ! check that fittedtree's left subnode's parentnode points to fittedtree
+    if( (fittedtree%leftnode%parentnode%depth        /= fittedtree%depth) .or. &
+        (fittedtree%leftnode%parentnode%majority     /= fittedtree%majority) .or. &
+        (fittedtree%leftnode%parentnode%has_subnodes .neqv. fittedtree%has_subnodes) .or. &
+        (fittedtree%leftnode%parentnode%splitvarnum  /= fittedtree%splitvarnum) .or. &
+        (fittedtree%leftnode%parentnode%splitvalue   /= fittedtree%splitvalue) ) then
+
+        stop "Test failed: fittedtree's left subnode's parentnode attributes do not match those of fittedtree."
+    endif
+
+    ! check that fittedtree's right subnode's parentnode points to fittedtree
+    if( (fittedtree%rightnode%parentnode%depth        /= fittedtree%depth) .or. &
+        (fittedtree%rightnode%parentnode%majority     /= fittedtree%majority) .or. &
+        (fittedtree%rightnode%parentnode%has_subnodes .neqv. fittedtree%has_subnodes) .or. &
+        (fittedtree%rightnode%parentnode%splitvarnum  /= fittedtree%splitvarnum) .or. &
+        (fittedtree%rightnode%parentnode%splitvalue   /= fittedtree%splitvalue) ) then
+        stop "Test failed: fittedtree's right subnode's parentnode attributes do not match those of fittedtree."
+    endif
+
+    ! check that fittedtree's left subnode's left subnode's parentnode points to fittedtree's left subnode
+    if( (fittedtree%leftnode%leftnode%parentnode%depth        /= fittedtree%leftnode%depth) .or. &
+        (fittedtree%leftnode%leftnode%parentnode%majority     /= fittedtree%leftnode%majority) .or. &
+        (fittedtree%leftnode%leftnode%parentnode%has_subnodes .neqv. fittedtree%leftnode%has_subnodes) .or. &
+        (fittedtree%leftnode%leftnode%parentnode%splitvarnum  /= fittedtree%leftnode%splitvarnum) .or. &
+        (fittedtree%leftnode%leftnode%parentnode%splitvalue   /= fittedtree%leftnode%splitvalue) ) then
+
+        stop "Test failed: fittedtree's left subnode's left subnode's &
+            &parentnode attributes do not match those of fittedtree's left subnode."
+    endif
+
+    ! check that fittedtree's left subnode's right subnode's parentnode points to fittedtree's left subnode
+    if( (fittedtree%leftnode%rightnode%parentnode%depth        /= fittedtree%leftnode%depth) .or. &
+        (fittedtree%leftnode%rightnode%parentnode%majority     /= fittedtree%leftnode%majority) .or. &
+        (fittedtree%leftnode%rightnode%parentnode%has_subnodes .neqv. fittedtree%leftnode%has_subnodes) .or. &
+        (fittedtree%leftnode%rightnode%parentnode%splitvarnum  /= fittedtree%leftnode%splitvarnum) .or. &
+        (fittedtree%leftnode%rightnode%parentnode%splitvalue   /= fittedtree%leftnode%splitvalue) ) then
+        stop "Test failed: fittedtree's left subnode's right subnode's &
+            &parentnode attributes do not match those of fittedtree's left subnode."
+    endif
 
     exitflag = 0
 
