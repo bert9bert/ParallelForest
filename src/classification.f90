@@ -150,12 +150,6 @@ pure subroutine insertion_sort(N, arr, arrcarry, opt_perform_index_carry)
 end subroutine
 
 
-
-
-
-
-
-
 function gini_impurity_measure(Y, N) result(impurity)
     integer, intent(in) :: N
     integer, intent(in) :: Y(N)
@@ -187,9 +181,10 @@ end function
 recursive function splitnode(Y, X, P, N, &
     min_node_obs, max_depth, &
     thisdepth, build_tree, &
-    parentnode, opt_impurity_this) &
+    parentnode, opt_impurity_this, opt_tag) &
     result(thisnode)
 
+    ! variable declarations
     real(dp), intent(in) :: X(N,P) 
     integer, intent(in) :: Y(N)
     real(dp) :: sortedX(N,P) 
@@ -198,7 +193,12 @@ recursive function splitnode(Y, X, P, N, &
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
     logical, optional :: build_tree ! TODO: fix no opt
     type (node), target, optional :: parentnode ! TODO: fix no opt
-    real(dp), optional :: opt_impurity_this
+    real(dp), optional, intent(in) :: opt_impurity_this
+    character(len=50), optional, intent(in) :: opt_tag  ! TODO: implement better way to track this
+
+    character(len=50) :: tag 
+    character(len=50) :: tagleft, tagright
+    character(len=6), parameter :: tagleftstr=" LEFT", tagrightstr=" RIGHT"
 
     real(dp) :: impurity_this
 
@@ -212,17 +212,34 @@ recursive function splitnode(Y, X, P, N, &
     logical :: base1, base2, base3
     integer :: num1s
     logical :: Xi_homog
-    integer :: i,j
+    real(dp), allocatable :: Xleft(:,:), Xright(:,:)
+    integer, allocatable :: Yleft(:), Yright(:)
+    integer :: i,j,k
 
     logical, parameter :: verbose = .true.
     logical, parameter :: debug01 = .false.
     character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
+
+    if(present(opt_tag)) then
+        tag = opt_tag
+    else
+        tag = "NO TAG"
+    endif
 
     if(verbose) then
         print *, "==============================================================================="
         print *, "Recursive function SPLITNODE invoked..."
         print '("P=", i5, "; min_node_obs=", i5, "; max_depth=", i5, "; build_tree=", l5)', P, min_node_obs, max_depth, build_tree
         print '("N=", i5, "; thisdepth=", i5)', N, thisdepth
+        print '("tag=",(A))', tag
+    endif
+
+    if(verbose) then
+        print *, "[X1 X2 | Y ] = ["
+        do i=1,N
+            print '(f10.5, "    ", f10.5, "    ", i3)', X(i,1), X(i,2), Y(i)
+        enddo
+        print *, "]"
     endif
 
     ! take Y vector and X matrix, sort X by column and output
@@ -382,26 +399,49 @@ recursive function splitnode(Y, X, P, N, &
             ! create subnodes and attach
             thisnode%has_subnodes = .true.
 
-            ! TODO: this is inefficient splicing; see if this can be made to splice column-wise
-            
+            ! create left and right data to be passed to the subnodes
+            ! TODO: check if memory will build up in the stack like this
+
+            allocate(Xleft(bestsplit_rownum,P))
+            allocate(Yleft(bestsplit_rownum))
+            allocate(Xright(N-bestsplit_rownum,P))
+            allocate(Yright(N-bestsplit_rownum))
+
+            j=1
+            k=1
+            do i=1,N
+                if(X(i,thisnode%splitvarnum)<=thisnode%splitvalue) then
+                    Xleft(j,:) = X(i,:)
+                    Yleft(j) = Y(i)
+                    j = j+1
+                else
+                    Xright(k,:) = X(i,:)
+                    Yright(k) = Y(i)
+                    k = k+1
+                endif
+            enddo
+
             ! construct and attach left node
+            tagleft = trim(tag)//tagleftstr
+
             allocate(thisnode%leftnode)
 
             thisnode%leftnode = splitnode( &
-                sortedYcorresp(1:bestsplit_rownum,:), sortedX(1:bestsplit_rownum,:), &
+                Yleft, Xleft, &
                 P, bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode, bestsplit_impurity_left)
-
+                thisdepth+1, .true., thisnode, bestsplit_impurity_left, tagleft)
 
             ! construct and attach right node
+            tagright = trim(tag)//tagrightstr
+
             allocate(thisnode%rightnode)
 
             thisnode%rightnode = splitnode( &
-                sortedYcorresp(bestsplit_rownum+1:N,:), sortedX(bestsplit_rownum+1:N,:), &
+                Yright, Xright, &
                 P, N-bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode, bestsplit_impurity_right)
+                thisdepth+1, .true., thisnode, bestsplit_impurity_right, tagright)
         else
             thisnode%has_subnodes = .false.
         endif
@@ -899,32 +939,32 @@ function test_grow_01() result(exitflag)
 
         print *, ""
         print *, "For fitted tree:"
-        print *, "-------------+--------+----------+--------------+---------------+------------"
-        print *, "Node         |  Depth | Majority | Has Subnodes | Split Var Num | Split Value"
-        print *, "-------------+--------+----------+--------------+---------------+------------"
+        print *, "---------------+--------+----------+--------------+---------------+------------"
+        print *, "Node           |  Depth | Majority | Has Subnodes | Split Var Num | Split Value"
+        print *, "---------------+--------+----------+--------------+---------------+------------"
 
-        write (*,'(A)',advance="no") "parent        | "
+        write (*,'(A)',advance="no") "parent          | "
         print fmt, fittedtree%parentnode%depth, fittedtree%parentnode%majority, fittedtree%parentnode%has_subnodes, &
             fittedtree%parentnode%splitvarnum, fittedtree%parentnode%splitvalue
-        write (*,'(A)',advance="no") "this          | "
+        write (*,'(A)',advance="no") "-TOP (THIS)     | "
         print fmt, fittedtree%depth, fittedtree%majority, fittedtree%has_subnodes, &
             fittedtree%splitvarnum, fittedtree%splitvalue
-        write (*,'(A)',advance="no") "left          | "
+        write (*,'(A)',advance="no") "--left          | "
         print fmt, fittedtree%leftnode%depth, fittedtree%leftnode%majority, fittedtree%leftnode%has_subnodes, &
             fittedtree%leftnode%splitvarnum, fittedtree%leftnode%splitvalue
-        write (*,'(A)',advance="no") "left's left   | "
+        write (*,'(A)',advance="no") "---left's left  | "
         print fmt, fittedtree%leftnode%leftnode%depth, fittedtree%leftnode%leftnode%majority, &
             fittedtree%leftnode%leftnode%has_subnodes, &
             fittedtree%leftnode%leftnode%splitvarnum, fittedtree%leftnode%leftnode%splitvalue
-        write (*,'(A)',advance="no") "left's right  | "
+        write (*,'(A)',advance="no") "---left's right | "
         print fmt, fittedtree%leftnode%rightnode%depth, fittedtree%leftnode%rightnode%majority, &
             fittedtree%leftnode%rightnode%has_subnodes, &
             fittedtree%leftnode%rightnode%splitvarnum, fittedtree%leftnode%rightnode%splitvalue
-        write (*,'(A)',advance="no") "right         | "
+        write (*,'(A)',advance="no") "--right         | "
         print fmt, fittedtree%rightnode%depth, fittedtree%rightnode%majority, fittedtree%rightnode%has_subnodes, &
             fittedtree%rightnode%splitvarnum, fittedtree%rightnode%splitvalue
 
-        print *, "-------------+--------+----------+--------------+---------------+------------"
+        print *, "---------------+--------+----------+--------------+---------------+------------"
     endif
 
 
