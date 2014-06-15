@@ -1,7 +1,7 @@
 module classification
 !------------------------------------------------------------------------------
 !   Module for fitting and estimating a classification tree.
-!   Author: B.I.
+!   Author: Bertram Ieong
 !------------------------------------------------------------------------------
 
 implicit none
@@ -34,9 +34,6 @@ function grow(Y, X, min_node_obs, max_depth) result(fittedtree)
 
     integer :: N, P
 
-    integer, allocatable :: sortedYcorresp(:,:)
-    real(dp), allocatable :: sortedX(:,:)
-
     integer, parameter :: TOP_NODE_NUM = 0
 
     ! find out number of variables and number of observations
@@ -45,17 +42,9 @@ function grow(Y, X, min_node_obs, max_depth) result(fittedtree)
 
     if(N /= size(Y)) stop "Y has different number of obs than X"
 
-    ! allocate allocatable arrays
-    allocate(sortedYcorresp(N,P))
-    allocate(sortedX(N,P))
-
-    ! get matrix where each variable is sorted, and a matrix where the dependent variable
-    ! is carried in the sort, with columns in both matrices corresponding to each other
-    sortedX = X
-    call sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
     
     ! fit decision tree classifier
-    fittedtree = splitnode(sortedYcorresp, sortedX, P, N, &
+    fittedtree = splitnode(Y, X, P, N, &
     min_node_obs, max_depth, &
     TOP_NODE_NUM, .true.)
 
@@ -163,30 +152,6 @@ end subroutine
 
 
 
-subroutine sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
-    ! takes Y vector and X matrix, sorts X by column and outputs
-    ! a matrix with each column being the corresponding carried
-    ! sort of the Y vector
-
-    integer, intent(in) :: N, P
-    integer, intent(in) :: Y(N)
-    integer, intent(out) :: sortedYcorresp(:,:)
-    real(dp), intent(inout) :: sortedX(:,:)
-
-    integer :: col
-
-    if((size(sortedYcorresp,1)/=N) .or. (size(sortedYcorresp,2)/=P)) then
-        stop "Dimensions do not match"
-    else if((size(sortedX,1)/=N) .or. (size(sortedX,2)/=P)) then
-        stop "Dimensions do not match"
-    endif
-
-    do col=1,P
-        sortedYcorresp(:,col) = Y
-        call insertion_sort(N, sortedX(:,col), sortedYcorresp(:,col), .false.)
-    enddo
-
-end subroutine
 
 
 
@@ -219,14 +184,16 @@ function loss(impurity_this, impurity_left, impurity_right, prob_left) result(lo
 end function
 
 
-recursive function splitnode(sortedYcorresp, sortedX, P, N, &
+recursive function splitnode(Y, X, P, N, &
     min_node_obs, max_depth, &
     thisdepth, build_tree, &
     parentnode, opt_impurity_this) &
     result(thisnode)
 
-    real(dp), intent(in) :: sortedX(N,P) 
-    integer, intent(in) :: sortedYcorresp(N,P)
+    real(dp), intent(in) :: X(N,P) 
+    integer, intent(in) :: Y(N)
+    real(dp) :: sortedX(N,P) 
+    integer :: sortedYcorresp(N,P)
     integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
     logical, optional :: build_tree ! TODO: fix no opt
@@ -245,11 +212,11 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
     logical :: base1, base2, base3
     integer :: num1s
     logical :: Xi_homog
+    integer :: i,j
 
     logical, parameter :: verbose = .true.
     logical, parameter :: debug01 = .false.
     character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
-    integer :: i  ! ditto above
 
     if(verbose) then
         print *, "==============================================================================="
@@ -257,6 +224,19 @@ recursive function splitnode(sortedYcorresp, sortedX, P, N, &
         print '("P=", i5, "; min_node_obs=", i5, "; max_depth=", i5, "; build_tree=", l5)', P, min_node_obs, max_depth, build_tree
         print '("N=", i5, "; thisdepth=", i5)', N, thisdepth
     endif
+
+    ! take Y vector and X matrix, sort X by column and output
+    ! a matrix with each column being the corresponding carried
+    ! sort of the Y vector
+    sortedX = X
+
+    do j=1,P
+        sortedYcorresp(:,j) = Y
+        call insertion_sort(N, sortedX(:,j), sortedYcorresp(:,j), .false.)
+    enddo
+
+
+
 
     allocate(thisnode)
 
@@ -851,117 +831,6 @@ function test_splitnode_07() result(exitflag)
 end function
 
 
-
-function test_sort_Xcols_Ycorresp_01() result(exitflag)
-    ! test that the subroutine sort_Xcols_Ycorresp() works
-    integer, parameter :: N = 20, P = 2
-    integer :: Y(N)
-    real(dp) :: X1(N), X2(N), sortedX(N,P)
-    real(dp) :: X1sorted_correct(N), X2sorted_correct(N), sortedX_correct(N,P)
-    integer :: sortedYcorresp(N,P)
-    integer :: Y1sortedcorresp_correct(N), Y2sortedcorresp_correct(N), sortedYcorresp_correct(N,P)
-    integer :: exitflag
-
-    integer :: i,j
-
-    logical, parameter :: verbose = .false.
-
-    exitflag = -1
-
-    print *, " "
-    print *, "--------- Running Test Function test_sort_Xcols_Ycorresp_01 ------------------"
-
-    ! define real array to sort, integer array to carry, and corresponding
-    ! sorted arrays
-
-    ! construct the X and Y data
-    X1 = (/ 0.387_dp, 0.319_dp, 0.725_dp, 0.221_dp, 0.029_dp, 0.271_dp, 0.942_dp, 0.091_dp, 0.605_dp, 0.940_dp, &
-            0.804_dp, 0.028_dp, 0.391_dp, 0.461_dp, 0.491_dp, 0.172_dp, 0.418_dp, 0.253_dp, 0.364_dp, 0.861_dp  &
-        /)
-
-    X2 = (/ 0.129_dp, 0.571_dp, 0.321_dp, 0.133_dp, 0.886_dp, 0.727_dp, 0.171_dp, 0.200_dp, 0.049_dp, 0.119_dp, &
-            0.754_dp, 0.386_dp, 0.059_dp, 0.755_dp, 0.365_dp, 0.722_dp, 0.193_dp, 0.436_dp, 0.795_dp, 0.116_dp  &
-        /)
-
-    sortedX(:,1) = X1
-    sortedX(:,2) = X2
-
-    Y = (/  769, 669, 545, 964, 40, 466, 83, 852, 336, 765, &
-                665, 159, 970, 480, 937, 187, 450, 344, 286, 11 &
-        /)
-
-
-    ! correct output given the above X and Y data
-    X1sorted_correct = (/   0.028_dp, 0.029_dp, 0.091_dp, 0.172_dp, 0.221_dp, 0.253_dp, 0.271_dp, 0.319_dp, 0.364_dp, 0.387_dp, &
-                            0.391_dp, 0.418_dp, 0.461_dp, 0.491_dp, 0.605_dp, 0.725_dp, 0.804_dp, 0.861_dp, 0.940_dp, 0.942_dp &
-
-        /)
-
-    X2sorted_correct = (/   0.049_dp, 0.059_dp, 0.116_dp, 0.119_dp, 0.129_dp, 0.133_dp, 0.171_dp, 0.193_dp, 0.200_dp, 0.321_dp, &
-                            0.365_dp, 0.386_dp, 0.436_dp, 0.571_dp, 0.722_dp, 0.727_dp, 0.754_dp, 0.755_dp, 0.795_dp, 0.886_dp  &
-        /)
-
-    Y1sortedcorresp_correct = (/    159,  40, 852, 187, 964, 344, 466, 669, 286, 769, &
-                                    970, 450, 480, 937, 336, 545, 665,  11, 765,  83  &
-        /)
-
-    Y2sortedcorresp_correct = (/    336, 970,  11, 765, 769, 964,  83, 450, 852, 545, &
-                                    937, 159, 344, 669, 187, 466, 665, 480, 286,  40  &
-        /)
-
-    sortedX_correct(:,1) = X1sorted_correct
-    sortedX_correct(:,2) = X2sorted_correct
-
-    sortedYcorresp_correct(:,1) = Y1sortedcorresp_correct
-    sortedYcorresp_correct(:,2) = Y2sortedcorresp_correct
-
-    if(verbose) then
-        print *, "DEBUG: Before call to sort_Xcols_Ycorresp()"
-
-        ! print info about X data
-        print *, " sX1     sX1C  |   sX2     sX2C"
-        print *, "---------------+---------------"
-
-        do, i=1,N
-            print '(f5.3, "    ", f5.3, "  | ",f5.3, "    ", f5.3)', ( sortedX(i,j), sortedX_correct(i,j), j=1,P )
-        enddo
-
-    endif
-
-    ! call sort_Xcols_Ycorresp()
-    call sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
-
-    
-    if(verbose) then
-        print *, ""
-        print *, "DEBUG: After call to sort_Xcols_Ycorresp()"
-
-        ! print info about X data
-        print *, " sX1     sX1C  |   sX2     sX2C"
-        print *, "---------------+---------------"
-
-        do, i=1,N
-            print '(f5.3, "    ", f5.3, "  | ",f5.3, "    ", f5.3)', ( sortedX(i,j), sortedX_correct(i,j), j=1,P )
-        enddo
-
-        ! print info about Y data
-        print *, ""
-        print *, "sYc1    sYc1C  |  sYc2    sYc2C"
-        print *, "---------------+---------------"
-
-        do, i=1,N
-            print '(i5, "    ", i5, "  | ",i5, "    ", i5)', ( sortedYcorresp(i,j), sortedYcorresp_correct(i,j), j=1,P )
-        enddo
-    endif
-
-    ! check failure conditions
-    if(any(sortedX .ne. sortedX_correct)) stop "Sort failed."
-    if(any(sortedYcorresp .ne. sortedYcorresp_correct)) stop "Sort carry failed."
-
-    print *, "Test successful if test executed without error."
-
-    exitflag = 0
-end function
 
 
 
