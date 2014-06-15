@@ -120,15 +120,30 @@ end function
 ! TODO: Will use basic, but very slow, insertion sort with carry 
 ! for integer vec for now. This will 
 ! be replaced by a better sort later and this subroutine will be deleted.
-pure subroutine insertion_sort(N, arr, arrcarry)
+pure subroutine insertion_sort(N, arr, arrcarry, opt_perform_index_carry)
+    ! variable declarations
     integer, intent(in) :: N
     real(dp), intent(inout) :: arr(N)
     integer, intent(inout) :: arrcarry(N)
-
+    logical, optional, intent(in) :: opt_perform_index_carry
+    logical :: perform_index_carry
 
     real(dp) :: elem, elemcarry
     integer :: i,j
 
+    ! figure out if arrcarry should be carried as inputted or if 
+    ! a carried index array should be placed into it
+    if(present(opt_perform_index_carry)) then
+        perform_index_carry = opt_perform_index_carry
+    else
+        perform_index_carry = .true.
+    endif
+
+    if(perform_index_carry) then
+        arrcarry = (/(i, i=1,N)/)
+    endif
+
+    ! sort
     do i=2,N
         elem = arr(i)
         elemcarry = arrcarry(i)
@@ -168,7 +183,7 @@ subroutine sort_Xcols_Ycorresp(N, P, Y, sortedYcorresp, sortedX)
 
     do col=1,P
         sortedYcorresp(:,col) = Y
-        call insertion_sort(N, sortedX(:,col), sortedYcorresp(:,col))
+        call insertion_sort(N, sortedX(:,col), sortedYcorresp(:,col), .false.)
     enddo
 
 end subroutine
@@ -826,7 +841,7 @@ function test_splitnode_07() result(exitflag)
                          107, 108, 109, 110, 111/)
 
     ! sort
-    call insertion_sort(N, arr, arrcarry)
+    call insertion_sort(N, arr, arrcarry, .false.)
 
     ! check failure conditions
     if(any(arr .ne. arr_correct)) stop "Sort failed."
