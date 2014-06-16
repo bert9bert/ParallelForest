@@ -6,7 +6,6 @@ Big steps
 	* redefine majority for unbalanced data
 * Implement decision tree prediction in single-threading
 	* write tests
-		* for predict_rec_hlpr()
 		* for predict()
 * Implement R interface and connect with FORTRAN 90 code
 * Implement decision tree fitting in multi-threading

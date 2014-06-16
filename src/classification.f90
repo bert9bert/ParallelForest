@@ -874,7 +874,7 @@ end function
 
 
 
-function test_grow_01() result(exitflag)
+function test_grow_predict_01() result(exitflag)
     ! tests the function that grows a decision tree using a simple example
 
     ! variable declarations
@@ -891,10 +891,21 @@ function test_grow_01() result(exitflag)
 
     integer :: i,j,ctr
 
+    integer :: Yhat(N)
+
+    integer :: Nnew
+    real(dp), allocatable :: Xnew(:,:)
+    integer, allocatable :: Ynew(:)
+    integer, allocatable :: Ynewhat(:)
+
+
     exitflag = -1
 
     print *, " "
     print *, "--------- Running Test Function test_grow_01 ------------------"
+
+    ! -----  Fit tree on pre-determined X and Y data, and compare  -----
+    ! -----  against expected results  -----
 
     ! set base conditions
     min_node_obs = 1
@@ -1047,15 +1058,32 @@ function test_grow_01() result(exitflag)
             &parentnode attributes do not match those of fittedtree's left subnode."
     endif
 
+
+    ! -----  Use the fitted tree to predict on X, and check that Yhat = Y  -----
+    Yhat = predict(fittedtree, X)
+    
+    ! check failure condition
+    if(any(Y/=Yhat)) stop "Predicted values not same as actual values."
+
+
+    ! -----  Use the fitted tree to predict on a new set of data, and  -----
+    ! -----  check that the predicted results are as expected -----
+    Nnew = 5
+    allocate(Xnew(Nnew,P))
+    allocate(Ynew(Nnew))
+    allocate(Ynewhat(Nnew))
+    !...
+
+
     exitflag = 0
 
     print *, ""
     print *, "Test successful if test executed without error."
 
-    ! TODO: now add some impurities to the data
+    
 end function
 
-
+! TODO: test grow on some real data
 ! TODO: then test the stopping conditions for grow
 
 
