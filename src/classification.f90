@@ -14,6 +14,7 @@ type node
     integer :: depth
     integer :: majority
     logical :: has_subnodes
+    integer :: tag
     ! variables only not null when node has subnodes
     type (node), pointer :: leftnode, rightnode
     integer :: splitvarnum
