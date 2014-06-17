@@ -80,7 +80,7 @@ end function
 
 !-----  PRIVATE FUNCTIONS AND SUBROUTINES  -----
 
-subroutine tree2flat(tree, K, tag, tagparent, tagleft, tagright, is_topnode &
+subroutine tree2flat(tree, K, tag, tagparent, tagleft, tagright, is_topnode, &
     depth, majority, has_subnodes, splitvarnum, splitvalue)
 
     !--- variable declarations ---
@@ -99,12 +99,12 @@ subroutine tree2flat(tree, K, tag, tagparent, tagleft, tagright, is_topnode &
     real(dp), intent(out) :: splitvalue
 
 
-    ! ...
+    ! ... 
 
 end subroutine
 
 
-subroutine flat2tree(tree, K, tag, tagparent, tagleft, tagright, is_topnode &
+subroutine flat2tree(tree, K, tag, tagparent, tagleft, tagright, is_topnode, &
     depth, majority, has_subnodes, splitvarnum, splitvalue)
 
     !--- variable declarations ---
@@ -231,7 +231,7 @@ end function
 recursive function splitnode(Y, X, P, N, &
     min_node_obs, max_depth, &
     thisdepth, build_tree, &
-    parentnode, opt_impurity_this, opt_tag) &
+    parentnode, opt_impurity_this, opt_reset_tag_ctr) &
     result(thisnode)
 
     ! variable declarations
@@ -244,11 +244,11 @@ recursive function splitnode(Y, X, P, N, &
     logical, optional :: build_tree ! TODO: fix no opt
     type (node), target, optional :: parentnode ! TODO: fix no opt
     real(dp), optional, intent(in) :: opt_impurity_this
-    character(len=50), optional, intent(in) :: opt_tag  ! TODO: implement better way to track this
+    logical, optional, intent(in) :: opt_reset_tag_ctr
 
-    character(len=50) :: tag 
-    character(len=50) :: tagleft, tagright
-    character(len=6), parameter :: tagleftstr=" LEFT", tagrightstr=" RIGHT"
+    logical :: reset_tag_ctr 
+
+    integer, save :: tag = 0
 
     real(dp) :: impurity_this
 
@@ -270,11 +270,24 @@ recursive function splitnode(Y, X, P, N, &
     logical, parameter :: debug01 = .false.
     character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
 
-    if(present(opt_tag)) then
-        tag = opt_tag
+
+    ! allocate memory for this node
+    allocate(thisnode)
+
+    ! tag
+    if(present(opt_reset_tag_ctr)) then
+        reset_tag_ctr = opt_reset_tag_ctr
     else
-        tag = "NO TAG"
+        reset_tag_ctr = .true.
     endif
+
+    if(reset_tag_ctr) then
+        tag = 0
+    else
+        tag = tag + 1
+    endif
+
+    thisnode%tag = tag
 
     if(verbose) then
         print *, "==============================================================================="
@@ -305,8 +318,7 @@ recursive function splitnode(Y, X, P, N, &
 
 
 
-    allocate(thisnode)
-
+    
     if(.not. present(build_tree)) build_tree = .false.
 
     if(.not. present(opt_impurity_this)) then
@@ -375,7 +387,7 @@ recursive function splitnode(Y, X, P, N, &
             print *, " var  row      impL      impR      loss var* row*     loss*"
         endif
 
-        
+
         do varnum = 1,P
             Xi_homog = .true.
             do rownum = 1,N
@@ -446,6 +458,7 @@ recursive function splitnode(Y, X, P, N, &
         endif
 
         if(build_tree .and. (.not. Xi_homog)) then          
+
             ! create subnodes and attach
             thisnode%has_subnodes = .true.
 
@@ -472,34 +485,28 @@ recursive function splitnode(Y, X, P, N, &
             enddo
 
             ! construct and attach left node
-            tagleft = trim(tag)//tagleftstr
-
             allocate(thisnode%leftnode)
 
             thisnode%leftnode = splitnode( &
                 Yleft, Xleft, &
                 P, bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode, bestsplit_impurity_left, tagleft)
+                thisdepth+1, .true., thisnode, bestsplit_impurity_left, .false.)
 
             ! construct and attach right node
-            tagright = trim(tag)//tagrightstr
-
             allocate(thisnode%rightnode)
 
             thisnode%rightnode = splitnode( &
                 Yright, Xright, &
                 P, N-bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode, bestsplit_impurity_right, tagright)
+                thisdepth+1, .true., thisnode, bestsplit_impurity_right, .false.)
         else
             thisnode%has_subnodes = .false.
         endif
-
     else
         ! otherwise, this is a terminal node
         thisnode%has_subnodes = .false.
-
     endif
 
 end function
@@ -936,7 +943,7 @@ function test_grow_predict_01() result(exitflag)
     type (node) :: fittedtree
     integer :: exitflag
 
-    logical, parameter :: verbose = .false.
+    logical, parameter :: verbose = .true.
     character(len=50) :: fmt
 
     integer :: i,j,ctr
@@ -995,36 +1002,36 @@ function test_grow_predict_01() result(exitflag)
 
 
     if(verbose) then
-        fmt = '(i6, i11, l15, i16, f14.3)'
+        fmt = '(i6, i11, l15, i16, f14.3, i6)'
 
         print *, ""
         print *, "For fitted tree:"
-        print *, "---------------+--------+----------+--------------+---------------+------------"
-        print *, "Node           |  Depth | Majority | Has Subnodes | Split Var Num | Split Value"
-        print *, "---------------+--------+----------+--------------+---------------+------------"
+        print *, "---------------+--------+----------+--------------+---------------+-------------+-----"
+        print *, "Node           |  Depth | Majority | Has Subnodes | Split Var Num | Split Value | Tag "
+        print *, "---------------+--------+----------+--------------+---------------+-------------+-----"
 
         write (*,'(A)',advance="no") "parent          | "
         print fmt, fittedtree%parentnode%depth, fittedtree%parentnode%majority, fittedtree%parentnode%has_subnodes, &
-            fittedtree%parentnode%splitvarnum, fittedtree%parentnode%splitvalue
+            fittedtree%parentnode%splitvarnum, fittedtree%parentnode%splitvalue, fittedtree%parentnode%tag
         write (*,'(A)',advance="no") "-TOP (THIS)     | "
         print fmt, fittedtree%depth, fittedtree%majority, fittedtree%has_subnodes, &
-            fittedtree%splitvarnum, fittedtree%splitvalue
+            fittedtree%splitvarnum, fittedtree%splitvalue, fittedtree%tag
         write (*,'(A)',advance="no") "--left          | "
         print fmt, fittedtree%leftnode%depth, fittedtree%leftnode%majority, fittedtree%leftnode%has_subnodes, &
-            fittedtree%leftnode%splitvarnum, fittedtree%leftnode%splitvalue
+            fittedtree%leftnode%splitvarnum, fittedtree%leftnode%splitvalue, fittedtree%leftnode%tag
         write (*,'(A)',advance="no") "---left's left  | "
         print fmt, fittedtree%leftnode%leftnode%depth, fittedtree%leftnode%leftnode%majority, &
             fittedtree%leftnode%leftnode%has_subnodes, &
-            fittedtree%leftnode%leftnode%splitvarnum, fittedtree%leftnode%leftnode%splitvalue
+            fittedtree%leftnode%leftnode%splitvarnum, fittedtree%leftnode%leftnode%splitvalue, fittedtree%leftnode%leftnode%tag
         write (*,'(A)',advance="no") "---left's right | "
         print fmt, fittedtree%leftnode%rightnode%depth, fittedtree%leftnode%rightnode%majority, &
             fittedtree%leftnode%rightnode%has_subnodes, &
-            fittedtree%leftnode%rightnode%splitvarnum, fittedtree%leftnode%rightnode%splitvalue
+            fittedtree%leftnode%rightnode%splitvarnum, fittedtree%leftnode%rightnode%splitvalue, fittedtree%leftnode%rightnode%tag
         write (*,'(A)',advance="no") "--right         | "
         print fmt, fittedtree%rightnode%depth, fittedtree%rightnode%majority, fittedtree%rightnode%has_subnodes, &
-            fittedtree%rightnode%splitvarnum, fittedtree%rightnode%splitvalue
+            fittedtree%rightnode%splitvarnum, fittedtree%rightnode%splitvalue, fittedtree%rightnode%tag
 
-        print *, "---------------+--------+----------+--------------+---------------+------------"
+        print *, "---------------+--------+----------+--------------+---------------+------------+------"
     endif
 
 
@@ -1107,6 +1114,18 @@ function test_grow_predict_01() result(exitflag)
         stop "Test failed: fittedtree's left subnode's right subnode's &
             &parentnode attributes do not match those of fittedtree's left subnode."
     endif
+
+
+    ! check that the tags are in the order of expected tree trasversal
+    if (    (fittedtree%parentnode%tag /= 0) .or. &  ! dummy node, should default to 0
+            (fittedtree%tag /= 0) .or. &
+            (fittedtree%leftnode%tag /= 1) .or. &
+            (fittedtree%leftnode%leftnode%tag /= 2) .or. &
+            (fittedtree%leftnode%rightnode%tag /= 3) .or. &
+            (fittedtree%rightnode%tag /= 4) ) then
+        stop "Test failed: check tags."
+    endif
+
 
 
     ! -----  Use the fitted tree to predict on X, and check that Yhat = Y  -----
