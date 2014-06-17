@@ -3,7 +3,6 @@ Big steps
 ---------
 * Implement decision tree growing in single-threading
 	* modify test 2 for splitnode()
-	* redefine majority for unbalanced data
 * Implement decision tree prediction in single-threading
 	* write tests
 		* for predict()

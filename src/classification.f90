@@ -1068,11 +1068,46 @@ function test_grow_predict_01() result(exitflag)
 
     ! -----  Use the fitted tree to predict on a new set of data, and  -----
     ! -----  check that the predicted results are as expected -----
-    Nnew = 5
+
+    ! construct new data
+    Nnew = 9
     allocate(Xnew(Nnew,P))
     allocate(Ynew(Nnew))
     allocate(Ynewhat(Nnew))
-    !...
+    
+    Xnew = transpose(reshape( (/ &
+    real(6, dp)/real(100 ,dp),  real(3, dp)/real(100, dp)  , &
+    real(5, dp)/real(100, dp),  real(2, dp)/real(100, dp)  , &
+    real(5, dp)/real(100, dp),  real(5, dp)/real(100, dp)  , &
+    real(1, dp)/real(100, dp),  real(3, dp)/real(100, dp)  , &
+    real(9, dp)/real(100, dp),  real(4, dp)/real(100, dp)  , &
+    real(5, dp)/real(100, dp),  real(-1000, dp)            , &
+    real(5, dp)/real(100, dp),  real( 1000, dp)            , &
+    real(-1000, dp)          ,  real(4, dp)/real(100, dp)  , &
+    real( 1000, dp)          ,  real(3, dp)/real(100, dp)    &
+    /) , (/size(Xnew,2),size(Xnew,1)/)))
+
+    Ynew = (/1, 0, 1, 0, 1, 0, 1, 1, 1/)
+
+    ! fit new data
+    Ynewhat = predict(fittedtree, Xnew)
+
+    ! check failure condition
+    if(any(Ynew/=Ynewhat)) then
+        print *, "Test failed. Program stop upcomming..."
+
+        print *, "Xnew = "
+        do i=1,Nnew
+            print '(2f12.3)', Xnew(i,1), Xnew(i,2)
+        enddo
+
+        print *, "Ynewhat Ynew"
+        do i=1,Nnew
+            print '(i8,i5)', Ynewhat(i), Ynew(i)
+        enddo
+
+        stop "Predicted values not same as actual values."
+    endif
 
 
     exitflag = 0
