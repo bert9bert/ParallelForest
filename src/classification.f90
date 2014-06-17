@@ -79,6 +79,55 @@ end function
 
 !-----  PRIVATE FUNCTIONS AND SUBROUTINES  -----
 
+subroutine tree2flat(tree, K, tag, tagparent, tagleft, tagright, is_topnode &
+    depth, majority, has_subnodes, splitvarnum, splitvalue)
+
+    !--- variable declarations ---
+    type (node), intent(in) :: tree
+
+    ! tree descriptors
+    integer, intent(out) :: K
+    integer, intent(out) :: tag, tagparent, tagleft, tagright
+    logical, intent(out) :: is_topnode
+
+    ! node attributes
+    integer, intent(out) :: depth
+    integer, intent(out) :: majority
+    logical, intent(out) :: has_subnodes
+    integer :: splitvarnum
+    real(dp), intent(out) :: splitvalue
+
+
+    ! ...
+
+end subroutine
+
+
+subroutine flat2tree(tree, K, tag, tagparent, tagleft, tagright, is_topnode &
+    depth, majority, has_subnodes, splitvarnum, splitvalue)
+
+    !--- variable declarations ---
+    type (node), intent(out) :: tree
+
+    ! tree descriptors
+    integer, intent(in) :: K
+    integer, intent(in) :: tag, tagparent, tagleft, tagright
+    logical, intent(in) :: is_topnode
+
+    ! node attributes
+    integer, intent(in) :: depth
+    integer, intent(in) :: majority
+    logical, intent(in) :: has_subnodes
+    integer :: splitvarnum
+    real(dp), intent(in) :: splitvalue
+
+
+    ! ...
+
+end subroutine
+
+
+
 
 recursive function predict_rec_hlpr(t, X_row, P) result(pred)
     ! variable declarations
