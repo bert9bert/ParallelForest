@@ -18,6 +18,3 @@ subroutine grow_predict_rwrapper(n, p, xtrain, ytrain, xtest, ytesthat)
 
 end subroutine
 
-
-! compile command
-! gfortran -fPIC -shared -o grow_predict_rwrapper.dll classification.f90 grow_predict_rwrapper.f90
