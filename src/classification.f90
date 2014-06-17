@@ -94,7 +94,7 @@ subroutine tree2flat(tree, K, tag, tagparent, tagleft, tagright, is_topnode &
     integer, intent(out) :: depth
     integer, intent(out) :: majority
     logical, intent(out) :: has_subnodes
-    integer :: splitvarnum
+    integer, intent(out) :: splitvarnum
     real(dp), intent(out) :: splitvalue
 
 
@@ -118,7 +118,7 @@ subroutine flat2tree(tree, K, tag, tagparent, tagleft, tagright, is_topnode &
     integer, intent(in) :: depth
     integer, intent(in) :: majority
     logical, intent(in) :: has_subnodes
-    integer :: splitvarnum
+    integer, intent(in) :: splitvarnum
     real(dp), intent(in) :: splitvalue
 
 
