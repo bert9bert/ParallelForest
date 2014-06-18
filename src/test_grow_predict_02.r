@@ -1,5 +1,8 @@
 # set directory to where the shared library is stored
 setwd("~/ParallelDecisionTree/src/")
+# source("test_grow_predict_02.r")
+
+
 
 # load the shared libraries compiled in Fortran
 dyn.load("~/ParallelDecisionTree/src/grow_wrapper.dll")
@@ -27,7 +30,7 @@ ytrain = datamat[,3]
 ret = .Fortran("grow_wrapper",
 	n=as.integer(n), p=as.integer(p),
 	xtrain=as.matrix(xtrain), ytrain=as.integer(ytrain),
-	min_node_obs=as.integer(2), max_depth=as.integer(10),
+	min_node_obs=as.integer(1), max_depth=as.integer(10),
 	tag=integer(tmp),tagparent=integer(tmp),tagleft=integer(tmp),tagright=integer(tmp),is_topnode=integer(tmp),
 	depth=integer(tmp),majority=integer(tmp),has_subnodes=integer(tmp),splitvarnum=integer(tmp),splitvalue=double(tmp))
 

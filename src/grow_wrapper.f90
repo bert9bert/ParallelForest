@@ -11,7 +11,7 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 
 	! DEBUGGING VARIABLES, DELETE WHEN NO LONGER NEEDED
 	integer, parameter :: TMP = 25
-	logical, parameter :: verbose = .true.
+	logical, parameter :: verbose = .false.
 	integer :: i
 	character(len=50) :: fmt
 	integer :: numfittednodes
@@ -47,6 +47,21 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 
     !--- fit tree ---
     fittedtree = grow(ytrain, xtrain, min_node_obs, max_depth)
+
+    
+    if(verbose) then
+        print *, "[X1 X2 | Y ] = ["
+        do i=1,N
+            print '(f10.5, "    ", f10.5, "    ", i3)', xtrain(i,1), xtrain(i,2), ytrain(i)
+        enddo
+        print *, "]"
+    endif
+
+	if(verbose) then
+		numfittednodes = 0
+		call countnodes(fittedtree, numfittednodes)
+		print '("Before flatten, there are ", i5, " nodes in the fitted tree.")', numfittednodes
+	endif
 
     !--- flatten tree and pad ---
 	call tree2flat(fittedtree, max_depth, &
@@ -86,6 +101,5 @@ end subroutine
 ! 1. make take into account proper size of array when passing outputs from
 ! Fortran to R
 ! 2. look into using R logicals for returned Fortran logicals
-! 3. why are there an unexpectedly high number of nodes (see Size = printed)?,
-! probably good idea to have additional test in tree_utils.f90 to make sure 
+! 3. probably good idea to have additional test in tree_utils.f90 to make sure 
 ! erroneous nodes aren't created in any case
