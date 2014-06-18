@@ -7,7 +7,7 @@ is.loaded("grow_predict_rwrapper")
 
 # define data
 n = 100
-p = 3
+p = 2
 
 datamat = matrix( c(
    0.01000,       0.01000,      0,
@@ -110,7 +110,7 @@ datamat = matrix( c(
    0.10000,       0.08000,      1,
    0.10000,       0.09000,      1,
    0.10000,       0.10000,      1
-   ), nrow=n, ncol=p, byrow=TRUE)
+   ), nrow=n, ncol=(p+1), byrow=TRUE)
 
 xtrain = datamat[,c(1,2)]
 ytrain = datamat[,3]
