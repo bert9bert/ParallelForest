@@ -458,14 +458,16 @@ function test_splitnode_02() result(exitflag)
 ! split is on the first variable, and a second test will be for when
 ! the proper split is on the second variable. Test will be with sorted data.
 
-    integer, parameter :: N=10, P=2
-    real(dp) :: sortedX(N,P) 
-    integer :: sortedYcorresp(N,P)
+    integer, parameter :: sqrtN=10, P=2
+    real(dp), allocatable :: X(:,:) 
+    integer, allocatable :: Y(:)
     integer :: bestsplit_varnum_correct
     real(dp) :: bestsplit_value_correct
     type (node) :: thisnode
     integer :: exitflag
-    integer :: i,j
+
+    integer :: i,j,ctr
+    integer :: N
 
     logical, parameter :: verbose = .false.
 
@@ -474,49 +476,51 @@ function test_splitnode_02() result(exitflag)
     print *, " "
     print *, "---------- Running Test Function test_splitnode_02 -------------------"
 
-    ! set up sorted Y and X data
-    sortedYcorresp = reshape((/ &
-        1,1,1,0,0,0,0,1,1,1, &
-        1,1,1,1,1,1,0,0,0,0 &
-        /), &
-        (/size(sortedYcorresp,1),size(sortedYcorresp,2)/) )
-    sortedX = reshape((/ &
-        0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, 0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp, &
-        0.1_dp, 0.2_dp, 0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, 0.7_dp, 0.8_dp, 0.9_dp, 1.0_dp  &
-        /), &
-        (/size(sortedX,1),size(sortedX,2)/) )
+    ! set up Y and X data
+    N = sqrtN**2
 
-    if(verbose) then
-        print *, "sortedYcorresp = "
-        do i=1,size(sortedYcorresp,1)
-            write(*,'("    ",i1,"        ",i1)') ( sortedYcorresp(i,j), j=1,size(sortedYcorresp,2) )
+    allocate(X(N,P))
+    allocate(Y(N))
+
+    ctr = 1
+    do i=1,sqrtN
+        do j=1,sqrtN
+            X(ctr,1) = real(i,dp)/100
+            X(ctr,2) = real(j,dp)/100
+
+            ctr = ctr + 1
         enddo
-        print *, "sortedX = "
-        do i=1,size(sortedX,1)
-            write(*,'(f5.3,"    ",f5.3)') ( sortedX(i,j), j=1,size(sortedX,2) )
-        enddo
-    endif
+    enddo
+
+    do ctr=1,N
+        if(X(ctr,2)>=0.04_dp) then
+            Y(ctr) = 1
+        else if(X(ctr,1)<=0.03) then
+            Y(ctr) = 0
+        else if((X(ctr,1)>=0.05) .and. (X(ctr,1)<=0.07)) then
+            Y(ctr) = 0
+        else
+            Y(ctr) = 1
+        endif
+    enddo
 
     ! set correct splits for this data
     bestsplit_varnum_correct = 2
-    bestsplit_value_correct = 0.6_dp
+    bestsplit_value_correct = 0.03_dp
 
     ! get node split
-    thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
+    thisnode = splitnode(Y, X, P, N, 2, 2, 1, .false.)
 
-    ! print results
-    if(verbose) then
-        print '("Fitted Var to Split   = ", i5,   ";       Correct Split Val = ", i5)', &
-            thisnode%splitvarnum, bestsplit_varnum_correct
-        print '("Fitted Value to Split = ", f5.3, ";  Correct Value to Split = ", f5.3)', &
-            thisnode%splitvalue, bestsplit_value_correct
-    endif
 
     ! test failure conditions
     if(thisnode%splitvarnum /= bestsplit_varnum_correct) &
         stop "Test failed: Wrong splitting variable"
-    if(thisnode%splitvalue /= bestsplit_value_correct) &
+
+    if(thisnode%splitvalue /= bestsplit_value_correct) then
+        print *, "Test failure upcoming..."
+        print *, "Computed split value = ", thisnode%splitvalue
         stop "Test failed: Wrong value to split variable at"
+    endif
 
     print *, "Test successful if test executed without error."
 

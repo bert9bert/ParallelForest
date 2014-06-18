@@ -1,8 +1,7 @@
 
 Big steps
 ---------
-* Implement decision tree growing in single-threading
-	* modify test 2 for splitnode()
+
 * Implement decision tree prediction in single-threading
 	* write base case tests for predict()
 * Implement R interface and connect with Fortran 90 code
