@@ -800,6 +800,8 @@ function test_grow_predict_01() result(exitflag)
     integer, allocatable :: Ynew(:)
     integer, allocatable :: Ynewhat(:)
 
+    integer :: numfittednodes
+
 
     exitflag = -1
 
@@ -884,6 +886,11 @@ function test_grow_predict_01() result(exitflag)
             fittedtree%rightnode%splitvarnum, fittedtree%rightnode%splitvalue, fittedtree%rightnode%tag
 
         print *, "---------------+--------+----------+--------------+---------------+------------+------"
+    
+        numfittednodes = 0
+        call countnodes(fittedtree, numfittednodes)
+        print '("There are ", i5, " nodes in the fitted tree.")', numfittednodes
+
     endif
 
 
