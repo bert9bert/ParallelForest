@@ -2,13 +2,18 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	tag_padded, tagparent_padded, tagleft_padded, tagright_padded, is_topnode_padded, &
     depth_padded, majority_padded, has_subnodes_padded, splitvarnum_padded, splitvalue_padded)
 
-	!use utils
-	!use tree_utils
+	use utils
+	use tree_utils
 	use classification
 
 	implicit none
 	!--- variable declarations ---
+
+	! DEBUGGING VARIABLES, DELETE WHEN NO LONGER NEEDED
 	integer, parameter :: TMP = 25
+	logical, parameter :: verbose = .true.
+	integer :: i
+	character(len=50) :: fmt
 
 	! input variables
 	integer, intent(in) :: n, p
@@ -17,7 +22,8 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	integer, intent(in) :: min_node_obs, max_depth
 
 	! output (flattened tree) variables
-	integer, intent(out)  :: tag_padded(TMP), tagparent_padded(TMP), tagleft_padded(TMP), tagright_padded(TMP)
+	integer, intent(out)  :: tag_padded(TMP)
+	integer, intent(out)  :: tagparent_padded(TMP), tagleft_padded(TMP), tagright_padded(TMP)
 	logical, intent(out)  :: is_topnode_padded(TMP)
 	integer, intent(out)  :: depth_padded(TMP)
 	integer, intent(out)  :: majority_padded(TMP)
@@ -57,11 +63,24 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	splitvarnum_padded(1:size(tag)) = splitvarnum
 	splitvalue_padded(1:size(tag)) = splitvalue
 
-	print *, "SIZE = ", size(tag)
+	if(verbose) then
+        print *, "Flattended Tree"
+        print *, "tag tagparent tagleft tagright is_topnode &
+                depth majority has_subnodes splitvarnum splitvalue"
+
+        fmt = '(i4, i10, i8, i9, l11, i6, i9, l13, i12, f11.3 )'
+        do i=1,size(tag)
+            print fmt, &
+                tag(i), tagparent(i), tagleft(i), tagright(i), is_topnode(i), &
+                depth(i), majority(i), has_subnodes(i), splitvarnum(i), splitvalue(i)
+        enddo
+    endif
 end subroutine
 
 ! TODO and NOTES:
 ! 1. make take into account proper size of array when passing outputs from
 ! Fortran to R
 ! 2. look into using R logicals for returned Fortran logicals
-! 3. why are there an unexpectedly high number of nodes (see Size = printed)?
+! 3. why are there an unexpectedly high number of nodes (see Size = printed)?,
+! probably need additional test in tree_utils.f90 to make sure erroneous nodes
+! aren't created
