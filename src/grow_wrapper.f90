@@ -67,7 +67,7 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	if(verbose) then
 		numfittednodes = 0
 		call countnodes(fittedtree, numfittednodes)
-		print *, "There are ", numfittednodes, " nodes in the fitted tree."
+		print '("There are ", i5, " nodes in the fitted tree.")', numfittednodes
 
         print *, "Flattended Tree"
         print *, "tag tagparent tagleft tagright is_topnode &
