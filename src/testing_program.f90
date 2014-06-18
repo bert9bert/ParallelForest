@@ -1,6 +1,7 @@
 program testing_program
 
 use classification
+use tree_utils
 
 implicit none
 
