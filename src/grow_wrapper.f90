@@ -14,6 +14,7 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	logical, parameter :: verbose = .true.
 	integer :: i
 	character(len=50) :: fmt
+	integer :: numfittednodes
 
 	! input variables
 	integer, intent(in) :: n, p
@@ -64,6 +65,10 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	splitvalue_padded(1:size(tag)) = splitvalue
 
 	if(verbose) then
+		numfittednodes = 0
+		call countnodes(fittedtree, numfittednodes)
+		print *, "There are ", numfittednodes, " nodes in the fitted tree."
+
         print *, "Flattended Tree"
         print *, "tag tagparent tagleft tagright is_topnode &
                 depth majority has_subnodes splitvarnum splitvalue"
@@ -82,5 +87,5 @@ end subroutine
 ! Fortran to R
 ! 2. look into using R logicals for returned Fortran logicals
 ! 3. why are there an unexpectedly high number of nodes (see Size = printed)?,
-! probably need additional test in tree_utils.f90 to make sure erroneous nodes
-! aren't created
+! probably good idea to have additional test in tree_utils.f90 to make sure 
+! erroneous nodes aren't created in any case

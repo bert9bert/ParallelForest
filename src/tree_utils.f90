@@ -314,6 +314,20 @@ end subroutine
 
 
 
+recursive subroutine countnodes(t, n)
+    type (node) :: t
+    integer :: n  ! for initial function call, set to 0 -- TODO: make this more elegant
+
+    n=n+1
+
+    if(t%has_subnodes) then
+        call countnodes(t%leftnode, n)
+        call countnodes(t%rightnode, n)
+    endif
+end subroutine
+
+
+
 
 function test_tree2flat_flat2tree_01() result(exitflag)
     integer :: exitflag
