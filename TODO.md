@@ -17,5 +17,4 @@ Loose ends
 * have comment to indicate when a test is on sorted data only
 * review and fix any bad pointer practices
 * explicitly indicate public/private access in classification module
-* break out classification module into several modules and testing suites
 * write better sort to replace insertion sort
