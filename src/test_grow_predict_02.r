@@ -31,8 +31,9 @@ ret = .Fortran("grow_wrapper",
 	n=as.integer(n), p=as.integer(p),
 	xtrain=as.matrix(xtrain), ytrain=as.integer(ytrain),
 	min_node_obs=as.integer(1), max_depth=as.integer(10),
-	tag=integer(tmp),tagparent=integer(tmp),tagleft=integer(tmp),tagright=integer(tmp),is_topnode=integer(tmp),
-	depth=integer(tmp),majority=integer(tmp),has_subnodes=integer(tmp),splitvarnum=integer(tmp),splitvalue=double(tmp))
+	tag_padded=integer(tmp),tagparent_padded=integer(tmp),tagleft_padded=integer(tmp),tagright_padded=integer(tmp),is_topnode_padded=integer(tmp),
+	depth_padded=integer(tmp),majority_padded=integer(tmp),has_subnodes_padded=integer(tmp),splitvarnum_padded=integer(tmp),splitvalue_padded=double(tmp),
+	numnodes=integer(1))
 
 #if(!all(ret$ytrain==ret$ytesthat)) {
 #   stop("Test failed.")

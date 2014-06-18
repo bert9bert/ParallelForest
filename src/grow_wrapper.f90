@@ -1,6 +1,7 @@
 subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	tag_padded, tagparent_padded, tagleft_padded, tagright_padded, is_topnode_padded, &
-    depth_padded, majority_padded, has_subnodes_padded, splitvarnum_padded, splitvalue_padded)
+    depth_padded, majority_padded, has_subnodes_padded, splitvarnum_padded, splitvalue_padded, &
+    numnodes)
 
 	use utils
 	use tree_utils
@@ -31,6 +32,7 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	logical, intent(out)  :: has_subnodes_padded(TMP)
 	integer, intent(out)  :: splitvarnum_padded(TMP)
 	real(dp), intent(out) :: splitvalue_padded(TMP)
+	integer, intent(out)  :: numnodes
 
 	! private variables
 	integer, allocatable  :: tag(:), tagparent(:), tagleft(:), tagright(:)
@@ -68,16 +70,18 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 		tag, tagparent, tagleft, tagright, is_topnode, &
     	depth, majority, has_subnodes, splitvarnum, splitvalue)
 
-	tag_padded(1:size(tag)) = tag
-	tagparent_padded(1:size(tag)) = tagparent
-	tagleft_padded(1:size(tag)) = tagleft
-	tagright_padded(1:size(tag)) = tagright
-	is_topnode_padded(1:size(tag)) = is_topnode
-	depth_padded(1:size(tag)) = depth
-	majority_padded(1:size(tag)) = majority
-	has_subnodes_padded(1:size(tag)) = has_subnodes
-	splitvarnum_padded(1:size(tag)) = splitvarnum
-	splitvalue_padded(1:size(tag)) = splitvalue
+	numnodes = size(tag)
+
+	tag_padded(1:numnodes) = tag
+	tagparent_padded(1:numnodes) = tagparent
+	tagleft_padded(1:numnodes) = tagleft
+	tagright_padded(1:numnodes) = tagright
+	is_topnode_padded(1:numnodes) = is_topnode
+	depth_padded(1:numnodes) = depth
+	majority_padded(1:numnodes) = majority
+	has_subnodes_padded(1:numnodes) = has_subnodes
+	splitvarnum_padded(1:numnodes) = splitvarnum
+	splitvalue_padded(1:numnodes) = splitvalue
 
 	if(verbose) then
 		numfittednodes = 0
