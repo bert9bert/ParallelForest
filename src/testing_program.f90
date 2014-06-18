@@ -2,6 +2,7 @@ program testing_program
 
 use classification
 use tree_utils
+use sort_utils
 
 implicit none
 
