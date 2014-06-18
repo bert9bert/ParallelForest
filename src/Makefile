@@ -1,4 +1,4 @@
-OBJECTS = utils.o tree_utils.o sort_utils.o classification.o testing_program.o
+OBJECTS = utils.o tree_utils.o sort_utils.o impurity_measures.o classification.o testing_program.o
 FFLAGS = 
 
 .PHONY: test clean 

@@ -1,6 +1,6 @@
 module classification
 !------------------------------------------------------------------------------
-!   Module for fitting and estimating a classification tree.
+!   Module for fitting and predicting on a classification tree.
 !   Author: Bertram Ieong
 !------------------------------------------------------------------------------
 
@@ -8,6 +8,7 @@ module classification
 use utils
 use tree_utils
 use sort_utils
+use impurity_measures
 
 implicit none
 
@@ -100,24 +101,7 @@ recursive function predict_rec_hlpr(t, X_row, P) result(pred)
 end function
 
 
-function gini_impurity_measure(Y, N) result(impurity)
-    integer, intent(in) :: N
-    integer, intent(in) :: Y(N)
-    real(dp) :: impurity
-    integer :: num1s
-    real(dp) :: f0, f1
 
-    ! check that Y only contains 1s or 0s
-    ! ...
-
-    num1s = sum(Y)
-    f1 = real(num1s, dp)/N
-    f0 = 1 - f1
-
-    impurity = f0*(1-f0) + f1*(1-f1)
-end function
-
-! TODO
 function loss(impurity_this, impurity_left, impurity_right, prob_left) result(loss_val)
     real(dp), intent(in) :: impurity_this, impurity_left, impurity_right, prob_left
     real(dp) :: loss_val
