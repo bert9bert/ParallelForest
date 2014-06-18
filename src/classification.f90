@@ -1180,7 +1180,7 @@ function test_grow_predict_01() result(exitflag)
     type (node) :: fittedtree
     integer :: exitflag
 
-    logical, parameter :: verbose = .true.
+    logical, parameter :: verbose = .false.
     character(len=50) :: fmt
 
     integer :: i,j,ctr
@@ -1359,8 +1359,7 @@ function test_grow_predict_01() result(exitflag)
     endif
 
     ! check that the tags are in the order of expected tree trasversal
-    if (    (fittedtree%parentnode%tag /= 0) .or. &  ! dummy node, should default to 0
-            (fittedtree%tag /= 0) .or. &
+    if (    (fittedtree%tag /= 0) .or. &
             (fittedtree%leftnode%tag /= 1) .or. &
             (fittedtree%leftnode%leftnode%tag /= 2) .or. &
             (fittedtree%leftnode%rightnode%tag /= 3) .or. &
