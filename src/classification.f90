@@ -1036,14 +1036,51 @@ function test_grow_predict_01() result(exitflag)
     
 end function
 
-! TODO: test grow on some real data
-! TODO: then test the stopping conditions for grow
+
+function test_grow_01() result(exitflag)
+    ! test heterogenous dependent data base case for grow
+
+    integer :: exitflag
+
+    exitflag = -1
+    ! ...
+
+    exitflag = 0
+end function
+
+function test_grow_02() result(exitflag)
+    ! test heterogenous independent data base case for grow
+
+    integer :: exitflag
+
+    exitflag = -1
+    ! ...
+
+    exitflag = 0
+end function
+
+function test_grow_03() result(exitflag)
+    ! test max depth base case for grow
+
+    integer :: exitflag
+
+    exitflag = -1
+    ! ...
+
+    exitflag = 0
+end function
 
 
+function test_grow_04() result(exitflag)
+    ! test min node obs base case for grow
 
+    integer :: exitflag
 
+    exitflag = -1
+    ! ...
 
-
+    exitflag = 0
+end function
 
 
 end module classification
