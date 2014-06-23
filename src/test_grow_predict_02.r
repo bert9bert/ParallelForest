@@ -8,7 +8,7 @@ setwd("~/ParallelDecisionTree/src/")
 dyn.load("~/ParallelDecisionTree/src/grow_wrapper.dll")
 is.loaded("grow_wrapper")
 
-tmp = 25
+retlen = 25
 
 df = read.csv("../data/easy_2var_data.csv")
 
@@ -30,10 +30,27 @@ ytrain = datamat[,3]
 ret = .Fortran("grow_wrapper",
 	n=as.integer(n), p=as.integer(p),
 	xtrain=as.matrix(xtrain), ytrain=as.integer(ytrain),
-	min_node_obs=as.integer(1), max_depth=as.integer(10),
-	tag_padded=integer(tmp),tagparent_padded=integer(tmp),tagleft_padded=integer(tmp),tagright_padded=integer(tmp),is_topnode_padded=integer(tmp),
-	depth_padded=integer(tmp),majority_padded=integer(tmp),has_subnodes_padded=integer(tmp),splitvarnum_padded=integer(tmp),splitvalue_padded=double(tmp),
+	min_node_obs=as.integer(1), max_depth=as.integer(10), retlen=as.integer(retlen),
+	tag_padded=integer(retlen),tagparent_padded=integer(retlen),tagleft_padded=integer(retlen),tagright_padded=integer(retlen),is_topnode_padded=integer(retlen),
+	depth_padded=integer(retlen),majority_padded=integer(retlen),has_subnodes_padded=integer(retlen),splitvarnum_padded=integer(retlen),splitvalue_padded=double(retlen),
 	numnodes=integer(1))
+
+fittedtree = list(
+	n=ret$n, p=ret$p,
+	xtrain=ret$xtrain, ytrain=ret$ytrain,
+	min_node_obs=ret$min_node_obs, max_depth=ret$max_depth,
+	tag=ret$tag_padded[1:ret$numnodes],
+	tagparent=ret$tagparent_padded[1:ret$numnodes],
+	tagleft=ret$tagleft_padded[1:ret$numnodes],
+	tagright=ret$tagright_padded[1:ret$numnodes],
+	is_topnode=ret$is_topnode_padded[1:ret$numnodes],
+	depth=ret$depth_padded[1:ret$numnodes],
+	majority=ret$majority_padded[1:ret$numnodes],
+	has_subnodes=ret$has_subnodes_padded[1:ret$numnodes],
+	splitvarnum=ret$splitvarnum_padded[1:ret$numnodes],
+	splitvalue=ret$splitvalue_padded[1:ret$numnodes],
+	numnodes=ret$numnodes
+	)
 
 #if(!all(ret$ytrain==ret$ytesthat)) {
 #   stop("Test failed.")

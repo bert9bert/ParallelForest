@@ -1,4 +1,4 @@
-subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
+subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retlen, &
 	tag_padded, tagparent_padded, tagleft_padded, tagright_padded, is_topnode_padded, &
     depth_padded, majority_padded, has_subnodes_padded, splitvarnum_padded, splitvalue_padded, &
     numnodes)
@@ -11,7 +11,6 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	!--- variable declarations ---
 
 	! DEBUGGING VARIABLES, DELETE WHEN NO LONGER NEEDED
-	integer, parameter :: TMP = 25
 	logical, parameter :: verbose = .false.
 	integer :: i
 	character(len=50) :: fmt
@@ -22,16 +21,17 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 	real(dp), intent(in) :: xtrain(n,p)
 	integer, intent(in) :: ytrain(n)
 	integer, intent(in) :: min_node_obs, max_depth
+	integer, intent(in) :: retlen  ! length of array to return
 
 	! output (flattened tree) variables
-	integer, intent(out)  :: tag_padded(TMP)
-	integer, intent(out)  :: tagparent_padded(TMP), tagleft_padded(TMP), tagright_padded(TMP)
-	logical, intent(out)  :: is_topnode_padded(TMP)
-	integer, intent(out)  :: depth_padded(TMP)
-	integer, intent(out)  :: majority_padded(TMP)
-	logical, intent(out)  :: has_subnodes_padded(TMP)
-	integer, intent(out)  :: splitvarnum_padded(TMP)
-	real(dp), intent(out) :: splitvalue_padded(TMP)
+	integer, intent(out)  :: tag_padded(retlen)
+	integer, intent(out)  :: tagparent_padded(retlen), tagleft_padded(retlen), tagright_padded(retlen)
+	logical, intent(out)  :: is_topnode_padded(retlen)
+	integer, intent(out)  :: depth_padded(retlen)
+	integer, intent(out)  :: majority_padded(retlen)
+	logical, intent(out)  :: has_subnodes_padded(retlen)
+	integer, intent(out)  :: splitvarnum_padded(retlen)
+	real(dp), intent(out) :: splitvalue_padded(retlen)
 	integer, intent(out)  :: numnodes
 
 	! private variables
@@ -45,6 +45,7 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 
     
     type (node) fittedtree
+
 
 
     !--- fit tree ---
@@ -71,6 +72,10 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
     	depth, majority, has_subnodes, splitvarnum, splitvalue)
 
 	numnodes = size(tag)
+
+	if(numnodes>retlen) then
+		stop "Returned array length needs to be at least the length of the number of nodes."
+	endif
 
 	tag_padded(1:numnodes) = tag
 	tagparent_padded(1:numnodes) = tagparent
@@ -102,8 +107,6 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, &
 end subroutine
 
 ! TODO and NOTES:
-! 1. make take into account proper size of array when passing outputs from
-! Fortran to R
 ! 2. look into using R logicals for returned Fortran logicals
 ! 3. probably good idea to have additional test in tree_utils.f90 to make sure 
 ! erroneous nodes aren't created in any case
