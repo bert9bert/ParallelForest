@@ -806,7 +806,7 @@ function test_grow_predict_01() result(exitflag)
     exitflag = -1
 
     print *, " "
-    print *, "--------- Running Test Function test_grow_01 ------------------"
+    print *, "--------- Running Test Function test_grow_predict_01 ------------------"
 
     ! -----  Fit tree on pre-determined X and Y data, and compare  -----
     ! -----  against expected results  -----
@@ -1045,48 +1045,158 @@ end function
 
 
 function test_grow_01() result(exitflag)
-    ! test heterogenous dependent data base case for grow
+    ! test homogeneous dependent data base case for grow
+
+    integer, parameter :: N=10, P=1
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer :: min_node_obs, max_depth
+    type (node) :: fittedtree
 
     integer :: exitflag
 
+    print *, "--------- Running Test Function test_grow_01 ------------------"
+
     exitflag = -1
-    ! ...
+    
+    ! set up test
+    min_node_obs = 1
+    max_depth = 100
+
+    Y = (/1,1,1,1,1,1,1,1,1,1/)
+    X(:,1) = (/1,2,3,4,5,6,7,8,9,10/)
+
+    fittedtree = grow(Y, X, min_node_obs, max_depth)
+
+
+    ! test for failure conditions
+    if(fittedtree%has_subnodes .neqv. .false.) then
+        stop "Test failure. Y homogeneous but still split."
+    endif
+
 
     exitflag = 0
+
+    print *, ""
+    print *, "Test successful if test executed without error."
 end function
 
 function test_grow_02() result(exitflag)
-    ! test heterogenous independent data base case for grow
+    ! test homogeneous independent data base case for grow
+
+    integer, parameter :: N=10, P=1
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer :: min_node_obs, max_depth
+    type (node) :: fittedtree
 
     integer :: exitflag
 
     exitflag = -1
-    ! ...
+
+    print *, "--------- Running Test Function test_grow_02 ------------------"
+
+    exitflag = -1
+    
+    ! set up test
+    min_node_obs = 1
+    max_depth = 100
+
+    Y = (/1,1,1,1,1,0,0,0,0,0/)
+    X(:,1) = (/1,1,1,1,1,1,1,1,1,1/)
+
+    fittedtree = grow(Y, X, min_node_obs, max_depth)
+
+
+    ! test for failure conditions
+    if(fittedtree%has_subnodes .neqv. .false.) then
+        stop "Test failure. X homogeneous but still split."
+    endif
+
 
     exitflag = 0
+
+    print *, ""
+    print *, "Test successful if test executed without error."
 end function
 
 function test_grow_03() result(exitflag)
     ! test max depth base case for grow
 
+    integer, parameter :: N=10, P=1
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer :: min_node_obs, max_depth
+    type (node) :: fittedtree
+
     integer :: exitflag
 
     exitflag = -1
-    ! ...
+
+    print *, "--------- Running Test Function test_grow_03 ------------------"
+
+    exitflag = -1
+    
+    ! set up test
+    min_node_obs = 1
+    max_depth = 0
+
+    Y = (/1,1,1,1,1,0,0,0,0,0/)
+    X(:,1) = (/0.1_dp,0.2_dp,0.3_dp,0.4_dp,0.5_dp,0.6_dp,0.7_dp,0.8_dp,0.9_dp,1.0_dp/)
+
+    fittedtree = grow(Y, X, min_node_obs, max_depth)
+
+
+    ! test for failure conditions
+    if(fittedtree%has_subnodes .neqv. .false.) then
+        stop "Test failure. Max depth is zero (root only), but still split."
+    endif
+
 
     exitflag = 0
+
+    print *, ""
+    print *, "Test successful if test executed without error."
 end function
 
 
 function test_grow_04() result(exitflag)
     ! test min node obs base case for grow
 
+    integer, parameter :: N=10, P=1
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer :: min_node_obs, max_depth
+    type (node) :: fittedtree
+
     integer :: exitflag
 
     exitflag = -1
-    ! ...
+
+    print *, "--------- Running Test Function test_grow_04 ------------------"
+
+    exitflag = -1
+    
+    ! set up test
+    min_node_obs = 10
+    max_depth = 100
+
+    Y = (/1,1,1,1,1,0,0,0,0,0/)
+    X(:,1) = (/0.1_dp,0.2_dp,0.3_dp,0.4_dp,0.5_dp,0.6_dp,0.7_dp,0.8_dp,0.9_dp,1.0_dp/)
+
+    fittedtree = grow(Y, X, min_node_obs, max_depth)
+
+
+    ! test for failure conditions
+    if(fittedtree%has_subnodes .neqv. .false.) then
+        stop "Test failure. Min node size is equal to data root node size, but still splits."
+    endif
+
 
     exitflag = 0
+
+    print *, ""
+    print *, "Test successful if test executed without error."
 end function
 
 
