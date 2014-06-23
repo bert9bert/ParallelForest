@@ -9,6 +9,9 @@ test: testing_program.exe
 grow_wrapper.dll: utils.f90 tree_utils.f90 sort_utils.f90 impurity_measures.f90 classification.f90 grow_wrapper.f90
 	gfortran -fPIC -shared utils.f90 tree_utils.f90 sort_utils.f90 impurity_measures.f90 classification.f90 grow_wrapper.f90 -o grow_wrapper.dll
 
+predict_wrapper.dll: utils.f90 tree_utils.f90 sort_utils.f90 impurity_measures.f90 classification.f90 predict_wrapper.f90
+	gfortran -fPIC -shared utils.f90 tree_utils.f90 sort_utils.f90 impurity_measures.f90 classification.f90 predict_wrapper.f90 -o predict_wrapper.dll
+
 
 grow_predict_rwrapper.dll: utils.f90 tree_utils.f90 sort_utils.f90 impurity_measures.f90 classification.f90 grow_predict_rwrapper.f90
 	gfortran -fPIC -shared utils.f90 tree_utils.f90 sort_utils.f90 impurity_measures.f90 classification.f90 grow_predict_rwrapper.f90 -o grow_predict_rwrapper.dll
