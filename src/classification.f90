@@ -1092,8 +1092,6 @@ function test_grow_02() result(exitflag)
 
     integer :: exitflag
 
-    exitflag = -1
-
     print *, "--------- Running Test Function test_grow_02 ------------------"
 
     exitflag = -1
@@ -1130,8 +1128,6 @@ function test_grow_03() result(exitflag)
     type (node) :: fittedtree
 
     integer :: exitflag
-
-    exitflag = -1
 
     print *, "--------- Running Test Function test_grow_03 ------------------"
 
@@ -1170,8 +1166,6 @@ function test_grow_04() result(exitflag)
     type (node) :: fittedtree
 
     integer :: exitflag
-
-    exitflag = -1
 
     print *, "--------- Running Test Function test_grow_04 ------------------"
 
