@@ -5,12 +5,11 @@ Big steps
 * Implement decision tree prediction in single-threading
 	* write base case tests for predict()
 * Implement R interface and connect with Fortran 90 code
-	* write mechanism to pass trees between R and Fortran
-	* write separate grow and predict functions for R
-	* write tests for grow and predict implementations in R
+	* write R functions to use Fortran grow and predict wrappers, write tests
 	* fit on real dataset with R
-* Implement decision tree fitting in multi-threading
-* Implement decision tree estimation in multi-threading
+* Implement random forest in single-threading
+* Connect random forest with R
+* Multi-thread random forest
 
 Loose ends
 ----------
