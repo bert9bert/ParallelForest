@@ -354,7 +354,7 @@ recursive function splitnode(Y, X, P, N, &
             enddo
         enddo
 
-        valid_split = all((.not. Xi_homog) .and. splittable)
+        valid_split = any((.not. Xi_homog) .and. splittable)
 
         if(valid_split) then
             ! set the splitting variable and splitting value for this node

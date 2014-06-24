@@ -172,6 +172,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
         ! -- create bootstrapped data --
         call bootstrap(Y, X, numsamps, Y_boot, X_boot)
 
+
         if(verbose) then
             print '("Bootstrapped Y Size = ", i6)', size(Y_boot)
             print '("Bootstrapped X Size = (", i5, ",", i5, ")")', size(X_boot,1), size(X_boot,2)
@@ -202,6 +203,9 @@ function predict_forest(fittedforest, X) result(Ypred)
     ! Counting variables
     integer :: i, j, num1
 
+    ! Debugging variables
+    logical, parameter :: verbose = .false.
+
     ! --- setup ---
     N = size(X,1)
     P = size(X,2)
@@ -210,9 +214,24 @@ function predict_forest(fittedforest, X) result(Ypred)
     allocate(Ypred(N))
 
     ! --- each tree makes prediction ---
-    do i=1,size(fittedforest)
-        Ypred_trees(:,i) = predict(fittedforest(i), X)
+    do j=1,size(fittedforest)
+        Ypred_trees(:,j) = predict(fittedforest(j), X)
     enddo
+
+    if(verbose) then
+        print *, "Split info for each tree:"
+        do j=1,size(fittedforest)
+            print *, "Var split = ", fittedforest(j)%splitvarnum, &
+                " Split value = ", fittedforest(j)%splitvalue, &
+                " Has Subnodes = ", fittedforest(j)%has_subnodes
+        enddo
+
+        print *, "Prediction for each tree:"
+        do i=1,size(Ypred_trees,1)
+            print *, (Ypred_trees(i,j), j=1,size(Ypred_trees,2))
+        enddo
+    endif
+
 
     ! --- create ensemble prediction ---
     do i=1,N
@@ -334,41 +353,49 @@ end function
 
 
 
-function test_predict_forest_01() result(exitflag)
+function test_grow_predict_forest_01() result(exitflag)
     integer :: exitflag
 
     integer, parameter :: N=10, P=2
     integer :: Y(N)
     real(dp) :: X(N,P)
     integer, parameter :: min_node_obs=1, max_depth=10
-    integer, parameter :: numsamps = 5, numvars=1, numboots=3
+    integer, parameter :: numsamps = 50, numvars=1, numboots=5
+
+    integer :: Ysamehat(N)
 
     type (node) :: ff(numboots)
 
     integer :: i,j
 
+    logical, parameter :: verbose = .false.
+
     exitflag = -1
 
     print *, " "
-    print *, "---------- Running Test Function test_predict_forest_01 -------------------"
+    print *, "---------- Running Test Function test_grow_predict_forest_01 -------------------"
 
     ! --- create pre-defined data and grow a forest ---
-    Y = (/1,1,1,1,1,1,0,0,0,0/)
+    Y      = (/ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0/)
     X(:,1) = (/10,11,12,13,14,15,16,17,18,19/)
     X(:,2) = (/20,21,22,23,24,25,26,27,28,29/)
 
     ff = grow_forest(Y, X, min_node_obs, max_depth, &
         numsamps, numvars, numboots)
 
-    ! ...
+    Ysamehat = predict_forest(ff, X)
+
+    if(verbose) then
+        print *, "Y same hat ="
+        print '(i5)', Ysamehat
+    endif
+
 
     ! --- test failure conditions, automated ---
-    ! ...
+    if(.not. all(Ysamehat==Y)) stop "Test failed."
 
-    ! --- test failure conditions, manual ---
-    ! ...
 
-    
+
     print *, ""
     print *, "Test successful if test executed without error."
 
