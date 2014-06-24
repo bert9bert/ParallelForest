@@ -95,7 +95,10 @@ end subroutine
 
 
 
-function grow_forest(Y, X, min_node_obs, max_depth, numsamps, numvars, numboots) result(fittedforest)
+function grow_forest(Y, X, min_node_obs, max_depth, &
+    numsamps, numvars, numboots) &
+    result(fittedforest)
+
     ! --- Declare Variables ---
     ! --- Input/Output Variables ---
     integer, intent(in) :: Y(:)
@@ -115,6 +118,9 @@ function grow_forest(Y, X, min_node_obs, max_depth, numsamps, numvars, numboots)
     real(dp), allocatable :: randarr(:)
 
     integer :: i, j, idx
+
+    ! Debugging variables
+    logical, parameter :: verbose = .true.
 
 
     ! --- setup ---
@@ -138,6 +144,10 @@ function grow_forest(Y, X, min_node_obs, max_depth, numsamps, numvars, numboots)
 
     ! --- grow forest ---
     do treenum=1,numboots
+        if(verbose) then
+            print *, "Generating Tree (Boostrap Sample) No. ", treenum
+        endif
+
         ! -- randomly select variables for this tree without replacement --
         ! draw indices of variables without replacement that can be split on
         call init_random_seed()  ! TODO: make this random
@@ -224,5 +234,40 @@ function test_bootstrap_01() result(exitflag)
 end function
 
 
+function test_grow_forest_01() result(exitflag)
+    integer :: exitflag
+
+    integer, parameter :: N=10, P=2
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer, parameter :: min_node_obs=1, max_depth=10
+    integer, parameter :: numsamps = 5, numvars=1, numboots=3
+
+    type (node) :: ff(numboots)
+
+    integer :: i,j
+
+    exitflag = -1
+
+    print *, " "
+    print *, "---------- Running Test Function test_grow_forest_01 -------------------"
+
+    ! --- create pre-defined data and grow a forest ---
+    Y = (/0,1,2,3,4,5,6,7,8,9/)
+    X(:,1) = (/10,11,12,13,14,15,16,17,18,19/)
+    X(:,2) = (/20,21,22,23,24,25,26,27,28,29/)
+
+    ff = grow_forest(Y, X, min_node_obs, max_depth, &
+        numsamps, numvars, numboots)
+
+    ! --- test failure conditions, automated ---
+
+    ! --- test failure conditions, manual ---
+
+    print *, "Test successful if test executed without error."
+
+    exitflag = 0
+
+end function
 
 end module forest_parallel
