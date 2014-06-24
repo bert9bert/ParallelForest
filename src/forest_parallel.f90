@@ -63,6 +63,7 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
         X_boot(i,:) = X(rand_obs_num(i),:)
     enddo
 
+    ! --- verbose prints ---
     if(verbose .and. P==1) then
         print *, "   Y         X    Y_boot    X_boot"
 
