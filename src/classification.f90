@@ -17,16 +17,19 @@ contains
 
 !-----  PUBLIC FUNCTIONS AND SUBROUTINES  -----
 
-function grow(Y, X, min_node_obs, max_depth) result(fittedtree)
+function grow(Y, X, min_node_obs, max_depth, opt_splittable) result(fittedtree)
     ! variable declarations
     integer, intent(in) :: Y(:)
     real(dp), intent(in) :: X(:,:)
     integer, intent(in) :: min_node_obs, max_depth
+    logical, optional, intent(in) :: opt_splittable(:)
     type (node) :: fittedtree
 
     integer :: N, P
+    logical, allocatable :: splittable(:)
 
     integer, parameter :: TOP_NODE_NUM = 0
+
 
     ! find out number of variables and number of observations
     N = size(X,1)
@@ -34,11 +37,20 @@ function grow(Y, X, min_node_obs, max_depth) result(fittedtree)
 
     if(N /= size(Y)) stop "Y has different number of obs than X"
 
+    ! splittable
+    allocate(splittable(P))
+    if(present(opt_splittable)) then
+        splittable = opt_splittable
+    else
+        splittable = .true.
+    endif
+
     
     ! fit decision tree classifier
     fittedtree = splitnode(Y, X, P, N, &
         min_node_obs, max_depth, &
-        TOP_NODE_NUM, .true.)
+        TOP_NODE_NUM, .true., &
+        opt_splittable=splittable)
 
 
 end function
@@ -115,7 +127,7 @@ end function
 recursive function splitnode(Y, X, P, N, &
     min_node_obs, max_depth, &
     thisdepth, build_tree, &
-    parentnode, opt_impurity_this, opt_reset_tag_ctr) &
+    parentnode, opt_impurity_this, opt_reset_tag_ctr, opt_splittable) &
     result(thisnode)
 
     ! variable declarations
@@ -129,8 +141,10 @@ recursive function splitnode(Y, X, P, N, &
     type (node), target, optional :: parentnode ! TODO: fix no opt
     real(dp), optional, intent(in) :: opt_impurity_this
     logical, optional, intent(in) :: opt_reset_tag_ctr
+    logical, optional, intent(in) :: opt_splittable(P)
 
     logical :: reset_tag_ctr 
+    logical :: splittable(P)
 
     integer, save :: tag = 0
 
@@ -145,10 +159,12 @@ recursive function splitnode(Y, X, P, N, &
     logical :: first_split_computed
     logical :: base1, base2, base3
     integer :: num1s
-    logical :: Xi_homog
+    logical :: Xi_homog(P)
     real(dp), allocatable :: Xleft(:,:), Xright(:,:)
     integer, allocatable :: Yleft(:), Yright(:)
     integer :: i,j,k
+
+    logical :: valid_split
 
     logical, parameter :: verbose = .false.
     logical, parameter :: debug01 = .false.
@@ -157,6 +173,13 @@ recursive function splitnode(Y, X, P, N, &
 
     ! allocate memory for this node
     allocate(thisnode)
+
+    ! splittable variables
+    if(present(opt_splittable)) then
+        splittable = opt_splittable
+    else
+        splittable = .true.
+    endif
 
     ! tag
     if(present(opt_reset_tag_ctr)) then
@@ -271,9 +294,11 @@ recursive function splitnode(Y, X, P, N, &
             print *, " var  row      impL      impR      loss var* row*     loss*"
         endif
 
-
+        Xi_homog = .true.
         do varnum = 1,P
-            Xi_homog = .true.
+            if(.not. splittable(varnum)) cycle  ! TODO: account for if all says not splittable
+
+            
             do rownum = 1,N
 
                 ! skip to the next row if it has the same value for this variable as
@@ -284,7 +309,7 @@ recursive function splitnode(Y, X, P, N, &
                     if(sortedX(rownum,varnum) == sortedX(rownum+1,varnum)) then
                         cycle
                     else
-                        Xi_homog = .false.
+                        Xi_homog(varnum) = .false.
                     endif
                 else if(rownum==N) then
                     cycle
@@ -329,19 +354,15 @@ recursive function splitnode(Y, X, P, N, &
             enddo
         enddo
 
-        if(verbose) then
-            if(Xi_homog) then
-                print *, "Xi homogeneous. Subnodes will not be attached."
-            endif
-        endif
+        valid_split = all((.not. Xi_homog) .and. splittable)
 
-        if(.not. Xi_homog) then
+        if(valid_split) then
             ! set the splitting variable and splitting value for this node
             thisnode%splitvarnum = bestsplit_varnum
             thisnode%splitvalue  = sortedX(bestsplit_rownum, bestsplit_varnum)
         endif
 
-        if(build_tree .and. (.not. Xi_homog)) then          
+        if(build_tree .and. valid_split) then          
 
             ! create subnodes and attach
             thisnode%has_subnodes = .true.
@@ -1193,5 +1214,42 @@ function test_grow_04() result(exitflag)
     print *, "Test successful if test executed without error."
 end function
 
+
+function test_grow_05() result(exitflag)
+    ! test not splittable case for grow
+
+    integer, parameter :: N=10, P=1
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer :: min_node_obs, max_depth
+    type (node) :: fittedtree
+
+    integer :: exitflag
+
+    print *, "--------- Running Test Function test_grow_05 ------------------"
+
+    exitflag = -1
+    
+    ! set up test
+    min_node_obs = 1
+    max_depth = 100
+
+    Y = (/1,1,1,1,1,0,0,0,0,0/)
+    X(:,1) = (/0.1_dp,0.2_dp,0.3_dp,0.4_dp,0.5_dp,0.6_dp,0.7_dp,0.8_dp,0.9_dp,1.0_dp/)
+
+    fittedtree = grow(Y, X, min_node_obs, max_depth, opt_splittable=(/.false./))
+
+
+    ! test for failure conditions
+    if(fittedtree%has_subnodes) then
+        stop "Test failure. No variables are indicated as splittable, but still splits."
+    endif
+
+
+    exitflag = 0
+
+    print *, ""
+    print *, "Test successful if test executed without error."
+end function
 
 end module classification

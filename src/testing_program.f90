@@ -22,6 +22,7 @@ exitflag = test_grow_01()
 exitflag = test_grow_02()
 exitflag = test_grow_03()
 exitflag = test_grow_04()
+exitflag = test_grow_05()
 
 
 end program
