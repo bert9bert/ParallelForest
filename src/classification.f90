@@ -292,9 +292,9 @@ recursive function splitnode(Y, X, P, N, &
 
                 ! compute loss that results from this split
                 impurity_left = gini_impurity_measure( &
-                	sortedYcorresp(1:rownum,varnum), rownum)
+                    sortedYcorresp(1:rownum,varnum), rownum)
                 impurity_right = gini_impurity_measure( &
-                	sortedYcorresp(rownum+1:N,varnum), N-rownum)
+                    sortedYcorresp(rownum+1:N,varnum), N-rownum)
                 loss_val = loss(impurity_this, impurity_left, impurity_right, real(rownum, dp)/N)
 
 
@@ -419,11 +419,11 @@ function test_splitnode_01() result(exitflag)
 
     ! set up sorted Y and X data
     sortedYcorresp = reshape((/1,1,1,1,1,1,1,1,1,0,0,0,0/), &
-    	shape(sortedYcorresp))
+        shape(sortedYcorresp))
     sortedX = reshape((/ 0.1_dp, 0.2_dp, 0.2_dp, 0.2_dp, &
         0.3_dp, 0.4_dp, 0.5_dp, 0.6_dp, &
-    	0.7_dp, 0.8_dp, 0.9_dp, 0.9_dp, 1.0_dp /), &
-    	shape(sortedX))
+        0.7_dp, 0.8_dp, 0.9_dp, 0.9_dp, 1.0_dp /), &
+        shape(sortedX))
 
     ! set correct splits for this data
     bestsplit_varnum_correct = 1
