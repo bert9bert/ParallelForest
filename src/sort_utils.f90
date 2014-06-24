@@ -45,7 +45,9 @@ pure subroutine insertion_sort(N, arr, arrcarry, opt_perform_index_carry)
         elemcarry = arrcarry(i)
 
         j = i - 1
-        do while (j>=1 .and. arr(j)>elem)
+        do while (j>=1)
+            if(.not. arr(j)>elem) exit
+
             arr(j+1) = arr(j)
             arrcarry(j+1) = arrcarry(j)
             j = j - 1
