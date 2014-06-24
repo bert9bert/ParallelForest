@@ -1,5 +1,6 @@
 program testing_program
 
+use forest_parallel
 use classification
 use tree_utils
 use sort_utils
@@ -23,6 +24,7 @@ exitflag = test_grow_02()
 exitflag = test_grow_03()
 exitflag = test_grow_04()
 exitflag = test_grow_05()
+exitflag = test_bootstrap_01()
 
 
 end program

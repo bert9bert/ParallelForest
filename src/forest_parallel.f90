@@ -34,6 +34,10 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
     integer :: N, P
     integer :: i
 
+    ! Debugging variables
+    character(len=50) :: fmt
+    logical, parameter :: verbose = .true.
+
 
     ! --- setup ---
     ! Get data size
@@ -57,6 +61,13 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
         X_boot(i,:) = X(rand_obs_num(i),:)
     enddo
 
+    if(verbose .and. P==1) then
+        fmt = '(i5, f10.5, i5, f10.5)'
+        do i=1,N
+            print fmt, Y(i), X(i,1), Y_boot(i), X_boot(i,1)
+        enddo
+    endif
+
 end subroutine
 
 
@@ -77,6 +88,10 @@ function grow_forest(Y, X, min_node_obs, max_depth, numsamps, numvars, numboots)
     integer :: Y_boot(numsamps)
     real(dp), allocatable :: X_boot(:,:)
     logical, allocatable :: variables_selected(:)
+    integer :: variables_selected_nums(numvars)
+    real(dp), allocatable :: randarr(:)
+
+    integer :: i, j, idx
 
 
     ! --- setup ---
@@ -95,23 +110,56 @@ function grow_forest(Y, X, min_node_obs, max_depth, numsamps, numvars, numboots)
     ! allocate memory to allocatable arrays
     allocate(X_boot(numsamps,P))
     allocate(variables_selected(P))
+    allocate(randarr(P))
 
 
-    ! --- grow forest ---  ! TODO: change from bagged forest to stoch forest
+    ! --- grow forest ---
     do treenum=1,numboots
-        ! randomly select variables for this tree without replacement
-        ! ...
-        ! variables_selected =
+        ! -- randomly select variables for this tree without replacement --
+        ! draw indices of variables without replacement that can be split on
+        call random_seed()  ! TODO: look into making this more random
+        call random_number(randarr)
 
-        ! create bootstrapped data
+        do i=1,numvars
+            idx = minloc(randarr, dim=1)
+            variables_selected_nums(i) = idx
+            randarr(idx) = huge(1_dp)
+        enddo
+
+        ! turn this list of indices into a logical array
+        variables_selected = .false.
+        do j=1,P
+            variables_selected(variables_selected_nums(j)) = .true.
+        enddo
+
+        ! -- create bootstrapped data --
         call bootstrap(Y, X, numsamps, Y_boot, X_boot)
 
-        ! fit tree to the bootstrapped data and select variables
-        ! TODO: grow needs to be modified to only fit on selected variables
-        fittedforest(treenum) = grow(Y_boot, X_boot, min_node_obs, max_depth)
+        ! -- fit tree to the bootstrapped data and select variables --
+        fittedforest(treenum) = grow(Y_boot, X_boot, min_node_obs, max_depth, &
+            opt_splittable=variables_selected)
     enddo
 
 end function
+
+
+
+function test_bootstrap_01() result(exitflag)
+    integer :: exitflag
+
+
+    exitflag = -1
+
+    print *, " "
+    print *, "---------- Running Test Function test_bootstrap_01 -------------------"
+
+
+    print *, "Test successful if test executed without error."
+
+    exitflag = 0
+
+end function
+
 
 
 end module forest_parallel
