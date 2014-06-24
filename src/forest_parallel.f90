@@ -188,6 +188,47 @@ end function
 
 
 
+function predict_forest(fittedforest, X) result(Ypred)
+    ! --- Variable Declarations ---
+    ! Input/Output variables
+    type (node), intent(in) :: fittedforest(:)
+    real(dp), intent(in) :: X(:,:)
+    integer, allocatable :: Ypred(:)
+
+    ! Private variables
+    integer, allocatable :: Ypred_trees(:,:)
+    integer :: N, P
+
+    ! Counting variables
+    integer :: i, j, num1
+
+    ! --- setup ---
+    N = size(X,1)
+    P = size(X,2)
+
+    allocate(Ypred_trees(N,size(fittedforest)))
+    allocate(Ypred(N))
+
+    ! --- each tree makes prediction ---
+    do i=1,size(fittedforest)
+        Ypred_trees(:,i) = predict(fittedforest(i), X)
+    enddo
+
+    ! --- create ensemble prediction ---
+    do i=1,N
+        num1 = 0
+        do j=1,size(fittedforest)
+            if(Ypred_trees(i,j)==1) num1=num1+1
+            if(Ypred_trees(i,j)==0) num1=num1-1
+        enddo
+
+        if(num1 >= 0) Ypred(i) = 1
+        if(num1 <  0) Ypred(i) = 0
+    enddo
+
+end function
+
+
 function test_bootstrap_01() result(exitflag)
     integer :: exitflag
 
@@ -290,5 +331,51 @@ function test_grow_forest_01() result(exitflag)
     exitflag = 0
 
 end function
+
+
+
+function test_predict_forest_01() result(exitflag)
+    integer :: exitflag
+
+    integer, parameter :: N=10, P=2
+    integer :: Y(N)
+    real(dp) :: X(N,P)
+    integer, parameter :: min_node_obs=1, max_depth=10
+    integer, parameter :: numsamps = 5, numvars=1, numboots=3
+
+    type (node) :: ff(numboots)
+
+    integer :: i,j
+
+    exitflag = -1
+
+    print *, " "
+    print *, "---------- Running Test Function test_predict_forest_01 -------------------"
+
+    ! --- create pre-defined data and grow a forest ---
+    Y = (/1,1,1,1,1,1,0,0,0,0/)
+    X(:,1) = (/10,11,12,13,14,15,16,17,18,19/)
+    X(:,2) = (/20,21,22,23,24,25,26,27,28,29/)
+
+    ff = grow_forest(Y, X, min_node_obs, max_depth, &
+        numsamps, numvars, numboots)
+
+    ! ...
+
+    ! --- test failure conditions, automated ---
+    ! ...
+
+    ! --- test failure conditions, manual ---
+    ! ...
+
+    
+    print *, ""
+    print *, "Test successful if test executed without error."
+
+    exitflag = 0
+
+end function
+
+
 
 end module forest_parallel
