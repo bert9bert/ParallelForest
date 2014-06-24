@@ -1,5 +1,5 @@
 OBJECTS = random_utils.o utils.o tree_utils.o sort_utils.o impurity_measures.o classification.o forest_parallel.o testing_program.o
-FFLAGS = 
+FFLAGS = -g -fbounds-check
 
 .PHONY: test clean 
 

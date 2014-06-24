@@ -5,7 +5,7 @@ module forest_parallel
 !   Author: Bertram Ieong
 !------------------------------------------------------------------------------
 
-use random_utils
+
 use utils
 use tree_utils
 use sort_utils
@@ -39,6 +39,7 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
     character(len=50) :: fmt
     logical, parameter :: verbose = .false.
 
+    if(verbose) print *, "Entering bootstrap(...)"
 
     ! --- setup ---
     ! Get data size
@@ -53,7 +54,6 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
 
 
     ! --- create bootstrapped sample ---
-    call init_random_seed()
     call random_number(randarr)
 
     rand_obs_num = 1 + int(randarr * ((N - 1) + 1))  ! get array of random integers in [1,N]
@@ -91,6 +91,7 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
         print *, "Note: Above table only prints up to row N. If numsamps>N, then some rows will not be shown."
     endif
 
+    if(verbose) print *, "Exiting bootstrap(...)"
 end subroutine
 
 
@@ -120,7 +121,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     integer :: i, j, idx
 
     ! Debugging variables
-    logical, parameter :: verbose = .true.
+    logical, parameter :: verbose = .false.
 
 
     ! --- setup ---
@@ -137,20 +138,18 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     if(numboots<=0)     stop
 
     ! allocate memory to allocatable arrays
-    allocate(X_boot(numsamps,P))
     allocate(variables_selected(P))
     allocate(randarr(P))
-
 
     ! --- grow forest ---
     do treenum=1,numboots
         if(verbose) then
-            print *, "Generating Tree (Boostrap Sample) No. ", treenum
+            print *, "-----------------------------------------------"
+            print '("Generating Tree (Bootstrap Sample) No. ", i5)', treenum
         endif
 
         ! -- randomly select variables for this tree without replacement --
         ! draw indices of variables without replacement that can be split on
-        call init_random_seed()  ! TODO: make this random
         call random_number(randarr)
 
         do i=1,numvars
@@ -161,18 +160,30 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
         ! turn this list of indices into a logical array
         variables_selected = .false.
-        do j=1,P
+        do j=1,numvars
             variables_selected(variables_selected_nums(j)) = .true.
         enddo
+
+        if(verbose) then
+            print *, "Variables selected:"
+            print *, variables_selected
+        endif
 
         ! -- create bootstrapped data --
         call bootstrap(Y, X, numsamps, Y_boot, X_boot)
 
+        if(verbose) then
+            print '("Bootstrapped Y Size = ", i6)', size(Y_boot)
+            print '("Bootstrapped X Size = (", i5, ",", i5, ")")', size(X_boot,1), size(X_boot,2)
+        endif
+
         ! -- fit tree to the bootstrapped data and select variables --
         fittedforest(treenum) = grow(Y_boot, X_boot, min_node_obs, max_depth, &
             opt_splittable=variables_selected)
-    enddo
 
+        deallocate(Y_boot)
+        deallocate(X_boot)
+    enddo
 end function
 
 
@@ -253,7 +264,7 @@ function test_grow_forest_01() result(exitflag)
     print *, "---------- Running Test Function test_grow_forest_01 -------------------"
 
     ! --- create pre-defined data and grow a forest ---
-    Y = (/0,1,2,3,4,5,6,7,8,9/)
+    Y = (/1,1,1,1,1,1,0,0,0,0/)
     X(:,1) = (/10,11,12,13,14,15,16,17,18,19/)
     X(:,2) = (/20,21,22,23,24,25,26,27,28,29/)
 
@@ -261,9 +272,19 @@ function test_grow_forest_01() result(exitflag)
         numsamps, numvars, numboots)
 
     ! --- test failure conditions, automated ---
+    if(.not. size(ff)==numboots) stop "Test failed."
 
     ! --- test failure conditions, manual ---
+    print *, "== Manual Testing Instructions =="
+    print *, "Part of this test cannot be automated and must be done manually."
+    print *, "To do so, set the verbose flag to .true. in grow_forest(...),"
+    print *, "recompile the test framework, and check the following:"
+    print *, "    1. The correct number of trees are generated"
+    print *, "    2. The correct number of variables are selected"
+    print *, "    3. There is some randomness in the variables selected"
+    print *, "    4. The size of the bootstrapped Y and X are correct"
 
+    print *, ""
     print *, "Test successful if test executed without error."
 
     exitflag = 0

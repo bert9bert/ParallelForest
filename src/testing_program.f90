@@ -1,5 +1,6 @@
 program testing_program
 
+use random_utils
 use forest_parallel
 use classification
 use tree_utils
@@ -8,6 +9,9 @@ use sort_utils
 implicit none
 
 integer :: exitflag
+
+! init random number generator seed
+call init_random_seed()
 
 ! classification module tests
 exitflag = test_splitnode_01()
