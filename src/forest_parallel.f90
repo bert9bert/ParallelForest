@@ -5,7 +5,7 @@ module forest_parallel
 !   Author: Bertram Ieong
 !------------------------------------------------------------------------------
 
-
+use random_utils
 use utils
 use tree_utils
 use sort_utils
@@ -54,6 +54,10 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
 
 
     ! --- create bootstrapped sample ---
+    ! init random number generator seed
+    call init_random_seed()
+
+    ! generate array of random numbers [0,1)
     call random_number(randarr)
 
     rand_obs_num = 1 + int(randarr * ((N - 1) + 1))  ! get array of random integers in [1,N]
@@ -151,6 +155,10 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
         ! -- randomly select variables for this tree without replacement --
         ! draw indices of variables without replacement that can be split on
+        ! init random number generator seed
+        call init_random_seed()
+
+        ! generate array of random numbers [0,1)
         call random_number(randarr)
 
         do i=1,numvars

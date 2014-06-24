@@ -10,8 +10,6 @@ implicit none
 
 integer :: exitflag
 
-! init random number generator seed
-call init_random_seed()
 
 ! classification module tests
 exitflag = test_splitnode_01()
