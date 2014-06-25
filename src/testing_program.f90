@@ -27,6 +27,7 @@ exitflag = test_grow_03()
 exitflag = test_grow_04()
 exitflag = test_grow_05()
 exitflag = test_bootstrap_01()
+exitflag = test_bootstrap_balanced_01()
 exitflag = test_grow_forest_01()
 exitflag = test_grow_predict_forest_01()
 

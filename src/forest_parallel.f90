@@ -101,7 +101,7 @@ end subroutine
 
 
 
-subroutine bootstrap_balance(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt_force_numsamps_evensplits)
+subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt_force_numsamps_evensplits)
     ! Returns a BALANCED bootstrapped sample of the data.
 
     ! --- Declare Variables ---
@@ -161,6 +161,7 @@ subroutine bootstrap_balance(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt
         call insertion_sort(N, tmp_dbl_arr_1d_no1, tmp_int_arr_1d_no2)
         tmp_int_arr_1d_no1 = int(tmp_dbl_arr_1d_no1)  ! TODO: make sure rounding is OK
 
+
         num_Yunique = 1
         do i=2,N
             if(tmp_int_arr_1d_no1(i) /= tmp_int_arr_1d_no1(i-1)) then
@@ -186,6 +187,7 @@ subroutine bootstrap_balance(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt
 
 
     ! take care of uneven split input to numsamps
+
     if(mod(in_numsamps,num_Yunique)/=0) then
         if(present(opt_force_numsamps_evensplits)) then
             if(opt_force_numsamps_evensplits) then
@@ -195,7 +197,7 @@ subroutine bootstrap_balance(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt
                 stop "ERROR"
             endif
         else
-            stop "ERROR"
+            stop "ERROR: Option to force even splits not supplied, so assumed false, but splits not even"
         endif
     else
         numsamps = in_numsamps
@@ -243,6 +245,7 @@ subroutine bootstrap_balance(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt
 
     ! generate array of random numbers [0,1)
     allocate(randarr(numsamps/num_Yunique, num_Yunique))
+    allocate(rand_obs_num(numsamps/num_Yunique, num_Yunique))
     call random_number(randarr)
 
     ! get array of random integers in the right range of each column
@@ -259,6 +262,39 @@ subroutine bootstrap_balance(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt
             ctr=ctr+1
         enddo
     enddo
+
+
+
+    ! --- verbose prints ---
+    if(verbose .and. P==1) then
+        print *, "   Y         X    Y_boot    X_boot"
+
+        fmt = '(i5, f10.5, i10, f10.5)'
+        do i=1,N
+            if(i<=numsamps) then
+                print fmt, Y(i), X(i,1), Y_boot(i), X_boot(i,1)
+            else
+                print fmt, Y(i), X(i,1)
+            endif
+        enddo
+    else if(verbose .and. P==2) then
+        print *, "  Y1        X1        X2   Y1_boot   X1_boot   X2_boot"
+
+        fmt = '(i5, f10.5, f10.5, i10, f10.5, f10.5)'
+        do i=1,N
+            if(i<=numsamps) then
+                print fmt, Y(i), X(i,1), X(i,2), Y_boot(i), X_boot(i,1), X_boot(i,2)
+            else
+                print fmt, Y(i), X(i,1), X(i,2)
+            endif
+        enddo
+    endif
+
+    if(verbose .and. (P==1 .or. P==2)) then
+        print *, "Note: Above table only prints up to row N. If numsamps>N, then some rows will not be shown."
+    endif
+
+
 
 
     if(verbose) print *, "Exiting bootstrap(...)"
@@ -471,6 +507,67 @@ function test_bootstrap_01() result(exitflag)
 
     ! do rudimentary check for randomness
     if(all(Y_boot1==Y_boot2) .and. all(Y_boot2==Y_boot3)) stop "Test failed."
+
+
+    print *, "Test successful if test executed without error."
+
+    exitflag = 0
+
+end function
+
+
+
+function test_bootstrap_balanced_01() result(exitflag)
+    integer :: exitflag
+
+    integer, parameter :: N=10, P=2
+    integer, parameter :: in_numsamps = 5
+    integer, parameter :: numsamps = 6  ! true value needed to achieve even splits
+    integer :: Y(N)
+    integer, allocatable :: Y_boot1(:), Y_boot2(:), Y_boot3(:)
+    real(dp) :: X(N,P)
+    real(dp), allocatable :: X_boot1(:,:), X_boot2(:,:), X_boot3(:,:)
+
+    integer :: i,j
+
+    exitflag = -1
+
+    print *, " "
+    print *, "---------- Running Test Function test_bootstrap_balanced_01 -------------------"
+
+    ! --- create bootstrap sample on pre-defined data ---
+    Y = (/1,1,1,1,1,1,0,0,0,0/)
+    X(:,1) = (/10,11,12,13,14,15,16,17,18,19/)
+    X(:,2) = (/20,21,22,23,24,25,26,27,28,29/)
+
+    call bootstrap_balanced(Y, X, in_numsamps, Y_boot1, X_boot1, opt_force_numsamps_evensplits=.true.)
+    call bootstrap_balanced(Y, X, in_numsamps, Y_boot2, X_boot2, opt_force_numsamps_evensplits=.true.)
+    call bootstrap_balanced(Y, X, in_numsamps, Y_boot3, X_boot3, opt_Yunique=(/0,1/), opt_force_numsamps_evensplits=.true.)
+
+
+    ! --- test failure conditions ---
+    ! test that bootstrapped data has correct dimensions
+    if(.not. size(Y_boot1)==numsamps) stop "Test failed: bootstrapped Y data has wrong number of rows."
+    if(.not. size(Y_boot2)==numsamps) stop "Test failed: bootstrapped Y data has wrong number of rows."
+    if(.not. size(Y_boot3)==numsamps) stop "Test failed: bootstrapped Y data has wrong number of rows."
+
+    if(.not. all((/size(X_boot1,1),size(X_boot1,2)/)==(/numsamps,P/))) &
+        stop "Test failed: bootstrapped X data has wrong dimensions."
+    if(.not. all((/size(X_boot2,1),size(X_boot2,2)/)==(/numsamps,P/))) &
+        stop "Test failed: bootstrapped X data has wrong dimensions."
+    if(.not. all((/size(X_boot3,1),size(X_boot3,2)/)==(/numsamps,P/))) &
+        stop "Test failed: bootstrapped X data has wrong dimensions."
+
+    ! roughly check that values have been correctly carried
+    do j=1,(P-1)
+        if(.not. all(X_boot1(:,j)==(X_boot1(:,j+1) - 10_dp) )) stop "Test failed."
+        if(.not. all(X_boot2(:,j)==(X_boot2(:,j+1) - 10_dp) )) stop "Test failed."
+        if(.not. all(X_boot3(:,j)==(X_boot3(:,j+1) - 10_dp) )) stop "Test failed."
+    enddo
+
+
+    ! do rudimentary check for randomness
+    if(all(X_boot1==X_boot2) .and. all(X_boot2==X_boot3)) stop "Test failed: not random."
 
 
     print *, "Test successful if test executed without error."
