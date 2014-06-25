@@ -100,7 +100,7 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
 end subroutine
 
 
-
+! TODO: implement bootstrap_balanaced in a less round-about/more-efficient way
 subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt_force_numsamps_evensplits)
     ! Returns a BALANCED bootstrapped sample of the data.
 
@@ -381,7 +381,8 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
         endif
 
         ! -- create bootstrapped data --
-        call bootstrap(Y, X, numsamps, Y_boot, X_boot)
+        call bootstrap_balanced(Y, X, numsamps, Y_boot, X_boot, opt_Yunique=(/0,1/), opt_force_numsamps_evensplits=.true.)
+        ! TODO: should implement even split option into arguments for grow_forest
 
 
         if(verbose) then
@@ -391,11 +392,22 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
         ! -- fit tree to the bootstrapped data and select variables --
         fittedforest(treenum) = grow(Y_boot, X_boot, min_node_obs, max_depth, &
-            opt_splittable=variables_selected)
+            opt_splittable=variables_selected)     
 
         deallocate(Y_boot)
         deallocate(X_boot)
+
+
     enddo
+
+
+    if(verbose) then
+        do i=1,size(fittedforest)
+            print *, "-----------------------------"
+            print '("For tree no. ", i5, ", root node splits variable no. ", i5, " at value ", f10.5)', &
+                i, fittedforest(i)%splitvarnum, fittedforest(i)%splitvalue
+        enddo
+    endif
 end function
 
 
