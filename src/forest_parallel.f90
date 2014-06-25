@@ -431,11 +431,12 @@ end function
 
 
 
-function predict_forest(fittedforest, X) result(Ypred)
+function predict_forest(fittedforest, X, OPT_NUM_THREADS) result(Ypred)
     ! --- Variable Declarations ---
     ! Input/Output variables
     type (node), intent(in) :: fittedforest(:)
     real(dp), intent(in) :: X(:,:)
+    integer, optional, intent(in) :: OPT_NUM_THREADS
     integer, allocatable :: Ypred(:)
 
     ! Private variables
@@ -448,6 +449,11 @@ function predict_forest(fittedforest, X) result(Ypred)
     ! Debugging variables
     logical, parameter :: verbose = .false.
 
+    ! Parallel setup
+    if(present(OPT_NUM_THREADS)) then
+        call OMP_SET_NUM_THREADS(OPT_NUM_THREADS)
+    endif
+
     ! --- setup ---
     N = size(X,1)
     P = size(X,2)
@@ -456,9 +462,12 @@ function predict_forest(fittedforest, X) result(Ypred)
     allocate(Ypred(N))
 
     ! --- each tree makes prediction ---
+    !$OMP PARALLEL DO &
+    !$OMP       PRIVATE(j)
     do j=1,size(fittedforest)
         Ypred_trees(:,j) = predict(fittedforest(j), X)
     enddo
+    !$OMP END PARALLEL DO
 
     if(verbose) then
         print *, "Split info for each tree:"
@@ -476,6 +485,8 @@ function predict_forest(fittedforest, X) result(Ypred)
 
 
     ! --- create ensemble prediction ---
+    !$OMP PARALLEL DO &
+    !$OMP       PRIVATE(i,j,num1)
     do i=1,N
         num1 = 0
         do j=1,size(fittedforest)
@@ -486,6 +497,7 @@ function predict_forest(fittedforest, X) result(Ypred)
         if(num1 >= 0) Ypred(i) = 1
         if(num1 <  0) Ypred(i) = 0
     enddo
+    !$OMP END PARALLEL DO
 
 end function
 
