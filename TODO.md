@@ -4,8 +4,6 @@ Big steps
 
 * Implement R interface and connect with Fortran 90 code
 	* fit on real dataset with R
-* Implement random forest in single-threading
-	* implement balanced bootstrap
 * Connect random forest with R
 * Multi-thread random forest
 
