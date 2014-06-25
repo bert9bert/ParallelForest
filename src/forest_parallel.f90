@@ -368,6 +368,8 @@ function test_grow_predict_forest_01() result(exitflag)
     integer, parameter :: N=10, P=2
     integer :: Y(N)
     real(dp) :: X(N,P)
+    integer, allocatable :: Ynew(:), Ynewhat(:)
+    real(dp), allocatable :: Xnew(:,:)
     integer, parameter :: min_node_obs=1, max_depth=10
     integer, parameter :: numsamps = 50, numvars=1, numboots=5
 
@@ -392,6 +394,7 @@ function test_grow_predict_forest_01() result(exitflag)
     ff = grow_forest(Y, X, min_node_obs, max_depth, &
         numsamps, numvars, numboots)
 
+    ! predict on the training set
     Ysamehat = predict_forest(ff, X)
 
     if(verbose) then
@@ -399,10 +402,25 @@ function test_grow_predict_forest_01() result(exitflag)
         print '(i5)', Ysamehat
     endif
 
+    ! predict on a new set of data with known solution
+    allocate(Ynew(4))
+    allocate(Ynewhat(4))
+    allocate(Xnew(4,P))
 
-    ! --- test failure conditions, automated ---
+    Ynew = (/1,1,0,0/)
+    Xnew(:,1) = (/-100,14,15,100/)
+    Xnew(:,2) = (/-100,24,25,100/)
+
+    Ynewhat = predict_forest(ff, Xnew)
+
+    if(verbose) then
+        print *, "Y new hat ="
+        print '(i5)', Ynewhat
+    endif
+
+    ! --- test failure conditions ---
     if(.not. all(Ysamehat==Y)) stop "Test failed."
-
+    if (.not. all(Ynewhat==Ynew)) stop "Test failed."
 
 
     print *, ""
