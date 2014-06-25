@@ -9,10 +9,12 @@ setwd("~/ParallelForest/src/")
 dyn.load("~/ParallelForest/src/grow_wrapper.dll")
 dyn.load("~/ParallelForest/src/predict_wrapper.dll")
 dyn.load("~/ParallelForest/src/grow_forest_wrapper.dll")
+dyn.load("~/ParallelForest/src/predict_forest_wrapper.dll")
 
 is.loaded("grow_wrapper")
 is.loaded("predict_wrapper")
-is.loaded("grow_forest_wrapper.dll")
+is.loaded("grow_forest_wrapper")
+is.loaded("predict_forest_wrapper")
 
 
 ### PREPARE TEST DATASET ####
@@ -180,6 +182,40 @@ predict = function(fittedtree, xnew){
     return(retpred$ynew_pred)
 }
 
+
+
+
+predict_forest = function(fittedforest, xnew){
+    n = as.integer(nrow(xnew))
+    p = as.integer(ncol(xnew))
+
+    if(p != fittedforest$p){
+        stop("New data has different number of variables than training data.")
+    }
+
+    retpred = .Fortran("predict_forest_wrapper",
+        fittedforest$treenum,
+        fittedforest$tag,
+        fittedforest$tagparent,
+        fittedforest$tagleft,
+        fittedforest$tagright,
+        fittedforest$is_topnode,
+        fittedforest$depth,
+        fittedforest$majority,
+        fittedforest$has_subnodes,
+        fittedforest$splitvarnum,
+        fittedforest$splitvalue,
+        fittedforest$numnodes,
+        fittedforest$numboots,
+        n,
+        p,
+        xnew,
+        ynew_pred=integer(n)
+        )
+
+    return(retpred$ynew_pred)
+}
+
 ##### TESTS ON GROWING AND PREDICTING TREES #####
 ### TEST 01 (ON EASY TO FIT DATA) ###
 
@@ -230,8 +266,27 @@ numsamps=90
 numvars=1
 numboots=20
 
-fft = grow_forest(xtrain, ytrain, min_node_obs, max_depth,
+fforest = grow_forest(xtrain, ytrain, min_node_obs, max_depth,
     numsamps, numvars, numboots)
+fforest_samepred = predict(fforest, xtrain)
+
+# test failure conditions
+if(!all(fforest$ytrain==fforest_samepred)) {
+   stop("Test failed.")
+}
+
+
+
+### TEST 02 (NEW DATA) ###
+
+# same as above, except now with new data
+forest_ynewhat = predict(fforest, xnew)
+
+# test failure conditions
+if(!all(ynew==forest_ynewhat)) {
+   stop("Test failed.")
+}
+
 
 ### TODO ###
 # 1. make sure that xtrain and xtest are DOUBLE matrices
