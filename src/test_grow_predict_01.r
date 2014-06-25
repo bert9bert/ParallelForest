@@ -6,15 +6,8 @@ setwd("~/ParallelForest/src/")
 
 
 # load the shared libraries compiled in Fortran
-dyn.load("~/ParallelForest/src/grow_wrapper.dll")
-dyn.load("~/ParallelForest/src/predict_wrapper.dll")
-dyn.load("~/ParallelForest/src/grow_forest_wrapper.dll")
-dyn.load("~/ParallelForest/src/predict_forest_wrapper.dll")
-
-is.loaded("grow_wrapper")
-is.loaded("predict_wrapper")
-is.loaded("grow_forest_wrapper")
-is.loaded("predict_forest_wrapper")
+dyn.load("~/ParallelForest/src/ParallelForest.dll")
+is.loaded("ParallelForest")
 
 
 ### PREPARE TEST DATASET ####
