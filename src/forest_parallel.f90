@@ -5,6 +5,7 @@ module forest_parallel
 !   Author: Bertram Ieong
 !------------------------------------------------------------------------------
 
+use OMP_LIB
 use random_utils
 use utils
 use tree_utils
@@ -100,7 +101,7 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
 end subroutine
 
 
-! TODO: implement bootstrap_balanaced in a less round-about/more-efficient way
+
 subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt_force_numsamps_evensplits)
     ! Returns a BALANCED bootstrapped sample of the data.
 
@@ -304,7 +305,8 @@ end subroutine
 
 
 function grow_forest(Y, X, min_node_obs, max_depth, &
-    numsamps, numvars, numboots) &
+    numsamps, numvars, numboots, &
+    OPT_NUM_THREADS) &
     result(fittedforest)
 
     ! --- Declare Variables ---
@@ -314,6 +316,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     integer, intent(in) :: min_node_obs, max_depth
     integer, intent(in) :: numsamps, numvars, numboots
     type (node) :: fittedforest(numboots)
+    integer, optional, intent(in) :: OPT_NUM_THREADS
 
     ! Private Variables
     integer :: N, P
@@ -329,6 +332,12 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
     ! Debugging variables
     logical, parameter :: verbose = .false.
+    logical, parameter :: verbose_parallel = .true.
+
+    ! Parallel setup
+    if(present(OPT_NUM_THREADS)) then
+        call OMP_SET_NUM_THREADS(OPT_NUM_THREADS)
+    endif
 
 
     ! --- setup ---
@@ -349,7 +358,17 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     allocate(randarr(P))
 
     ! --- grow forest ---
+
+    !$OMP PARALLEL DO &
+    !$OMP       PRIVATE(randarr, idx, i, &
+    !$OMP           variables_selected, variables_selected_nums, &
+    !$OMP           Y_boot, X_boot)
     do treenum=1,numboots
+        if(verbose_parallel) then
+            print *, "THIS IS THREAD NO. ", OMP_GET_THREAD_NUM(), &
+                " OUT OF ", OMP_GET_NUM_THREADS(), " THREADS."
+        endif
+
         if(verbose) then
             print *, "-----------------------------------------------"
             print '("Generating Tree (Bootstrap Sample) No. ", i5)', treenum
@@ -399,7 +418,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
 
     enddo
-
+    !$OMP END PARALLEL DO
 
     if(verbose) then
         do i=1,size(fittedforest)

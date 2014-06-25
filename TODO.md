@@ -2,13 +2,13 @@
 Big steps
 ---------
 
-* Implement R interface and connect with Fortran 90 code
+* Implement R interface to connect with Fortran 90 code
 	* fit on real dataset with R
-* Connect random forest with R
-* Multi-thread random forest
+* Switch build system to R
 
 Loose ends
 ----------
+* rename package to something more appropriate
 * have comment to indicate when a test is on sorted data only, and write unsorted tests
 * review and fix any bad pointer practices
 * explicitly indicate public/private access in modules
