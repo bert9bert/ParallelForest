@@ -288,8 +288,3 @@ if(!all(ynew==forest_ynewhat)) {
 }
 
 
-### TODO ###
-# 1. make sure that xtrain and xtest are DOUBLE matrices
-# 2. account for missing values
-# 3. put in functionality with data frames in addition to matrices
-# 4. look into R function overloading
