@@ -101,6 +101,172 @@ end subroutine
 
 
 
+subroutine bootstrap_balance(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, opt_force_numsamps_evensplits)
+    ! Returns a BALANCED bootstrapped sample of the data.
+
+    ! --- Declare Variables ---
+    ! --- Input/Output Variables ---
+    integer, intent(in) :: Y(:)
+    real(dp), intent(in) :: X(:,:)
+    integer, intent(in) :: in_numsamps
+    integer, allocatable, intent(out) :: Y_boot(:)
+    real(dp), allocatable, intent(out) :: X_boot(:,:)
+    integer, optional, intent(in) :: opt_Yunique(:)
+    logical, optional, intent(in) :: opt_force_numsamps_evensplits
+
+    ! Private Variables
+    integer :: numsamps
+    integer, allocatable :: Yunique(:)
+    real(dp), allocatable :: randarr(:,:)
+    integer, allocatable :: rand_obs_num(:,:)
+    integer :: N, P, num_Yunique
+    integer :: i, j, ctr
+    real(dp), allocatable :: tmp_dbl_arr_1d_no1(:)
+    integer, allocatable :: tmp_int_arr_1d_no1(:)
+    integer, allocatable :: tmp_int_arr_1d_no2(:)
+
+    integer, allocatable :: Yunique_counts(:)
+    integer, allocatable :: Ydata_unique(:,:)
+    real(dp), allocatable :: Xdata_unique(:,:,:)
+
+    ! Debugging variables
+    character(len=50) :: fmt
+    logical, parameter :: verbose = .false.
+
+    if(verbose) print *, "Entering bootstrap(...)"
+
+    ! --- setup ---
+
+    ! Get data size
+    N = size(X,1)
+    P = size(X,2)
+
+    if(N /= size(Y)) stop "Data dimensions do not match."
+
+
+    ! determine the unique values of Y
+    if(present(opt_Yunique)) then
+        allocate(Yunique(size(opt_Yunique)))
+        Yunique = opt_Yunique
+        num_Yunique = size(Yunique)
+    else
+        allocate(tmp_int_arr_1d_no1(N))
+        allocate(tmp_int_arr_1d_no2(N))  ! this is needed because of how this sort works, 
+                                         ! may be able to discard when sort is replaced
+                                         ! with another sort
+        allocate(tmp_dbl_arr_1d_no1(N))  ! same comment as above
+
+        tmp_int_arr_1d_no1 = Y
+        tmp_dbl_arr_1d_no1 = real(tmp_int_arr_1d_no1, dp)
+        call insertion_sort(N, tmp_dbl_arr_1d_no1, tmp_int_arr_1d_no2)
+        tmp_int_arr_1d_no1 = int(tmp_dbl_arr_1d_no1)  ! TODO: make sure rounding is OK
+
+        num_Yunique = 1
+        do i=2,N
+            if(tmp_int_arr_1d_no1(i) /= tmp_int_arr_1d_no1(i-1)) then
+                num_Yunique = num_Yunique + 1
+            endif
+        enddo
+
+        deallocate(tmp_int_arr_1d_no1)
+        deallocate(tmp_dbl_arr_1d_no1)
+        deallocate(tmp_int_arr_1d_no2)
+
+        allocate(Yunique(num_Yunique))
+        Yunique(1) = Y(1)
+        i = 2
+        do j=2,N
+            if(Y(j) /= Y(j-1)) then
+                Yunique(i) = Y(j)
+                i = i + 1
+            endif
+        enddo
+    endif
+
+
+
+    ! take care of uneven split input to numsamps
+    if(mod(in_numsamps,num_Yunique)/=0) then
+        if(present(opt_force_numsamps_evensplits)) then
+            if(opt_force_numsamps_evensplits) then
+                numsamps = in_numsamps + mod(in_numsamps,num_Yunique)
+                print *, "Requested num of samples not split even, forcing to split even number."
+            else
+                stop "ERROR"
+            endif
+        else
+            stop "ERROR"
+        endif
+    else
+        numsamps = in_numsamps
+    endif
+
+
+
+    ! allocate memory to allocatable arrays
+    allocate(Y_boot(numsamps))
+    allocate(X_boot(numsamps,P))
+
+
+    ! create array to hold data for different Y values
+    ! count how many of each
+    allocate(Yunique_counts(num_Yunique))
+    Yunique_counts = 0
+    do i=1,num_Yunique
+        do j=1,N
+            if(Y(j) == Yunique(i)) then
+                Yunique_counts(i) = Yunique_counts(i) + 1
+            endif
+        enddo
+    enddo
+
+    allocate(Ydata_unique(maxval(Yunique_counts), num_Yunique))
+    allocate(Xdata_unique(maxval(Yunique_counts), P, num_Yunique))
+
+    ! put into working arrays
+    do i=1,num_Yunique
+        ctr = 1
+        do j=1,N
+            if(Y(j) == Yunique(i)) then
+                Ydata_unique(ctr,i) = Y(j)
+                Xdata_unique(ctr,:,i) = X(j,:)                
+
+                ctr=ctr+1
+            endif
+        enddo
+    enddo
+
+
+    ! --- create bootstrapped sample ---
+    ! init random number generator seed
+    call init_random_seed()
+
+    ! generate array of random numbers [0,1)
+    allocate(randarr(numsamps/num_Yunique, num_Yunique))
+    call random_number(randarr)
+
+    ! get array of random integers in the right range of each column
+    do i=1,num_Yunique
+        rand_obs_num(:,i) = 1 + int(randarr(:,i) * ((Yunique_counts(i) - 1) + 1))
+    enddo
+
+    ctr = 1
+    do j=1,num_Yunique
+        do i=1,numsamps/num_Yunique
+            Y_boot(ctr)   = Ydata_unique(rand_obs_num(i,j),j)
+            X_boot(ctr,:) = Xdata_unique(rand_obs_num(i,j),:,j)
+
+            ctr=ctr+1
+        enddo
+    enddo
+
+
+    if(verbose) print *, "Exiting bootstrap(...)"
+end subroutine
+
+
+
+
 function grow_forest(Y, X, min_node_obs, max_depth, &
     numsamps, numvars, numboots) &
     result(fittedforest)
