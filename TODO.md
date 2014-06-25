@@ -8,7 +8,6 @@ Big steps
 
 Loose ends
 ----------
-* rename package to something more appropriate
 * have comment to indicate when a test is on sorted data only, and write unsorted tests
 * review and fix any bad pointer practices
 * explicitly indicate public/private access in modules
