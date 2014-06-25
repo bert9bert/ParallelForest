@@ -1,15 +1,18 @@
 ### SETUP ###
 # set directory to where the shared library is stored
-setwd("~/ParallelDecisionTree/src/")
+setwd("~/ParallelForest/src/")
 # source("test_grow_predict_01.r")
 
 
 
 # load the shared libraries compiled in Fortran
-dyn.load("~/ParallelDecisionTree/src/grow_wrapper.dll")
-dyn.load("~/ParallelDecisionTree/src/predict_wrapper.dll")
+dyn.load("~/ParallelForest/src/grow_wrapper.dll")
+dyn.load("~/ParallelForest/src/predict_wrapper.dll")
+dyn.load("~/ParallelForest/src/grow_forest_wrapper.dll")
+
 is.loaded("grow_wrapper")
 is.loaded("predict_wrapper")
+is.loaded("grow_forest_wrapper.dll")
 
 
 ### PREPARE TEST DATASET ####
@@ -84,6 +87,70 @@ grow = function(xtrain, ytrain, min_node_obs, max_depth){
 }
 
 
+
+grow_forest = function(xtrain, ytrain, min_node_obs, max_depth, 
+    numsamps, numvars, numboots){
+
+    # get data size
+    n = nrow(xtrain)
+    p = ncol(xtrain)
+
+    # determine the maximum possible number of nodes with the given max depth for the 
+    # fitted tree, which determines the length of the padded array that the Fortran
+    # subroutine should return
+    TOP_NODE_NUM = 0
+    retlen = 2^(max_depth + 1 - TOP_NODE_NUM) - 1
+
+    # send to Fortran wrapper to grow forest
+    ret = .Fortran("grow_forest_wrapper",
+        n=as.integer(n), p=as.integer(p),
+        xtrain=as.matrix(xtrain), ytrain=as.integer(ytrain),
+        min_node_obs=as.integer(min_node_obs), max_depth=as.integer(max_depth), 
+        retlen=as.integer(retlen),
+        numsamps=as.integer(numsamps),
+        numvars=as.integer(numvars),
+        numboots=as.integer(numboots),
+        treenum_padded=integer(retlen*numboots),
+        tag_padded=integer(retlen*numboots),
+        tagparent_padded=integer(retlen*numboots),
+        tagleft_padded=integer(retlen*numboots),
+        tagright_padded=integer(retlen*numboots),
+        is_topnode_padded=integer(retlen*numboots),
+        depth_padded=integer(retlen*numboots),
+        majority_padded=integer(retlen*numboots),
+        has_subnodes_padded=integer(retlen*numboots),
+        splitvarnum_padded=integer(retlen*numboots),
+        splitvalue_padded=double(retlen*numboots),
+        numnodes=integer(numboots)
+        )
+
+    # unpad returned arrays and put everything into a list to return
+    fittedforest = list(
+        n=ret$n, p=ret$p,
+        xtrain=ret$xtrain, ytrain=ret$ytrain,
+        min_node_obs=ret$min_node_obs, max_depth=ret$max_depth,
+        numsamps=ret$numsamps,
+        numvars=ret$numvars,
+        numboots=ret$numboots,
+        treenum=ret$treenum_padded[1:sum(ret$numnodes)],
+        tag=ret$tag_padded[1:sum(ret$numnodes)],
+        tagparent=ret$tagparent_padded[1:sum(ret$numnodes)],
+        tagleft=ret$tagleft_padded[1:sum(ret$numnodes)],
+        tagright=ret$tagright_padded[1:sum(ret$numnodes)],
+        is_topnode=ret$is_topnode_padded[1:sum(ret$numnodes)],
+        depth=ret$depth_padded[1:sum(ret$numnodes)],
+        majority=ret$majority_padded[1:sum(ret$numnodes)],
+        has_subnodes=ret$has_subnodes_padded[1:sum(ret$numnodes)],
+        splitvarnum=ret$splitvarnum_padded[1:sum(ret$numnodes)],
+        splitvalue=ret$splitvalue_padded[1:sum(ret$numnodes)],
+        numnodes=ret$numnodes
+        )
+
+    return(fittedforest)
+}
+
+
+
 predict = function(fittedtree, xnew){
     n = as.integer(nrow(xnew))
     p = as.integer(ncol(xnew))
@@ -113,7 +180,7 @@ predict = function(fittedtree, xnew){
     return(retpred$ynew_pred)
 }
 
-
+##### TESTS ON GROWING AND PREDICTING TREES #####
 ### TEST 01 (ON EASY TO FIT DATA) ###
 
 # fit data to tree, and make sure that predicted values on same data
@@ -152,6 +219,19 @@ if(!all(ynew==ynewhat)) {
    stop("Test failed.")
 }
 
+
+
+##### TESTS ON GROWING AND PREDICTING FORESTS #####
+### TEST 01 (ON EASY TO FIT DATA) ###
+
+# fit data to tree, and make sure that predicted values on same data
+# is the same as was inputted
+numsamps=90
+numvars=1
+numboots=20
+
+fft = grow_forest(xtrain, ytrain, min_node_obs, max_depth,
+    numsamps, numvars, numboots)
 
 ### TODO ###
 # 1. make sure that xtrain and xtest are DOUBLE matrices

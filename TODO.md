@@ -12,3 +12,4 @@ Loose ends
 * review and fix any bad pointer practices
 * explicitly indicate public/private access in modules
 * write better sort to replace insertion sort
+* figure how to pass optional arguments such as num threads to wrappers
