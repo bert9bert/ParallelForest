@@ -28,8 +28,7 @@ The above is just temporary, and will be a lot cleaner once this package has bee
 
 Once compiled and loaded, fit a forest using the syntax
 ```R
-fittedforest = grow.forest(xtrain, ytrain, min_node_obs, max_depth, 
-    numsamps, numvars, numboots)
+fittedforest = grow.forest(xtrain, ytrain, min_node_obs, max_depth, numsamps, numvars, numboots)
 ```
 where 
 * `xtrain` is a double matrix of the predictors organized column-wise, 
@@ -39,3 +38,11 @@ where
 * `numsamps` is the number of bootstrap sampled observations for each tree in the forest,
 * `numvars` is the number of various to randomly choose for each tree in the forest, and
 * `numboots` is the number of trees to grow in the forest.
+
+Once a forest is grown, use it to predict outcomes on new data with the syntax
+```R
+ynewhat = predict(fittedforest, xnew)
+```
+where
+* `fittedforest` is the outputted forest object from `grow.forest`, and
+* `xnew` is a double matrix of new data to predict on.
