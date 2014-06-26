@@ -1,3 +1,9 @@
+!------------------------------------------------------------------------------
+!   Fortran subroutine to be used as wrapper to grow forest in R.
+!   Copyright (C) 2014  Bertram Ieong
+!------------------------------------------------------------------------------
+
+
 subroutine grow_forest_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retlen, &
     numsamps, numvars, numboots, &
     treenum_padded, &

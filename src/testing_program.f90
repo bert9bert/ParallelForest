@@ -1,3 +1,9 @@
+!------------------------------------------------------------------------------
+!   Runs all unit tests for the Fortran parts of this package.
+!   Copyright (C) 2014  Bertram Ieong
+!------------------------------------------------------------------------------
+
+
 program testing_program
 
 use random_utils

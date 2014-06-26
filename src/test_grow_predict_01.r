@@ -1,3 +1,9 @@
+#------------------------------------------------------------------------------
+#   Tests Fortran wrappers.
+#   Copyright (C) 2014  Bertram Ieong
+#------------------------------------------------------------------------------
+
+
 ### SETUP ###
 # set directory to where the shared library is stored
 setwd("~/ParallelForest/src/")

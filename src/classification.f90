@@ -1,8 +1,9 @@
-module classification
 !------------------------------------------------------------------------------
 !   Module for fitting and predicting on a classification tree.
-!   Author: Bertram Ieong
+!   Copyright (C) 2014  Bertram Ieong
 !------------------------------------------------------------------------------
+
+module classification
 
 
 use utils

@@ -1,3 +1,9 @@
+!------------------------------------------------------------------------------
+!   Make file for compiling in Linux.
+!   Copyright (C) 2014  Bertram Ieong
+!------------------------------------------------------------------------------
+
+
 OBJECTS = utils.o random_utils.o tree_utils.o sort_utils.o impurity_measures.o classification.o forest_parallel.o testing_program.o
 FFLAGS = -g -fbounds-check -fopenmp
 

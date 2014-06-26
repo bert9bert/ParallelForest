@@ -1,9 +1,11 @@
-module forest_parallel
 !------------------------------------------------------------------------------
 !   Module for fitting and predicting on a random forest classifier using
 !       parallel computing.
-!   Author: Bertram Ieong
+!   Copyright (C) 2014  Bertram Ieong
 !------------------------------------------------------------------------------
+
+module forest_parallel
+
 
 use OMP_LIB
 use random_utils

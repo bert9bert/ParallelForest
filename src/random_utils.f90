@@ -1,3 +1,9 @@
+!------------------------------------------------------------------------------
+!   Fortran functions and subroutines to assist in generating random numbers.
+!   Copyright (C) 2014  Bertram Ieong  EXCEPT  outside code as indicated below.
+!------------------------------------------------------------------------------
+
+
 module random_utils
 
 implicit none

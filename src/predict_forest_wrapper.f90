@@ -1,3 +1,8 @@
+!------------------------------------------------------------------------------
+!   Fortran subroutine to be used as wrapper to predict forest in R.
+!   Copyright (C) 2014  Bertram Ieong
+!------------------------------------------------------------------------------
+
 subroutine predict_forest_wrapper(treenum, &
     tag, tagparent, tagleft, tagright, is_topnode, &
     depth, majority, has_subnodes, splitvarnum, splitvalue, numnodes, &

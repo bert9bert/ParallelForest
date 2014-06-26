@@ -1,3 +1,9 @@
+!------------------------------------------------------------------------------
+!   Fortran subroutine to be used as wrapper to predict tree in R.
+!   Copyright (C) 2014  Bertram Ieong
+!------------------------------------------------------------------------------
+
+
 subroutine predict_wrapper(tag, tagparent, tagleft, tagright, is_topnode, &
     depth, majority, has_subnodes, splitvarnum, splitvalue, numnodes, &
     N, P, Xnew, Ynew_pred)

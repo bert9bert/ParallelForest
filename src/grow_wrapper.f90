@@ -1,3 +1,9 @@
+!------------------------------------------------------------------------------
+!   Fortran subroutine to be used as wrapper to grow tree in R.
+!   Copyright (C) 2014  Bertram Ieong
+!------------------------------------------------------------------------------
+
+
 subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retlen, &
     tag_padded, tagparent_padded, tagleft_padded, tagright_padded, is_topnode_padded, &
     depth_padded, majority_padded, has_subnodes_padded, splitvarnum_padded, splitvalue_padded, &
