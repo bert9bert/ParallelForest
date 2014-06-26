@@ -332,7 +332,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
     ! Debugging variables
     logical, parameter :: verbose = .false.
-    logical, parameter :: verbose_parallel = .false.
+    logical, parameter :: verbose_parallel = .true.
 
     ! Parallel setup
     if(present(OPT_NUM_THREADS)) then
