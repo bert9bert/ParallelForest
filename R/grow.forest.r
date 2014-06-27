@@ -12,6 +12,23 @@ grow.forest = function(xtrain, ytrain, min_node_obs, max_depth,
     n = nrow(xtrain)
     p = ncol(xtrain)
 
+    # input assertions
+    if(class(xtrain)!="matrix") stop("Input error.")
+    if(typeof(xtrain)!="double") stop("Input error.")
+    if(class(ytrain)!="integer"){
+        if(class(ytrain)!="numeric"){
+            stop("Input error.")
+        }
+    }
+    if(length(ytrain)!=n) stop("Input error.")
+    if(length(min_node_obs)!=1) stop("Input error.")
+    if(length(max_depth)!=1) stop("Input error.")
+    if(length(numsamps)!=1) stop("Input error.")
+    if(length(numvars)!=1) stop("Input error.")
+    if(length(numboots)!=1) stop("Input error.")
+
+
+
     # determine the maximum possible number of nodes with the given max depth for the 
     # fitted tree, which determines the length of the padded array that the Fortran
     # subroutine should return

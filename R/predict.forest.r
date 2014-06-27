@@ -6,6 +6,10 @@
 
 
 predict.forest = function(object, xnew){
+    # input assertions
+    if(class(xnew)!="matrix") stop("Input error.")
+    if(typeof(xnew)!="double") stop("Input error.")
+
     n.new = as.integer(nrow(xnew))
     p = as.integer(ncol(xnew))
 
