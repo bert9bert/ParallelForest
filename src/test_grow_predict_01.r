@@ -17,6 +17,7 @@ is.loaded("ParallelForest")
 
 
 source("../R/forest.r")
+source("../R/tree.r")
 source("../R/grow.forest.r")
 source("../R/predict.forest.r")
 
