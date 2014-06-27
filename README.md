@@ -2,7 +2,7 @@ Package Description
 ===================
 An R package for fitting random decision forests using parallel computing, with Fortran and OpenMP under the hood.
 
-The basic features of this project are now functional (i.e. growing a forest, and predicting on the forest). The project has not been packaged yet, so to use it in its current state, it will need to be built from source. 
+This package is still a work in progress, but the basic features of this project are now functional (i.e. growing a forest and predicting on the forest). The project has not been packaged yet, so to use it in its current state, it will need to be built from source. It will be packaged and submitted to CRAN once it reaches a stable point in its development.
 
 For now, on a Linux computer with R, gfortran, and GNU make installed:
 
