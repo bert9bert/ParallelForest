@@ -6,13 +6,13 @@
 
 ### SETUP ###
 # set directory to where the shared library is stored
-setwd("~/ParallelForest/src/")
+setwd("../tests/")
 # source("test_grow_predict_01.r")
 
 
 
 # load the shared libraries compiled in Fortran
-dyn.load("~/ParallelForest/src/ParallelForest.dll")
+dyn.load("../src/ParallelForest.dll")
 is.loaded("ParallelForest")
 
 source("../R/forest.r")
