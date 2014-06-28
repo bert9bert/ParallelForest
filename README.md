@@ -4,7 +4,7 @@ An R package for fitting random decision forests using parallel computing, with 
 
 This package is still a work in progress, but the basic features of this project are now functional (i.e. growing a forest and predicting on the forest). To use it in its current experimental state, it will need to be built from source. This package will be submitted to CRAN once it reaches a stable point in its development.
 
-To install this package from source on a Linux computer with R, R Dev, and gfortran installed:
+To install this package from source on a Linux computer with R, R Dev, gfortran, and pdflatex installed:
 
 1. Download and un-archive package contents, such as to `/randomdirectory/ParallelForest`.
 

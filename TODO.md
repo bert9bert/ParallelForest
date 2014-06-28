@@ -15,6 +15,7 @@ Loose ends
 * explicitly indicate public/private access in modules
 * write better sort to replace insertion sort
 * figure how to pass optional arguments such as num threads to wrappers
-
+* write manuals
+* store data in R format
 
 
