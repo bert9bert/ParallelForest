@@ -632,14 +632,16 @@ function test_splitnode_05() result(exitflag)
     ! test that the homogeneous node base case works
 
     integer, parameter :: N=10, P=1
-    real(dp) :: sortedX(N,P) 
+    real(dp) :: sortedX(N,P), Xdata_alt(8,2)
     integer :: sortedYcorresp0(N,P), sortedYcorresp1(N,P)
-    integer :: bestsplit_varnum_correct
-    real(dp) :: bestsplit_value_correct
-    type (node) :: thisnode0, thisnode1
+    integer :: Ydata_alt(8)
+    type (node) :: thisnode0, thisnode1, thisnode_alt
     integer :: exitflag
 
     exitflag = -1
+
+    print *, " "
+    print *, "---------- Running Test Function test_splitnode_05 -------------------"
 
     ! set up homogenous Y with all 0s, homogenous Y with all 1s, and X data
     sortedYcorresp0 = reshape((/0,0,0,0,0,0,0,0,0,0/), &
@@ -654,14 +656,21 @@ function test_splitnode_05() result(exitflag)
     thisnode0 = splitnode(sortedYcorresp0, sortedX, P, N, 2, 2, 1, .false.)
     thisnode1 = splitnode(sortedYcorresp1, sortedX, P, N, 2, 2, 1, .false.)
 
-    ! print results
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_05 -------------------"
+    ! alternate test
+    Ydata_alt = (/1,1,1,1,1,1,1,1/)
+    Xdata_alt = reshape((/0.06000_dp, 0.06000_dp, 0.08000_dp, 0.08000_dp, 0.08000_dp, 0.07000_dp, 0.06000_dp, 0.10000_dp, &
+                          0.02000_dp, 0.01000_dp, 0.03000_dp, 0.02000_dp, 0.03000_dp, 0.03000_dp, 0.03000_dp, 0.02000_dp/), &
+                        shape(Xdata_alt))
+
+    thisnode_alt = splitnode(Ydata_alt, Xdata_alt, 2, 8, 1, 10, 1, .false.)
+
 
     ! test failure conditions
     if(thisnode0%has_subnodes .eqv. .true.) &
         stop "Test failed: Homogenous node but was split."
     if(thisnode1%has_subnodes .eqv. .true.) &
+        stop "Test failed: Homogenous node but was split."
+    if(thisnode_alt%has_subnodes .eqv. .true.) &
         stop "Test failed: Homogenous node but was split."
 
     print *, "Test successful if test executed without error."

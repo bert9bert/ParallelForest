@@ -6,7 +6,7 @@
 
 ### SETUP ###
 # set directory to where the shared library is stored
-setwd("../tests/")
+setwd("~/ParallelForest/tests/")
 # source("test_grow_predict_01.r")
 
 
@@ -61,7 +61,7 @@ ynew = c(1, 0, 1, 0, 1, 0, 1, 1, 1)
 # is the same as was inputted
 numsamps=90
 numvars=1
-numboots=20
+numboots=1
 
 fforest = grow.forest(xtrain, ytrain, min_node_obs, max_depth,
     numsamps, numvars, numboots)

@@ -31,4 +31,4 @@ testing_program.exe: $(OBJECTS)
 	gfortran $(FFLAGS) -c  $< 
 
 clean:
-	rm -f *.o *.exe *.mod
+	rm -f *.o *.exe *.mod *.dll
