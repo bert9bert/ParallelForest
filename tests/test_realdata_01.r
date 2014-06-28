@@ -26,6 +26,8 @@ load("../data/low_high_earners.rda")
 
 
 # fit forest
-fforest = grow.forest(Y~., data=low_high_earners, min_node_obs=10000, max_depth=10,
+fforest = grow.forest(Y~., data=low_high_earners, min_node_obs=1000, max_depth=10,
     numsamps=100000, numvars=5, numboots=5)
+
+yhat_traindata = predict(fforest, low_high_earners)
 
