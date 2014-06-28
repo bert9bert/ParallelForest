@@ -368,7 +368,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     do treenum=1,numboots
         if(verbose_parallel) then
             print *, "THIS IS THREAD NO. ", OMP_GET_THREAD_NUM(), &
-                " OUT OF ", OMP_GET_NUM_THREADS(), " THREADS."
+                " (", OMP_GET_NUM_THREADS(), " THREADS RUNNING)."
         endif
 
         if(verbose) then

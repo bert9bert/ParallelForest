@@ -137,6 +137,17 @@ subroutine tree2flat(tree, max_depth, tag, tagparent, tagleft, tagright, is_topn
         endif
     enddo
 
+    ! if no subnodes, standardize fields that will consequently be missing
+    ! to something uniform
+    do j=1,numnodes
+        if(.not. has_subnodes(j)) then
+            tagleft(j) = -1111
+            tagright(j) = -2222
+            splitvarnum(j) = -8888
+            splitvalue(j) = -9999
+        endif
+    enddo
+
 end subroutine
 
 
