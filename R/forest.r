@@ -13,5 +13,5 @@ setClass("forest", representation(  n = "integer",
                                     numboots = "integer",
                                     numnodes = "integer",
                                     flattened.nodes = "data.frame",
-									fmla = "formula"
-									))
+                                    fmla = "formula"
+                                    ))
