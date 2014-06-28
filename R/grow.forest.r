@@ -5,8 +5,13 @@
 #------------------------------------------------------------------------------
 
 
-grow.forest = function(xtrain, ytrain, min_node_obs, max_depth, 
+grow.forest = function(formula, data, subset, weights, na.action,
+    impurity.function = "gini", model = FALSE, x = FALSE, y = FALSE,
+    min_node_obs, max_depth, 
     numsamps, numvars, numboots){
+
+    xtrain = formula  # TODO: bad naming for now, testing only
+    ytrain = data  # TODO: bad naming for now, testing only
 
     # get data size
     n = nrow(xtrain)
