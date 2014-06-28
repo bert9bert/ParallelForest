@@ -1,0 +1,4 @@
+useDynLib(ParallelForest)
+
+export( grow.forest,
+        predict.forest)
