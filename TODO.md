@@ -7,7 +7,6 @@ Big steps
 	* make sure that xtrain and xtest integer matrices can be converted to double matrices
 	* account for missing values
 	* put in functionality with data frames in addition to matrices
-* Switch build system to R
 
 Loose ends
 ----------
