@@ -2,33 +2,33 @@ Package Description
 ===================
 An R package for fitting random decision forests using parallel computing, with Fortran and OpenMP under the hood.
 
-This package is still a work in progress, but the basic features of this project are now functional (i.e. growing a forest and predicting on the forest). The project has not been packaged yet, so to use it in its current state, it will need to be built from source. It will be packaged and submitted to CRAN once it reaches a stable point in its development.
+This package is still a work in progress, but the basic features of this project are now functional (i.e. growing a forest and predicting on the forest). To use it in its current experimental state, it will need to be built from source. It will be packaged and submitted to CRAN once it reaches a stable point in its development.
 
-For now, on a Linux computer with R, gfortran, and GNU make installed:
+To install this package from source on a Linux computer with R, R Dev, and gfortran installed:
 
-1. Download and unarchive package contents, such as to `~/ParallelForest`.
+1. Download and un-archive package contents, such as to `/randomdirectory/ParallelForest`.
 
-2. Enter the `src` directory.
+2. Go to the directory one above the `ParallelForest` directory and build the R package. The follow can be typed in a shell.
 	```bash
-	cd ~/ParallelForest/src/
+	cd /randomdirectory/
+	R CMD build ParallelForest
 	```
 
-3. Compile the Fortran shared library with gfortran.
-	```bash
-	make ParallelForest.dll
-	```
-
-4. Put the following lines of code at the top of any R script that you want to run this package in.
+3. Then open R, and install the package
 	```R
-	dyn.load("~/ParallelForest/src/ParallelForest.dll")
-	is.loaded("ParallelForest")
-
-	source("~/ParallelForest/R/forest.r")
-	source("~/ParallelForest/R/grow.forest.r")
-	source("~/ParallelForest/R/predict.forest.r")
+	install.packages("ParallelForest", repos=NULL)
 	```
 
-The above is just temporary, and will be a lot cleaner once this package has been R packaged.
+4. To use the package, load it as normal.
+	```R
+	library("ParallelForest")
+	```
+
+5. To uninstall the package, run
+	```R
+	remove.packages("ParallelForest")
+	```
+
 
 Once compiled and loaded, fit a forest using the syntax
 ```R
