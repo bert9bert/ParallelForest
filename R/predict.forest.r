@@ -5,13 +5,13 @@
 #------------------------------------------------------------------------------
 
 
-predict.forest = function(object, xnew){
+predict.forest = function(object, newdata, ...){
     # input assertions
-    if(class(xnew)!="matrix") stop("Input error.")
-    if(typeof(xnew)!="double") stop("Input error.")
+    if(class(newdata)!="matrix") stop("Input error.")
+    if(typeof(newdata)!="double") stop("Input error.")
 
-    n.new = as.integer(nrow(xnew))
-    p = as.integer(ncol(xnew))
+    n.new = as.integer(nrow(newdata))
+    p = as.integer(ncol(newdata))
 
     if(p != object@p){
         stop("New data has different number of variables than training data.")
@@ -33,7 +33,7 @@ predict.forest = function(object, xnew){
         object@numboots,
         n.new,
         p,
-        xnew,
+        newdata,
         ynew_pred=integer(n.new)
         )
 
