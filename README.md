@@ -2,13 +2,13 @@ Package Description
 ===================
 An R package for fitting random decision forests using parallel computing, with Fortran and OpenMP under the hood.
 
-This package is still a work in progress, but the basic features of this project are now functional (i.e. growing a forest and predicting on the forest). To use it in its current experimental state, it will need to be built from source. It will be packaged and submitted to CRAN once it reaches a stable point in its development.
+This package is still a work in progress, but the basic features of this project are now functional (i.e. growing a forest and predicting on the forest). To use it in its current experimental state, it will need to be built from source. This package will be submitted to CRAN once it reaches a stable point in its development.
 
 To install this package from source on a Linux computer with R, R Dev, and gfortran installed:
 
 1. Download and un-archive package contents, such as to `/randomdirectory/ParallelForest`.
 
-2. Go to the directory one above the `ParallelForest` directory and build the R package. The follow can be typed in a shell.
+2. Go to the directory one above the `ParallelForest` directory and build the R package. The following can be typed in a shell with by replacing `randomdirectory` with the directory that you un-archived `ParallelForest` into.
 	```bash
 	cd /randomdirectory/
 	R CMD build ParallelForest
@@ -16,7 +16,8 @@ To install this package from source on a Linux computer with R, R Dev, and gfort
 
 3. Then open R, and install the package
 	```R
-	install.packages("ParallelForest", repos=NULL)
+	setwd("/randomdirectory/")
+	install.packages("ParallelForest_1.0.0.tar.gz", repos=NULL)
 	```
 
 4. To use the package, load it as normal.
