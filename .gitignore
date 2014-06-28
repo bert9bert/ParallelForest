@@ -4,6 +4,7 @@ NOCOMMIT/
 *.o
 *.mod
 *.dll
+*.so
 
 *.sublime-workspace
 

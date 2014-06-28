@@ -10,22 +10,21 @@ grow.forest = function(formula, data, subset, weights, na.action,
     min_node_obs, max_depth, 
     numsamps, numvars, numboots){
 
-    xtrain = formula  # TODO: bad naming for now, testing only
-    ytrain = data  # TODO: bad naming for now, testing only
+    # TODO: implement subset, weights, and na.action
+
+    m = model.frame(formula, data=data)
+
+    ytrain = as.integer(m[,1])
+    xtrain = m[,-1]  # TODO: add check that there is no constant term, or string terms
 
     # get data size
     n = nrow(xtrain)
     p = ncol(xtrain)
 
     # input assertions
-    if(class(xtrain)!="matrix") stop("Input error.")
-    if(typeof(xtrain)!="double") stop("Input error.")
-    if(class(ytrain)!="integer"){
-        if(class(ytrain)!="numeric"){
-            stop("Input error.")
-        }
-    }
-    if(length(ytrain)!=n) stop("Input error.")
+
+    # TODO: revise these input assertions for new arguments list
+
     if(length(min_node_obs)!=1) stop("Input error.")
     if(length(max_depth)!=1) stop("Input error.")
     if(length(numsamps)!=1) stop("Input error.")
@@ -85,7 +84,8 @@ grow.forest = function(formula, data, subset, weights, na.action,
         numvars=ret$numvars,
         numboots=ret$numboots,
         numnodes=ret$numnodes,
-        flattened.nodes=flattened.nodes
+        flattened.nodes=flattened.nodes,
+        fmla=formula
         )
 
     return(fitted.forest)

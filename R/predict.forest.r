@@ -6,12 +6,18 @@
 
 
 predict.forest = function(object, newdata, ...){
-    # input assertions
-    if(class(newdata)!="matrix") stop("Input error.")
-    if(typeof(newdata)!="double") stop("Input error.")
 
-    n.new = as.integer(nrow(newdata))
-    p = as.integer(ncol(newdata))
+    fmla.str = deparse(object@fmla)
+    Yvar.str = strsplit(fmla.str," ~ ")[[1]][1]
+    newdata[,Yvar.str] = rep(-1,nrow(newdata))  # TODO: find a better way than this
+
+    xtest = model.frame(object@fmla, data=newdata)[,-1]
+
+    # input assertions
+    # TODO: write input assertion checks
+
+    n.new = as.integer(nrow(xtest))
+    p = as.integer(ncol(xtest))
 
     if(p != object@p){
         stop("New data has different number of variables than training data.")
@@ -33,7 +39,7 @@ predict.forest = function(object, newdata, ...){
         object@numboots,
         n.new,
         p,
-        newdata,
+        as.matrix(xtest),
         ynew_pred=integer(n.new)
         )
 

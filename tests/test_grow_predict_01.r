@@ -12,7 +12,7 @@ setwd("~/ParallelForest/tests/")
 
 
 # load the shared libraries compiled in Fortran
-dyn.load("../src/ParallelForest.dll")
+dyn.load("../src/ParallelForest.so")
 is.loaded("ParallelForest")
 
 source("../R/forest.r")
@@ -50,6 +50,8 @@ xnew = matrix(c(
         ), 
     nrow=9, ncol=2, byrow=TRUE
     )
+xnew = as.data.frame(xnew)
+colnames(xnew) = c("X1","X2")
 
 ynew = c(1, 0, 1, 0, 1, 0, 1, 1, 1)
 
@@ -63,9 +65,9 @@ numsamps=90
 numvars=1
 numboots=20
 
-fforest = grow.forest(xtrain, ytrain, min_node_obs, max_depth,
-    numsamps, numvars, numboots)
-fforest_samepred = predict(fforest, xtrain)
+fforest = grow.forest(Y~X1+X2, data=df, min_node_obs=min_node_obs, max_depth=max_depth,
+    numsamps=numsamps, numvars=numvars, numboots=numboots)
+fforest_samepred = predict(fforest, df)
 
 # test failure conditions
 if(!all(ytrain==fforest_samepred)) {
