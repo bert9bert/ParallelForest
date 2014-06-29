@@ -17,4 +17,4 @@ grow_forest_wrapper.f90 predict_forest_wrapper.f90 \
 fortran_unit_tests_wrapper.f90
 
 clean:
-	rm -f *.o *.exe *.mod *.dll
+	rm -f *.o *.exe *.mod *.dll *.so
