@@ -4,6 +4,10 @@
 #------------------------------------------------------------------------------
 
 
+PERFORM_TREE_TESTS = TRUE
+PERFORM_FOREST_TESTS = TRUE
+
+
 ### SETUP ###
 # set directory to where the shared library is stored
 setwd("~/ParallelForest/tests/")
@@ -17,6 +21,7 @@ is.loaded("ParallelForest")
 
 source("../R/forest.r")
 source("../R/tree.r")
+source("../R/grow.tree.r")
 source("../R/grow.forest.r")
 source("../R/predict.forest.r")
 
@@ -56,34 +61,40 @@ colnames(xnew) = c("X1","X2")
 ynew = c(1, 0, 1, 0, 1, 0, 1, 1, 1)
 
 
+
+##### TREES #####
+if(PERFORM_TREE_TESTS){
+    ftree = grow.tree(Y~X1+X2, data=df, min_node_obs=min_node_obs, max_depth=max_depth)
+}
+
 ##### TESTS ON GROWING AND PREDICTING FORESTS #####
 ### TEST 01 (ON EASY TO FIT DATA) ###
+if(PERFORM_FOREST_TESTS){
+    # fit data to forest, and make sure that predicted values on same data
+    # is the same as was inputted
+    numsamps=90
+    numvars=1
+    numboots=20
 
-# fit data to tree, and make sure that predicted values on same data
-# is the same as was inputted
-numsamps=90
-numvars=1
-numboots=20
+    fforest = grow.forest(Y~X1+X2, data=df, min_node_obs=min_node_obs, max_depth=max_depth,
+        numsamps=numsamps, numvars=numvars, numboots=numboots)
+    fforest_samepred = predict(fforest, df)
 
-fforest = grow.forest(Y~X1+X2, data=df, min_node_obs=min_node_obs, max_depth=max_depth,
-    numsamps=numsamps, numvars=numvars, numboots=numboots)
-fforest_samepred = predict(fforest, df)
+    # test failure conditions
+    if(!all(ytrain==fforest_samepred)) {
+       stop("Test failed.")
+    }
 
-# test failure conditions
-if(!all(ytrain==fforest_samepred)) {
-   stop("Test failed.")
+
+
+    ### TEST 02 (NEW DATA) ###
+
+    # same as above, except now with new data
+    forest_ynewhat = predict(fforest, xnew)
+
+    # test failure conditions
+    if(!all(ynew==forest_ynewhat)) {
+       stop("Test failed.")
+    }
+
 }
-
-
-
-### TEST 02 (NEW DATA) ###
-
-# same as above, except now with new data
-forest_ynewhat = predict(fforest, xnew)
-
-# test failure conditions
-if(!all(ynew==forest_ynewhat)) {
-   stop("Test failed.")
-}
-
-
