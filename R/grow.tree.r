@@ -10,6 +10,9 @@ grow.tree = function(formula, data, subset, weights, na.action,
     min_node_obs, max_depth){
 
     # TODO: implement subset, weights, and na.action
+    if(!missing(subset)) stop("This feature has not been implemented yet.")
+    if(!missing(weights)) stop("This feature has not been implemented yet.")
+    if(!missing(na.action)) stop("This feature has not been implemented yet.")
 
     m = model.frame(formula, data=data)
 

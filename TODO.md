@@ -16,4 +16,4 @@ Loose ends
 * write manuals
 * store data in R format
 * implement changing to non-default thread number
-
+* implement tree predict and add to tests
