@@ -6,7 +6,8 @@
 }
 \usage{
 grow.forest(formula, data, subset, weights, na.action,
-    impurity.function = "gini", model = FALSE, x = FALSE, y = FALSE,
+    impurity.function = "gini", 
+    model = FALSE, x = FALSE, y = FALSE,
     min_node_obs, max_depth, 
     numsamps, numvars, numboots)
 }
