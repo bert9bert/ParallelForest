@@ -82,7 +82,7 @@ if(PERFORM_FOREST_TESTS){
 
     # test failure conditions
     if(!all(ytrain==fforest_samepred)) {
-       stop("Test failed.")
+       stop("Forest prediction on training data is different than training data.")
     }
 
 
@@ -94,7 +94,7 @@ if(PERFORM_FOREST_TESTS){
 
     # test failure conditions
     if(!all(ynew==forest_ynewhat)) {
-       stop("Test failed.")
+       stop("Forest prediction on new testing data is different than expected.")
     }
 
 }
