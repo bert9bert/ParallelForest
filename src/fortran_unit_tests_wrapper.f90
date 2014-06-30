@@ -15,7 +15,7 @@ use sort_utils
 implicit none
 
 integer, intent(out) :: exitflag
-integer :: test_exitflag(18)
+integer :: test_exitflag(19)
 
 ! classification module tests
 
@@ -25,6 +25,7 @@ test_exitflag(03) = test_splitnode_03()
 test_exitflag(04) = test_splitnode_04()
 test_exitflag(05) = test_splitnode_05()
 test_exitflag(06) = test_splitnode_06()
+test_exitflag(06) = test_splitnode_07()
 test_exitflag(07) = test_insertion_sort_01()
 test_exitflag(08) = test_grow_predict_01()
 test_exitflag(09) = test_tree2flat_flat2tree_01()

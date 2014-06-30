@@ -168,8 +168,6 @@ recursive function splitnode(Y, X, P, N, &
     logical :: valid_split
 
     logical, parameter :: verbose = .false.
-    logical, parameter :: debug01 = .false.
-    character(len=50) :: fmt ! TODO: delete this when no longer needed for debugging
 
 
     ! allocate memory for this node
@@ -205,7 +203,7 @@ recursive function splitnode(Y, X, P, N, &
         print '("tag=",(A))', tag
     endif
 
-    if(verbose) then
+    if(verbose .and. P==2) then
         print *, "[X1 X2 | Y ] = ["
         do i=1,N
             print '(f10.5, "    ", f10.5, "    ", i3)', X(i,1), X(i,2), Y(i)
@@ -277,7 +275,7 @@ recursive function splitnode(Y, X, P, N, &
 
     if(verbose) then
         print *, "Pass base cases to grow?"
-        print *, "!Min Node Size     !Max Depth    !Homogenous"
+        print *, "!Min Node Size     !Max Depth    !Homogeneous"
         print '(3l15)', base1, base2, base3
     endif
 
@@ -327,7 +325,7 @@ recursive function splitnode(Y, X, P, N, &
                 ! if this split has a lower loss than any previous split, then store it
                 ! and discard the previous best split
                 if(first_split_computed .eqv. .false.) then
-                    bestsplit_varnum = 1
+                    bestsplit_varnum = varnum
                     bestsplit_rownum  = rownum
                     bestsplit_impurity_left = impurity_left
                     bestsplit_impurity_right = impurity_right
@@ -397,7 +395,8 @@ recursive function splitnode(Y, X, P, N, &
                 Yleft, Xleft, &
                 P, bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode, bestsplit_impurity_left, .false.)
+                thisdepth+1, .true., thisnode, bestsplit_impurity_left, .false., &
+                splittable)
 
             ! construct and attach right node
             allocate(thisnode%rightnode)
@@ -406,7 +405,8 @@ recursive function splitnode(Y, X, P, N, &
                 Yright, Xright, &
                 P, N-bestsplit_rownum, &
                 min_node_obs, max_depth, &
-                thisdepth+1, .true., thisnode, bestsplit_impurity_right, .false.)
+                thisdepth+1, .true., thisnode, bestsplit_impurity_right, .false., &
+                splittable)
         else
             thisnode%has_subnodes = .false.
         endif
@@ -805,6 +805,205 @@ end function
 
 
 
+
+function test_splitnode_07() result(exitflag)
+    integer, parameter :: N=53, P=2
+    real(dp) :: X(N,P) 
+    integer :: Y(N)
+
+    type (node) :: tree
+
+    integer :: exitflag
+
+
+    print *, " "
+    print *, "---------- Running Test Function test_splitnode_07 -------------------"
+
+    exitflag = -1
+
+    ! set up data
+    X(:,1) = (/ &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.04000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.05000_dp, &
+            0.03000_dp, &
+            0.04000_dp, &
+            0.04000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.05000_dp, &
+            0.04000_dp, &
+            0.02000_dp, &
+            0.04000_dp, &
+            0.02000_dp, &
+            0.05000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.04000_dp, &
+            0.05000_dp, &
+            0.02000_dp, &
+            0.05000_dp, &
+            0.01000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.03000_dp, &
+            0.03000_dp, &
+            0.05000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.04000_dp, &
+            0.03000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.06000_dp, &
+            0.07000_dp, &
+            0.08000_dp, &
+            0.06000_dp, &
+            0.10000_dp, &
+            0.06000_dp, &
+            0.10000_dp, &
+            0.07000_dp &
+        /)
+
+    X(:,2) = (/ &
+            0.01000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.01000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.03000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.03000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.03000_dp, &
+            0.02000_dp, &
+            0.03000_dp, &
+            0.01000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.01000_dp, &
+            0.01000_dp, &
+            0.02000_dp, &
+            0.03000_dp &
+        /)
+
+    Y = (/ &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            0, &
+            1, &
+            1, &
+            1, &
+            1, &
+            1, &
+            1, &
+            1, &
+            1 &
+        /)
+
+    ! fit tree to the data
+    tree = splitnode(Y, X, P, N, &
+        min_node_obs=1, max_depth=10, &
+        thisdepth=2, build_tree=.true., &
+        opt_splittable=(/.false.,.true./))
+
+    ! make sure has expected results; test failure conditions
+    if(.not. tree%splitvarnum==2) stop "Error."
+    if(.not. tree%splitvalue==0.01_dp) stop "Error."
+
+
+    exitflag = 0
+    print *, "Test successful if test executed without error."
+end function
 
 
 function test_grow_predict_01() result(exitflag)

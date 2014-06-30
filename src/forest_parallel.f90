@@ -456,6 +456,7 @@ function predict_forest(fittedforest, X, OPT_NUM_THREADS) result(Ypred)
         call OMP_SET_NUM_THREADS(OPT_NUM_THREADS)
     endif
 
+
     ! --- setup ---
     N = size(X,1)
     P = size(X,2)
