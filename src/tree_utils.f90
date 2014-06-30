@@ -6,11 +6,6 @@
 
 module tree_utils
 
-!------------------------------------------------------------------------------
-!   
-!   Author: Bertram Ieong
-!------------------------------------------------------------------------------
-
 use utils
 
 implicit none
@@ -333,7 +328,7 @@ end subroutine
 
 recursive subroutine countnodes(t, n)
     type (node) :: t
-    integer :: n  ! for initial function call, set to 0 -- TODO: make this more elegant
+    integer :: n  ! for initial function call, set to 0
 
     n=n+1
 

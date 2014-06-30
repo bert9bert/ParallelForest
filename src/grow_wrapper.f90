@@ -111,8 +111,3 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retlen, &
         enddo
     endif
 end subroutine
-
-! TODO and NOTES:
-! 2. look into using R logicals for returned Fortran logicals
-! 3. probably good idea to have additional test in tree_utils.f90 to make sure 
-! erroneous nodes aren't created in any case

@@ -74,8 +74,6 @@ function predict(fittedtree, X) result(Ypred)
 
     ! for each observation, go through fitted tree to get prediction
     do obs = 1,N
-        ! TODO: might be possible to rewrite below to make column-wise so
-        ! it is more efficient
         Ypred(obs) = predict_rec_hlpr(fittedtree, X(obs,:), P)
     enddo
 
@@ -221,10 +219,6 @@ recursive function splitnode(Y, X, P, N, &
         call insertion_sort(N, sortedX(:,j), sortedYcorresp(:,j), .false.)
     enddo
 
-
-
-
-    
     if(.not. present(build_tree)) build_tree = .false.
 
     if(.not. present(opt_impurity_this)) then
@@ -243,8 +237,8 @@ recursive function splitnode(Y, X, P, N, &
     ! add pointer to parent node if parent node is given in input
     if(present(parentnode)) thisnode%parentnode => parentnode
 
-    ! set majority flag for this node
-    ! TODO: figure what to do if tie
+    ! set majority flag for this node.
+    ! if tie, defaults to 1
     if( max(num1s, N-num1s)==num1s ) then
         thisnode%majority = 1
     else
@@ -258,10 +252,6 @@ recursive function splitnode(Y, X, P, N, &
 
 
     !----- Check input assertions -----
-    ! check that sortedX is sorted
-    ! ...
-    ! check that sortedX and sortedYcorresp are N x P
-
 
     ! Check base cases to see if tree growth can continue, 
     ! then find split and recursively call this function
@@ -367,7 +357,6 @@ recursive function splitnode(Y, X, P, N, &
             thisnode%has_subnodes = .true.
 
             ! create left and right data to be passed to the subnodes
-            ! TODO: check if memory will build up in the stack like this
 
             allocate(Xleft(bestsplit_rownum,P))
             allocate(Yleft(bestsplit_rownum))
