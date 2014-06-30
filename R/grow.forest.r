@@ -12,10 +12,34 @@ grow.forest = function(formula, data, subset, weights, na.action,
 
     # TODO: implement subset, weights, and na.action
 
-    m = model.frame(formula, data=data)
+    if(missing(subset) & missing(weights) & missing(na.action)){
+        m = model.frame(formula, data=data)
+    } else if(missing(subset) & !missing(weights) & missing(na.action)){
+        m = model.frame(formula, data=data, weights=weights)
+    } else if(missing(subset) & missing(weights) & !missing(na.action)){
+        m = model.frame(formula, data=data, na.action=na.action)
+    } else if(missing(subset) & !missing(weights) & !missing(na.action)){
+        m = model.frame(formula, data=data, weights=weights, na.action=na.action)
+    } else if(!missing(subset) & missing(weights) & missing(na.action)){
+        m = model.frame(formula, data=data, subset=subset)
+    } else if(!missing(subset) & !missing(weights) & missing(na.action)){
+        m = model.frame(formula, data=data, subset=subset, weights=weights)
+    } else if(!missing(subset) & missing(weights) & !missing(na.action)){
+        m = model.frame(formula, data=data, subset=subset, na.action=na.action)
+    } else if(!missing(subset) & !missing(weights) & !missing(na.action)){
+        m = model.frame(formula, data=data, subset=subset, weights=weights, na.action=na.action)
+    } else {
+        stop("Error.")
+    }
+
+
 
     ytrain = as.integer(m[,1])
     xtrain = m[,-1]  # TODO: add check that there is no constant term, or string terms
+
+    ytrain.tof = as.integer(ytrain)
+    xtrain.tof = as.matrix(xtrain)
+    storage.mode(xtrain.tof) = "double"
 
     # get data size
     n = nrow(xtrain)
@@ -42,7 +66,7 @@ grow.forest = function(formula, data, subset, weights, na.action,
     # send to Fortran wrapper to grow forest
     ret = .Fortran("grow_forest_wrapper",
         n=as.integer(n), p=as.integer(p),
-        xtrain=as.matrix(xtrain), ytrain=as.integer(ytrain),
+        xtrain=xtrain.tof, ytrain=ytrain.tof,
         min_node_obs=as.integer(min_node_obs), max_depth=as.integer(max_depth), 
         retlen=as.integer(retlen),
         numsamps=as.integer(numsamps),

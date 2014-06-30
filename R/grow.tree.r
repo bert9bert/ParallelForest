@@ -16,6 +16,10 @@ grow.tree = function(formula, data, subset, weights, na.action,
     ytrain = as.integer(m[,1])
     xtrain = m[,-1]  # TODO: add check that there is no constant term, or string terms
 
+    ytrain.tof = as.integer(ytrain)
+    xtrain.tof = as.matrix(xtrain)
+    storage.mode(xtrain.tof) = "double"
+
     # get data size
     n = nrow(xtrain)
     p = ncol(xtrain)
@@ -39,7 +43,7 @@ grow.tree = function(formula, data, subset, weights, na.action,
     # send to Fortran wrapper to grow forest
     ret = .Fortran("grow_wrapper",
         n=as.integer(n), p=as.integer(p),
-        xtrain=as.matrix(xtrain), ytrain=as.integer(ytrain),
+        xtrain=xtrain.tof, ytrain=ytrain.tof,
         min_node_obs=as.integer(min_node_obs), max_depth=as.integer(max_depth), 
         retlen=as.integer(retlen),
         tag_padded=integer(retlen),

@@ -4,9 +4,7 @@ Big steps
 
 * Implement R interface to connect with Fortran 90 code
 	* fit on real dataset with R
-	* make sure that xtrain and xtest integer matrices can be converted to double matrices
 	* account for missing values
-	* put in functionality with data frames in addition to matrices
 
 Loose ends
 ----------
