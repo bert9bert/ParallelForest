@@ -29,4 +29,4 @@ Low Priority
 * in wrappers, look into using R logicals for returned Fortran logicals
 * implement sanity check in tree_utils.f90 to make sure erroneous nodes aren't created
 * make balanced bootstrap more memory friendly
-make countnodes() API more elegant
+* make countnodes() API more elegant
