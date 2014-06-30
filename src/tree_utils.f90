@@ -516,8 +516,6 @@ function test_tree2flat_flat2tree_01() result(exitflag)
     if( (tree%leftnode%depth        /=     tree_unflattened%leftnode%depth) .or. &
         (tree%leftnode%majority     /=     tree_unflattened%leftnode%majority) .or. &
         (tree%leftnode%has_subnodes .neqv. tree_unflattened%leftnode%has_subnodes) .or. &
-        (tree%leftnode%splitvarnum  /=     tree_unflattened%leftnode%splitvarnum) .or. &
-        (tree%leftnode%splitvalue   /=     tree_unflattened%leftnode%splitvalue) .or. &
         (tree%leftnode%tag          /=     tree_unflattened%leftnode%tag) ) then
 
         stop "Test failed: left node &
@@ -527,8 +525,6 @@ function test_tree2flat_flat2tree_01() result(exitflag)
     if( (tree%rightnode%depth        /=     tree_unflattened%rightnode%depth) .or. &
         (tree%rightnode%majority     /=     tree_unflattened%rightnode%majority) .or. &
         (tree%rightnode%has_subnodes .neqv. tree_unflattened%rightnode%has_subnodes) .or. &
-        (tree%rightnode%splitvarnum  /=     tree_unflattened%rightnode%splitvarnum) .or. &
-        (tree%rightnode%splitvalue   /=     tree_unflattened%rightnode%splitvalue) .or. &
         (tree%rightnode%tag          /=     tree_unflattened%rightnode%tag) ) then
 
         stop "Test failed: right node &
@@ -538,8 +534,6 @@ function test_tree2flat_flat2tree_01() result(exitflag)
     if( (tree%rightnode%leftnode%depth        /=     tree_unflattened%rightnode%leftnode%depth) .or. &
         (tree%rightnode%leftnode%majority     /=     tree_unflattened%rightnode%leftnode%majority) .or. &
         (tree%rightnode%leftnode%has_subnodes .neqv. tree_unflattened%rightnode%leftnode%has_subnodes) .or. &
-        (tree%rightnode%leftnode%splitvarnum  /=     tree_unflattened%rightnode%leftnode%splitvarnum) .or. &
-        (tree%rightnode%leftnode%splitvalue   /=     tree_unflattened%rightnode%leftnode%splitvalue) .or. &
         (tree%rightnode%leftnode%tag          /=     tree_unflattened%rightnode%leftnode%tag) ) then
 
         stop "Test failed: right node's left node &
@@ -549,8 +543,6 @@ function test_tree2flat_flat2tree_01() result(exitflag)
     if( (tree%rightnode%rightnode%depth        /=     tree_unflattened%rightnode%rightnode%depth) .or. &
         (tree%rightnode%rightnode%majority     /=     tree_unflattened%rightnode%rightnode%majority) .or. &
         (tree%rightnode%rightnode%has_subnodes .neqv. tree_unflattened%rightnode%rightnode%has_subnodes) .or. &
-        (tree%rightnode%rightnode%splitvarnum  /=     tree_unflattened%rightnode%rightnode%splitvarnum) .or. &
-        (tree%rightnode%rightnode%splitvalue   /=     tree_unflattened%rightnode%rightnode%splitvalue) .or. &
         (tree%rightnode%rightnode%tag          /=     tree_unflattened%rightnode%rightnode%tag) ) then
 
         stop "Test failed: right node's right node &

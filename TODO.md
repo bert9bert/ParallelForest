@@ -15,5 +15,5 @@ Loose ends
 * figure how to pass optional arguments such as num threads to wrappers
 * write manuals
 * store data in R format
-
+* implement changing to non-default thread number
 
