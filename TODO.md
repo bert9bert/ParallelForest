@@ -5,7 +5,6 @@ High Priority
 	* test on real dataset with R
 	* account for missing values
 	* finish implementing forest grow and predict APIs
-	* sufficiently implement private tree grow and predict APIs to perform tests
 	* write manual pages
 
 Medium Priority
