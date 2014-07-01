@@ -1,14 +1,15 @@
 \name{predict.forest}
 \alias{predict.forest}
-\title{This is the title string for predict.forest}
+\title{Predict method for random decision forest classifier fits}
 \description{
-	This is the title string for predict.forest
+	Predict method for random decision forest classifier fits
 }
 \usage{
 predict.forest(object, newdata, \dots)
 }
 \arguments{
-	\item{object}{Needs documentation.}
-	\item{newdata}{Needs documentation.}
-	\item{\dots}{Needs documentation.}
+	\item{object}{Object of class inheriting from ‘"forest"’}
+	\item{newdata}{A data frame in which to look for variables with
+          which to predict.}
+	\item{\dots}{further arguments passed to or from other methods.}
 }
