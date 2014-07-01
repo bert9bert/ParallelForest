@@ -9,4 +9,6 @@ setClass("tree", representation(    n = "integer",
                                     min_node_obs = "integer",
                                     max_depth = "integer",
                                     numnodes = "integer",
-                                    flattened.nodes = "data.frame"))
+                                    flattened.nodes = "data.frame",
+                                    fmla = "formula"
+                                    ))
