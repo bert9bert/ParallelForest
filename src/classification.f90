@@ -124,16 +124,15 @@ end function
 
 
 recursive function splitnode(Y, X, P, N, &
-    min_node_obs, max_depth, &
-    thisdepth, opt_build_tree, &
+    min_node_obs, max_depth, thisdepth, &
+    opt_build_tree, &
     opt_parentnode, opt_impurity_this, opt_reset_tag_ctr, opt_splittable) &
     result(thisnode)
 
-    ! variable declarations
-    real(dp), intent(in) :: X(N,P) 
+    !----- Variable Declarations -----
+    ! input variables
     integer, intent(in) :: Y(N)
-    real(dp) :: sortedX(N,P) 
-    integer :: sortedYcorresp(N,P)
+    real(dp), intent(in) :: X(N,P)
     integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
     logical, optional :: opt_build_tree
@@ -142,14 +141,19 @@ recursive function splitnode(Y, X, P, N, &
     logical, optional, intent(in) :: opt_reset_tag_ctr
     logical, optional, intent(in) :: opt_splittable(P)
 
+    ! output variables
+    type (node), pointer :: thisnode
+
+    ! private variables
+    real(dp) :: sortedX(N,P) 
+    integer :: sortedYcorresp(N,P)
+
     logical :: build_tree
     real(dp) :: impurity_this
     logical :: reset_tag_ctr 
     logical :: splittable(P)
 
     integer, save :: tag = 0
-  
-    type (node), pointer :: thisnode
     
     integer :: varnum, rownum
     integer :: bestsplit_varnum, bestsplit_rownum
@@ -161,10 +165,13 @@ recursive function splitnode(Y, X, P, N, &
     logical :: Xi_homog(P)
     real(dp), allocatable :: Xleft(:,:), Xright(:,:)
     integer, allocatable :: Yleft(:), Yright(:)
-    integer :: i,j,k
 
     logical :: valid_split
 
+    ! counting variables
+    integer :: i,j,k
+
+    ! debugging variables
     logical, parameter :: verbose = .false.
 
 
