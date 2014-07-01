@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 
 
-PERFORM_TREE_TESTS = FALSE
+PERFORM_TREE_TESTS = TRUE
 PERFORM_FOREST_TESTS = TRUE
 
 
@@ -48,6 +48,6 @@ if(PERFORM_FOREST_TESTS){
 	fforest_samepred = predict(fforest, low_high_earners)
 
 	if(sum(low_high_earners$Y==fforest_samepred)/nrow(low_high_earners) <= 0.70) {
-       stop("Tree prediction on training data performs worse than 70%.")
+       stop("Forest prediction on training data performs worse than 70%.")
     }
 }

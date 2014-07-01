@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 
 
-PERFORM_TREE_TESTS = FALSE
+PERFORM_TREE_TESTS = TRUE
 PERFORM_FOREST_TESTS = TRUE
 
 
@@ -84,7 +84,7 @@ if(PERFORM_FOREST_TESTS){
 
     # test failure conditions
     if(sum(df$Y==fforest_samepred)/nrow(df) <= 0.85) {
-       stop("Tree prediction on training data performs worse than 85%.")
+       stop("Forest prediction on training data performs worse than 85%.")
     }
 
     ### TEST 02 (NEW DATA) ###
@@ -93,8 +93,8 @@ if(PERFORM_FOREST_TESTS){
     fforest_ynewhat = predict(fforest, xnew)
 
     # test failure conditions
-    if(sum(ynew==fforest_ynewhat)/nrow(df) <= 0.85) {
-       stop("Tree prediction on training data performs worse than 85%.")
+    if(sum(ynew==fforest_ynewhat)/length(ynew) != 1) {
+       stop("Forest prediction on training data performs worse than perfect.")
     }
 
 }
