@@ -12,6 +12,8 @@ predict.forest = function(object, newdata, ...){
     newdata[,Yvar.str] = rep(-1,nrow(newdata))  # TODO: find a better way than this
 
     xtest = model.frame(object@fmla, data=newdata)[,-1]
+    xtest.tof = as.matrix(xtest)
+    storage.mode(xtest.tof) = "double"
 
     # input assertions
     # TODO: write input assertion checks
@@ -39,7 +41,7 @@ predict.forest = function(object, newdata, ...){
         object@numboots,
         n.new,
         p,
-        as.matrix(xtest),
+        xtest.tof,
         ynew_pred=integer(n.new)
         )
 

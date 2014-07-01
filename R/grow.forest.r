@@ -10,8 +10,6 @@ grow.forest = function(formula, data, subset, weights, na.action,
     min_node_obs, max_depth, 
     numsamps, numvars, numboots){
 
-    # TODO: implement subset, weights, and na.action
-
     if(missing(subset) & missing(weights) & missing(na.action)){
         m = model.frame(formula, data=data)
     } else if(missing(subset) & !missing(weights) & missing(na.action)){
