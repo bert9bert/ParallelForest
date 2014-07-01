@@ -76,7 +76,7 @@ grow.tree = function(formula, data, subset, weights, na.action,
         splitvalue=ret$splitvalue_padded[1:ret$numnodes]
         )
 
-    fitted.forest = new("forest",
+    fitted.tree = new("tree",
         n=ret$n, p=ret$p,
         min_node_obs=ret$min_node_obs, max_depth=ret$max_depth,
         numnodes=ret$numnodes,
@@ -84,6 +84,6 @@ grow.tree = function(formula, data, subset, weights, na.action,
         fmla=formula
         )
 
-    return(fitted.forest)
+    return(fitted.tree)
 }
 
