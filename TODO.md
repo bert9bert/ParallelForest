@@ -2,7 +2,6 @@
 High Priority
 -------------
 * Implement R interface to connect with Fortran 90 code
-	* test on real dataset with R
 	* account for missing values
 	* finish implementing forest grow and predict APIs
 	* write manual pages
