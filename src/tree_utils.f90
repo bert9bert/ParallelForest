@@ -183,16 +183,16 @@ recursive function flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
     numnodes = size(tag)
 
     ! check that inputs are of the right size
-    if( size(tag) /= numnodes )          stop "Input dimensions do not match"
-    if( size(tagparent) /= numnodes )    stop "Input dimensions do not match"
-    if( size(tagleft) /= numnodes )      stop "Input dimensions do not match"
-    if( size(tagright) /= numnodes )     stop "Input dimensions do not match"
-    if( size(is_topnode) /= numnodes )   stop "Input dimensions do not match"
-    if( size(depth) /= numnodes )        stop "Input dimensions do not match"
-    if( size(majority) /= numnodes )     stop "Input dimensions do not match"
-    if( size(has_subnodes) /= numnodes ) stop "Input dimensions do not match"
-    if( size(splitvarnum) /= numnodes )  stop "Input dimensions do not match"
-    if( size(splitvalue) /= numnodes )   stop "Input dimensions do not match"
+    if( size(tag) /= numnodes )          call rexit("Input dimensions do not match")
+    if( size(tagparent) /= numnodes )    call rexit("Input dimensions do not match")
+    if( size(tagleft) /= numnodes )      call rexit("Input dimensions do not match")
+    if( size(tagright) /= numnodes )     call rexit("Input dimensions do not match")
+    if( size(is_topnode) /= numnodes )   call rexit("Input dimensions do not match")
+    if( size(depth) /= numnodes )        call rexit("Input dimensions do not match")
+    if( size(majority) /= numnodes )     call rexit("Input dimensions do not match")
+    if( size(has_subnodes) /= numnodes ) call rexit("Input dimensions do not match")
+    if( size(splitvarnum) /= numnodes )  call rexit("Input dimensions do not match")
+    if( size(splitvalue) /= numnodes )   call rexit("Input dimensions do not match")
 
 
     !--- figure out what the tag for the root node is/should be ---
@@ -284,7 +284,7 @@ recursive subroutine tree2flat_recursion_helper(&
     else if(t%tag==TOP_NODE_NUM) then
         tagparent_tmp(idx_tmp) = -1
     else
-        stop
+        call rexit("ERROR.")
     endif
 
 
@@ -504,8 +504,8 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%splitvalue   /=     tree_unflattened%splitvalue) .or. &
         (tree%tag          /=     tree_unflattened%tag) ) then
 
-        stop "Test failed: root node &
-            was flattened and unflattened incorrectly"
+        call rexit("Test failed: root node &
+            was flattened and unflattened incorrectly")
     endif
 
     if( (tree%leftnode%depth        /=     tree_unflattened%leftnode%depth) .or. &
@@ -513,8 +513,8 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%leftnode%has_subnodes .neqv. tree_unflattened%leftnode%has_subnodes) .or. &
         (tree%leftnode%tag          /=     tree_unflattened%leftnode%tag) ) then
 
-        stop "Test failed: left node &
-            was flattened and unflattened incorrectly"
+        call rexit("Test failed: left node &
+            was flattened and unflattened incorrectly")
     endif
 
     if( (tree%rightnode%depth        /=     tree_unflattened%rightnode%depth) .or. &
@@ -522,8 +522,8 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%rightnode%has_subnodes .neqv. tree_unflattened%rightnode%has_subnodes) .or. &
         (tree%rightnode%tag          /=     tree_unflattened%rightnode%tag) ) then
 
-        stop "Test failed: right node &
-            was flattened and unflattened incorrectly"
+        call rexit("Test failed: right node &
+            was flattened and unflattened incorrectly")
     endif
 
     if( (tree%rightnode%leftnode%depth        /=     tree_unflattened%rightnode%leftnode%depth) .or. &
@@ -531,8 +531,8 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%rightnode%leftnode%has_subnodes .neqv. tree_unflattened%rightnode%leftnode%has_subnodes) .or. &
         (tree%rightnode%leftnode%tag          /=     tree_unflattened%rightnode%leftnode%tag) ) then
 
-        stop "Test failed: right node's left node &
-            was flattened and unflattened incorrectly"
+        call rexit("Test failed: right node's left node &
+            was flattened and unflattened incorrectly")
     endif
 
     if( (tree%rightnode%rightnode%depth        /=     tree_unflattened%rightnode%rightnode%depth) .or. &
@@ -540,8 +540,8 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%rightnode%rightnode%has_subnodes .neqv. tree_unflattened%rightnode%rightnode%has_subnodes) .or. &
         (tree%rightnode%rightnode%tag          /=     tree_unflattened%rightnode%rightnode%tag) ) then
 
-        stop "Test failed: right node's right node &
-            was flattened and unflattened incorrectly"
+        call rexit("Test failed: right node's right node &
+            was flattened and unflattened incorrectly")
     endif
 
 

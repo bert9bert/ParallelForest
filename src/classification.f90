@@ -36,7 +36,7 @@ function grow(Y, X, min_node_obs, max_depth, opt_splittable) result(fittedtree)
     N = size(X,1)
     P = size(X,2)
 
-    if(N /= size(Y)) stop "Y has different number of obs than X"
+    if(N /= size(Y)) call rexit("Y has different number of obs than X")
 
     ! splittable
     allocate(splittable(P))
@@ -93,7 +93,7 @@ recursive function predict_rec_hlpr(t, X_row, P) result(pred)
     real(dp) :: pred
 
     ! argument checks
-    if(size(X_row) /= P) stop "Error: Length of X_row is not P."
+    if(size(X_row) /= P) call rexit("Error: Length of X_row is not P.")
 
     ! get prediction for this row of data
     if(.not. t%has_subnodes) then 
@@ -117,7 +117,7 @@ function loss(impurity_this, impurity_left, impurity_right, prob_left) result(lo
     real(dp), intent(in) :: impurity_this, impurity_left, impurity_right, prob_left
     real(dp) :: loss_val
 
-    if((prob_left<0) .or. (prob_left>1)) stop "Probability not between 0 and 1."
+    if((prob_left<0) .or. (prob_left>1)) call rexit("Probability not between 0 and 1.")
 
     loss_val = prob_left*impurity_left + (1-prob_left)*impurity_right - impurity_this
 end function
@@ -464,9 +464,9 @@ function test_splitnode_01() result(exitflag)
 
     ! test failure conditions
     if(thisnode%splitvarnum /= bestsplit_varnum_correct) &
-        stop "Test failed: Wrong splitting variable"
+        call rexit("Test failed: Wrong splitting variable")
     if(thisnode%splitvalue /= bestsplit_value_correct) &
-        stop "Test failed: Wrong value to split variable at"
+        call rexit("Test failed: Wrong value to split variable at")
 
     print *, "Test successful if test executed without error."
 
@@ -536,12 +536,12 @@ function test_splitnode_02() result(exitflag)
 
     ! test failure conditions
     if(thisnode%splitvarnum /= bestsplit_varnum_correct) &
-        stop "Test failed: Wrong splitting variable"
+        call rexit("Test failed: Wrong splitting variable")
 
     if(thisnode%splitvalue /= bestsplit_value_correct) then
         print *, "Test failure upcoming..."
         print *, "Computed split value = ", thisnode%splitvalue
-        stop "Test failed: Wrong value to split variable at"
+        call rexit("Test failed: Wrong value to split variable at")
     endif
 
     print *, "Test successful if test executed without error."
@@ -580,8 +580,9 @@ function test_splitnode_03() result(exitflag)
     print *, "---------- Running Test Function test_splitnode_03 -------------------"
 
     ! test failure conditions
-    if(thisnode%has_subnodes .eqv. .true.) &
-        stop "Test failed: Node has same as min number of obs per node but was split."
+    if(thisnode%has_subnodes .eqv. .true.) then
+        call rexit("Test failed: Node has same as min number of obs per node but was split.")
+    endif
 
     print *, "Test successful if test executed without error."
 
@@ -619,8 +620,9 @@ function test_splitnode_04() result(exitflag)
     print *, "---------- Running Test Function test_splitnode_04 -------------------"
 
     ! test failure conditions
-    if(thisnode%has_subnodes .eqv. .true.) &
-        stop "Test failed: Node at max depth but was split."
+    if(thisnode%has_subnodes .eqv. .true.) then
+        call rexit("Test failed: Node at max depth but was split.")
+    endif
 
     print *, "Test successful if test executed without error."
 
@@ -667,11 +669,11 @@ function test_splitnode_05() result(exitflag)
 
     ! test failure conditions
     if(thisnode0%has_subnodes .eqv. .true.) &
-        stop "Test failed: Homogenous node but was split."
+        call rexit("Test failed: Homogenous node but was split.")
     if(thisnode1%has_subnodes .eqv. .true.) &
-        stop "Test failed: Homogenous node but was split."
+        call rexit("Test failed: Homogenous node but was split.")
     if(thisnode_alt%has_subnodes .eqv. .true.) &
-        stop "Test failed: Homogenous node but was split."
+        call rexit("Test failed: Homogenous node but was split.")
 
     print *, "Test successful if test executed without error."
 
@@ -745,7 +747,7 @@ function test_splitnode_06() result(exitflag)
         (node2%parentnode%splitvarnum  /= node1%splitvarnum) .or. &
         (node2%parentnode%splitvalue   /= node1%splitvalue) ) then
 
-        stop "Test failed: node 2's parent attributes do not match those of node 1"
+        call rexit("Test failed: node 2's parent attributes do not match those of node 1")
     endif
 
 
@@ -766,7 +768,7 @@ function test_splitnode_06() result(exitflag)
             node2%leftnode%parentnode%splitvarnum, &
             node2%leftnode%parentnode%splitvalue
 
-        stop "Test failed: node 2's left subnode's parentnode attributes do not match those of node 2"
+        call rexit("Test failed: node 2's left subnode's parentnode attributes do not match those of node 2")
     endif
 
     ! check that node2's right subnode's parentnode points to node 2
@@ -775,7 +777,7 @@ function test_splitnode_06() result(exitflag)
         (node2%rightnode%parentnode%has_subnodes .neqv. node2%has_subnodes) .or. &
         (node2%rightnode%parentnode%splitvarnum  /= node2%splitvarnum) .or. &
         (node2%rightnode%parentnode%splitvalue   /= node2%splitvalue) ) then
-        stop "Test failed: node 2's right subnode's parentnode attributes do not match those of node 2"
+        call rexit("Test failed: node 2's right subnode's parentnode attributes do not match those of node 2")
     endif
 
     ! miscellaneous additional tests on node2
@@ -783,21 +785,21 @@ function test_splitnode_06() result(exitflag)
         (node2%has_subnodes .neqv. .true.) .or. &
         (node2%splitvarnum /= 1) .or. &
         (node2%splitvalue /= 0.7_dp) ) then
-        stop "Test failed: miscellaneous additional tests on node2"
+        call rexit("Test failed: miscellaneous additional tests on node2")
     endif
 
     ! miscellaneous additional tests on node2's left subnode
     if( (node2%leftnode%depth /= node2%depth+1) .or. &
         (node2%leftnode%majority /= 1) .or. &
         (node2%leftnode%has_subnodes .neqv. .false.) ) then
-        stop "Test failed: miscellaneous additional tests on node2's left subnode"
+        call rexit("Test failed: miscellaneous additional tests on node2's left subnode")
     endif
 
     ! miscellaneous additional tests on node2's right subnode
     if( (node2%rightnode%depth /= node2%depth+1) .or. &
         (node2%rightnode%majority /= 0) .or. &
         (node2%rightnode%has_subnodes .neqv. .false.) ) then
-        stop "Test failed: miscellaneous additional tests on node2's right subnode"
+        call rexit("Test failed: miscellaneous additional tests on node2's right subnode")
     endif
 
     print *, "Test successful if test executed without error."
@@ -997,8 +999,8 @@ function test_splitnode_07() result(exitflag)
         opt_splittable=(/.false.,.true./))
 
     ! make sure has expected results; test failure conditions
-    if(.not. tree%splitvarnum==2) stop "Error."
-    if(.not. tree%splitvalue==0.01_dp) stop "Error."
+    if(.not. tree%splitvarnum==2) call rexit("Error.")
+    if(.not. tree%splitvalue==0.01_dp) call rexit("Error.")
 
 
     exitflag = 0
@@ -1132,7 +1134,7 @@ function test_grow_predict_01() result(exitflag)
         (fittedtree%splitvalue /= 0.03_dp) .or. &
         (fittedtree%has_subnodes .neqv. .true.) .or. &
         (fittedtree%majority /= 1)) then
-        stop "Fitted tree does not have the expected attributes."
+        call rexit("Fitted tree does not have the expected attributes.")
     endif
 
     if((fittedtree%leftnode%depth /= 1) .or. &
@@ -1140,25 +1142,25 @@ function test_grow_predict_01() result(exitflag)
         (fittedtree%leftnode%splitvalue /= 0.05_dp) .or. &
         (fittedtree%leftnode%has_subnodes .neqv. .true.) .or. &
         (fittedtree%leftnode%majority /= 1)) then
-        stop "Fitted tree's left subnode does not have the expected attributes."
+        call rexit("Fitted tree's left subnode does not have the expected attributes.")
     endif
 
     if((fittedtree%leftnode%leftnode%depth /= 2) .or. &
         (fittedtree%leftnode%leftnode%has_subnodes .neqv. .false.) .or. &
         (fittedtree%leftnode%leftnode%majority /= 0)) then
-        stop "Fitted tree's left subnode's left subnode does not have the expected attributes."
+        call rexit("Fitted tree's left subnode's left subnode does not have the expected attributes.")
     endif
 
     if((fittedtree%leftnode%rightnode%depth /= 2) .or. &
         (fittedtree%leftnode%rightnode%has_subnodes .neqv. .false.) .or. &
         (fittedtree%leftnode%rightnode%majority /= 1)) then
-        stop "Fitted tree's left subnode's right subnode does not have the expected attributes."
+        call rexit("Fitted tree's left subnode's right subnode does not have the expected attributes.")
     endif
 
     if((fittedtree%rightnode%depth /= 1) .or. &
         (fittedtree%rightnode%has_subnodes .neqv. .false.) .or. &
         (fittedtree%rightnode%majority /= 1)) then
-        stop "Fitted tree's right subnode does not have the expected attributes."
+        call rexit("Fitted tree's right subnode does not have the expected attributes.")
     endif
 
 
@@ -1170,7 +1172,7 @@ function test_grow_predict_01() result(exitflag)
         (fittedtree%leftnode%parentnode%splitvarnum  /= fittedtree%splitvarnum) .or. &
         (fittedtree%leftnode%parentnode%splitvalue   /= fittedtree%splitvalue) ) then
 
-        stop "Test failed: fittedtree's left subnode's parentnode attributes do not match those of fittedtree."
+        call rexit("Test failed: fittedtree's left subnode's parentnode attributes do not match those of fittedtree.")
     endif
 
     ! check that fittedtree's right subnode's parentnode points to fittedtree
@@ -1179,7 +1181,7 @@ function test_grow_predict_01() result(exitflag)
         (fittedtree%rightnode%parentnode%has_subnodes .neqv. fittedtree%has_subnodes) .or. &
         (fittedtree%rightnode%parentnode%splitvarnum  /= fittedtree%splitvarnum) .or. &
         (fittedtree%rightnode%parentnode%splitvalue   /= fittedtree%splitvalue) ) then
-        stop "Test failed: fittedtree's right subnode's parentnode attributes do not match those of fittedtree."
+        call rexit("Test failed: fittedtree's right subnode's parentnode attributes do not match those of fittedtree.")
     endif
 
     ! check that fittedtree's left subnode's left subnode's parentnode points to fittedtree's left subnode
@@ -1189,8 +1191,8 @@ function test_grow_predict_01() result(exitflag)
         (fittedtree%leftnode%leftnode%parentnode%splitvarnum  /= fittedtree%leftnode%splitvarnum) .or. &
         (fittedtree%leftnode%leftnode%parentnode%splitvalue   /= fittedtree%leftnode%splitvalue) ) then
 
-        stop "Test failed: fittedtree's left subnode's left subnode's &
-            &parentnode attributes do not match those of fittedtree's left subnode."
+        call rexit("Test failed: fittedtree's left subnode's left subnode's &
+            &parentnode attributes do not match those of fittedtree's left subnode.")
     endif
 
     ! check that fittedtree's left subnode's right subnode's parentnode points to fittedtree's left subnode
@@ -1199,8 +1201,8 @@ function test_grow_predict_01() result(exitflag)
         (fittedtree%leftnode%rightnode%parentnode%has_subnodes .neqv. fittedtree%leftnode%has_subnodes) .or. &
         (fittedtree%leftnode%rightnode%parentnode%splitvarnum  /= fittedtree%leftnode%splitvarnum) .or. &
         (fittedtree%leftnode%rightnode%parentnode%splitvalue   /= fittedtree%leftnode%splitvalue) ) then
-        stop "Test failed: fittedtree's left subnode's right subnode's &
-            &parentnode attributes do not match those of fittedtree's left subnode."
+        call rexit("Test failed: fittedtree's left subnode's right subnode's &
+            &parentnode attributes do not match those of fittedtree's left subnode.")
     endif
 
     ! check that the tags are in the order of expected tree trasversal
@@ -1209,7 +1211,7 @@ function test_grow_predict_01() result(exitflag)
             (fittedtree%leftnode%leftnode%tag /= 2) .or. &
             (fittedtree%leftnode%rightnode%tag /= 3) .or. &
             (fittedtree%rightnode%tag /= 4) ) then
-        stop "Test failed: check tags."
+        call rexit("Test failed: check tags.")
     endif
 
 
@@ -1218,7 +1220,7 @@ function test_grow_predict_01() result(exitflag)
     Yhat = predict(fittedtree, X)
     
     ! check failure condition
-    if(any(Y/=Yhat)) stop "Predicted values not same as actual values."
+    if(any(Y/=Yhat)) call rexit("Predicted values not same as actual values.")
 
 
     ! -----  Use the fitted tree to predict on a new set of data, and  -----
@@ -1261,7 +1263,7 @@ function test_grow_predict_01() result(exitflag)
             print '(i8,i5)', Ynewhat(i), Ynew(i)
         enddo
 
-        stop "Predicted values not same as actual values."
+        call rexit("Predicted values not same as actual values.")
     endif
 
 
@@ -1301,7 +1303,7 @@ function test_grow_01() result(exitflag)
 
     ! test for failure conditions
     if(fittedtree%has_subnodes .neqv. .false.) then
-        stop "Test failure. Y homogeneous but still split."
+        call rexit("Test failure. Y homogeneous but still split.")
     endif
 
 
@@ -1338,7 +1340,7 @@ function test_grow_02() result(exitflag)
 
     ! test for failure conditions
     if(fittedtree%has_subnodes .neqv. .false.) then
-        stop "Test failure. X homogeneous but still split."
+        call rexit("Test failure. X homogeneous but still split.")
     endif
 
 
@@ -1375,7 +1377,7 @@ function test_grow_03() result(exitflag)
 
     ! test for failure conditions
     if(fittedtree%has_subnodes .neqv. .false.) then
-        stop "Test failure. Max depth is zero (root only), but still split."
+        call rexit("Test failure. Max depth is zero (root only), but still split.")
     endif
 
 
@@ -1413,7 +1415,7 @@ function test_grow_04() result(exitflag)
 
     ! test for failure conditions
     if(fittedtree%has_subnodes .neqv. .false.) then
-        stop "Test failure. Min node size is equal to data root node size, but still splits."
+        call rexit("Test failure. Min node size is equal to data root node size, but still splits.")
     endif
 
 
@@ -1451,7 +1453,7 @@ function test_grow_05() result(exitflag)
 
     ! test for failure conditions
     if(fittedtree%has_subnodes) then
-        stop "Test failure. No variables are indicated as splittable, but still splits."
+        call rexit("Test failure. No variables are indicated as splittable, but still splits.")
     endif
 
 

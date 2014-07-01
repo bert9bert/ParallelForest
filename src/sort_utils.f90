@@ -98,8 +98,8 @@ function test_insertion_sort_01() result(exitflag)
     call insertion_sort(N, arr, arrcarry, .false.)
 
     ! check failure conditions
-    if(any(arr .ne. arr_correct)) stop "Sort failed."
-    if(any(arrcarry .ne. arrcarry_correct)) stop "Sort carry failed."
+    if(any(arr .ne. arr_correct)) call rexit("Sort failed.")
+    if(any(arrcarry .ne. arrcarry_correct)) call rexit("Sort carry failed.")
 
     print *, "Test successful if test executed without error."
 end function

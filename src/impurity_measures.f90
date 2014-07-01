@@ -31,7 +31,7 @@ function gini_impurity_measure(Y, N, opt_check_valid) result(impurity)
         if(opt_check_valid) then
             do i=1,N
                 if(.not. ( Y(i)==0 .or. Y(i)==1 )) then
-                    stop "Invalid dependent variable entries to Gini impurity function."
+                    call rexit("Invalid dependent variable entries to Gini impurity function.")
                 endif
             enddo
         endif

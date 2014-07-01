@@ -65,8 +65,6 @@ subroutine predict_forest_wrapper(treenum, &
         endif
     enddo
 
-    if(endidx/=sum(numnodes)) stop "Error."     ! can probably remove this eventually
-    if(sum(numnodes)/=size(tag)) stop "Error."  ! can probably remove this eventually
 
     ! get forest prediction
     Ynew_pred = predict_forest(forest, Xnew)

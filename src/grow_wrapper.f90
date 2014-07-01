@@ -80,7 +80,7 @@ subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retlen, &
     numnodes = size(tag)
 
     if(numnodes>retlen) then
-        stop "Returned array length needs to be at least the length of the number of nodes."
+        call rexit("Returned array length needs to be at least the length of the number of nodes.")
     endif
 
     tag_padded(1:numnodes) = tag

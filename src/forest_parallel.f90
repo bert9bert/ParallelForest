@@ -49,7 +49,7 @@ subroutine bootstrap(Y, X, numsamps, Y_boot, X_boot)
     N = size(X,1)
     P = size(X,2)
 
-    if(N /= size(Y)) stop "Data dimensions do not match."
+    if(N /= size(Y)) call rexit("Data dimensions do not match.")
 
     ! allocate memory to allocatable arrays
     allocate(Y_boot(numsamps))
@@ -144,7 +144,7 @@ subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, op
     N = size(X,1)
     P = size(X,2)
 
-    if(N /= size(Y)) stop "Data dimensions do not match."
+    if(N /= size(Y)) call rexit("Data dimensions do not match.")
 
 
     ! determine the unique values of Y
@@ -197,10 +197,10 @@ subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, op
                 numsamps = in_numsamps + mod(in_numsamps,num_Yunique)
                 print *, "Requested num of samples not split even, forcing to split even number."
             else
-                stop "ERROR"
+                call rexit("ERROR")
             endif
         else
-            stop "ERROR: Option to force even splits not supplied, so assumed false, but splits not even"
+            call rexit("ERROR: Option to force even splits not supplied, so assumed false, but splits not even")
         endif
     else
         numsamps = in_numsamps
@@ -348,12 +348,12 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     P = size(X,2)
 
     ! input checks
-    if(N /= size(Y))    stop "Data dimensions do not match."
-    if(min_node_obs<=0) stop
-    if(max_depth<0)     stop
-    if(numsamps<=0)     stop
-    if(numvars<=0)      stop
-    if(numboots<=0)     stop
+    if(N /= size(Y))    call rexit("Data dimensions do not match.")
+    if(min_node_obs<=0) call rexit("ERROR.")
+    if(max_depth<0)     call rexit("ERROR.")
+    if(numsamps<=0)     call rexit("ERROR.")
+    if(numvars<=0)      call rexit("ERROR.")
+    if(numboots<=0)     call rexit("ERROR.")
 
     ! allocate memory to allocatable arrays
     allocate(variables_selected(P))
@@ -533,25 +533,25 @@ function test_bootstrap_01() result(exitflag)
 
     ! --- test failure conditions ---
     ! test that bootstrapped data has correct dimensions
-    if(.not. size(Y_boot1)==numsamps) stop "Test failed."
-    if(.not. size(Y_boot2)==numsamps) stop "Test failed."
-    if(.not. size(Y_boot3)==numsamps) stop "Test failed."
+    if(.not. size(Y_boot1)==numsamps) call rexit("Test failed.")
+    if(.not. size(Y_boot2)==numsamps) call rexit("Test failed.")
+    if(.not. size(Y_boot3)==numsamps) call rexit("Test failed.")
 
-    if(.not. all((/size(X_boot1,1),size(X_boot1,2)/)==(/numsamps,P/))) stop "Test failed."
-    if(.not. all((/size(X_boot2,1),size(X_boot2,2)/)==(/numsamps,P/))) stop "Test failed."
-    if(.not. all((/size(X_boot3,1),size(X_boot3,2)/)==(/numsamps,P/))) stop "Test failed."
+    if(.not. all((/size(X_boot1,1),size(X_boot1,2)/)==(/numsamps,P/))) call rexit("Test failed.")
+    if(.not. all((/size(X_boot2,1),size(X_boot2,2)/)==(/numsamps,P/))) call rexit("Test failed.")
+    if(.not. all((/size(X_boot3,1),size(X_boot3,2)/)==(/numsamps,P/))) call rexit("Test failed.")
 
     ! check that values have been correctly carried
     do i=1,numsamps
         do j=1,P
-            if(.not. all(X_boot1(:,j)==Y_boot1+(j*10_dp))) stop "Test failed."
-            if(.not. all(X_boot2(:,j)==Y_boot2+(j*10_dp))) stop "Test failed."
-            if(.not. all(X_boot3(:,j)==Y_boot3+(j*10_dp))) stop "Test failed."
+            if(.not. all(X_boot1(:,j)==Y_boot1+(j*10_dp))) call rexit("Test failed.")
+            if(.not. all(X_boot2(:,j)==Y_boot2+(j*10_dp))) call rexit("Test failed.")
+            if(.not. all(X_boot3(:,j)==Y_boot3+(j*10_dp))) call rexit("Test failed.")
         enddo
     enddo
 
     ! do rudimentary check for randomness
-    if(all(Y_boot1==Y_boot2) .and. all(Y_boot2==Y_boot3)) stop "Test failed."
+    if(all(Y_boot1==Y_boot2) .and. all(Y_boot2==Y_boot3)) call rexit("Test failed.")
 
 
     print *, "Test successful if test executed without error."
@@ -592,27 +592,27 @@ function test_bootstrap_balanced_01() result(exitflag)
 
     ! --- test failure conditions ---
     ! test that bootstrapped data has correct dimensions
-    if(.not. size(Y_boot1)==numsamps) stop "Test failed: bootstrapped Y data has wrong number of rows."
-    if(.not. size(Y_boot2)==numsamps) stop "Test failed: bootstrapped Y data has wrong number of rows."
-    if(.not. size(Y_boot3)==numsamps) stop "Test failed: bootstrapped Y data has wrong number of rows."
+    if(.not. size(Y_boot1)==numsamps) call rexit("Test failed: bootstrapped Y data has wrong number of rows.")
+    if(.not. size(Y_boot2)==numsamps) call rexit("Test failed: bootstrapped Y data has wrong number of rows.")
+    if(.not. size(Y_boot3)==numsamps) call rexit("Test failed: bootstrapped Y data has wrong number of rows.")
 
     if(.not. all((/size(X_boot1,1),size(X_boot1,2)/)==(/numsamps,P/))) &
-        stop "Test failed: bootstrapped X data has wrong dimensions."
+        call rexit("Test failed: bootstrapped X data has wrong dimensions.")
     if(.not. all((/size(X_boot2,1),size(X_boot2,2)/)==(/numsamps,P/))) &
-        stop "Test failed: bootstrapped X data has wrong dimensions."
+        call rexit("Test failed: bootstrapped X data has wrong dimensions.")
     if(.not. all((/size(X_boot3,1),size(X_boot3,2)/)==(/numsamps,P/))) &
-        stop "Test failed: bootstrapped X data has wrong dimensions."
+        call rexit("Test failed: bootstrapped X data has wrong dimensions.")
 
     ! roughly check that values have been correctly carried
     do j=1,(P-1)
-        if(.not. all(X_boot1(:,j)==(X_boot1(:,j+1) - 10_dp) )) stop "Test failed."
-        if(.not. all(X_boot2(:,j)==(X_boot2(:,j+1) - 10_dp) )) stop "Test failed."
-        if(.not. all(X_boot3(:,j)==(X_boot3(:,j+1) - 10_dp) )) stop "Test failed."
+        if(.not. all(X_boot1(:,j)==(X_boot1(:,j+1) - 10_dp) )) call rexit("Test failed.")
+        if(.not. all(X_boot2(:,j)==(X_boot2(:,j+1) - 10_dp) )) call rexit("Test failed.")
+        if(.not. all(X_boot3(:,j)==(X_boot3(:,j+1) - 10_dp) )) call rexit("Test failed.")
     enddo
 
 
     ! do rudimentary check for randomness
-    if(all(X_boot1==X_boot2) .and. all(X_boot2==X_boot3)) stop "Test failed: not random."
+    if(all(X_boot1==X_boot2) .and. all(X_boot2==X_boot3)) call rexit("Test failed: not random.")
 
 
     print *, "Test successful if test executed without error."
@@ -649,7 +649,7 @@ function test_grow_forest_01() result(exitflag)
         numsamps, numvars, numboots)
 
     ! --- test failure conditions, automated ---
-    if(.not. size(ff)==numboots) stop "Test failed."
+    if(.not. size(ff)==numboots) call rexit("Test failed.")
 
     ! --- test failure conditions, manual ---
     print *, "== Manual Testing Instructions =="
@@ -727,8 +727,8 @@ function test_grow_predict_forest_01() result(exitflag)
     endif
 
     ! --- test failure conditions ---
-    if(.not. all(Ysamehat==Y)) stop "Test failed."
-    if (.not. all(Ynewhat==Ynew)) stop "Test failed."
+    if(.not. all(Ysamehat==Y)) call rexit("Test failed.")
+    if (.not. all(Ynewhat==Ynew)) call rexit("Test failed.")
 
 
     print *, ""

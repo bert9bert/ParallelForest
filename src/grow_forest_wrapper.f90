@@ -74,8 +74,8 @@ subroutine grow_forest_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, re
         numnodes(this_treenum) = size(tag)
 
         if(numnodes(this_treenum)>retlen) then
-            stop "Returned array length divided by the number of bootstrap samples &
-                needs to be at least the length of the number of nodes."
+            call rexit("Returned array length divided by the number of bootstrap samples &
+                needs to be at least the length of the number of nodes.")
         endif
 
         ! add to padded return array, stacking trees on top of each other

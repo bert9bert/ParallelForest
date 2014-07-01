@@ -11,7 +11,7 @@ Medium Priority
 	* Linux
 	* Mac
 	* Windows
-* implement exception handling system, delete prints and stops
+* delete prints or implement them another way
 * replace insertion sort with more CPU friendly sort
 * in classification.f90:365-368, investigate whether memory will build up in the stack because of the many allocations of Xleft, etc.
 
