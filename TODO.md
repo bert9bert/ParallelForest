@@ -30,3 +30,4 @@ Low Priority
 * implement sanity check in tree_utils.f90 to make sure erroneous nodes aren't created
 * make balanced bootstrap more memory friendly
 * make countnodes() API more elegant
+* implement more memory friendly way to pass tree/forest from compiled Fortran to R
