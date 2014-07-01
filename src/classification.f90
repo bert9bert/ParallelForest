@@ -125,8 +125,8 @@ end function
 
 recursive function splitnode(Y, X, P, N, &
     min_node_obs, max_depth, &
-    thisdepth, build_tree, &
-    parentnode, opt_impurity_this, opt_reset_tag_ctr, opt_splittable) &
+    thisdepth, opt_build_tree, &
+    opt_parentnode, opt_impurity_this, opt_reset_tag_ctr, opt_splittable) &
     result(thisnode)
 
     ! variable declarations
@@ -136,19 +136,19 @@ recursive function splitnode(Y, X, P, N, &
     integer :: sortedYcorresp(N,P)
     integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
-    logical, optional :: build_tree ! TODO: fix no opt
-    type (node), target, optional :: parentnode ! TODO: fix no opt
+    logical, optional :: opt_build_tree
+    type (node), target, optional :: opt_parentnode
     real(dp), optional, intent(in) :: opt_impurity_this
     logical, optional, intent(in) :: opt_reset_tag_ctr
     logical, optional, intent(in) :: opt_splittable(P)
 
+    logical :: build_tree
+    real(dp) :: impurity_this
     logical :: reset_tag_ctr 
     logical :: splittable(P)
 
     integer, save :: tag = 0
-
-    real(dp) :: impurity_this
-
+  
     type (node), pointer :: thisnode
     
     integer :: varnum, rownum
@@ -219,7 +219,11 @@ recursive function splitnode(Y, X, P, N, &
         call insertion_sort(N, sortedX(:,j), sortedYcorresp(:,j), .false.)
     enddo
 
-    if(.not. present(build_tree)) build_tree = .false.
+    if(.not. present(opt_build_tree)) then
+        build_tree = .false.
+    else
+        build_tree = opt_build_tree
+    endif
 
     if(.not. present(opt_impurity_this)) then
         impurity_this = gini_impurity_measure(sortedYcorresp(:,1), N)
@@ -235,7 +239,7 @@ recursive function splitnode(Y, X, P, N, &
 
 
     ! add pointer to parent node if parent node is given in input
-    if(present(parentnode)) thisnode%parentnode => parentnode
+    if(present(opt_parentnode)) thisnode%parentnode => opt_parentnode
 
     ! set majority flag for this node.
     ! if tie, defaults to 1
@@ -982,7 +986,7 @@ function test_splitnode_07() result(exitflag)
     ! fit tree to the data
     tree = splitnode(Y, X, P, N, &
         min_node_obs=1, max_depth=10, &
-        thisdepth=2, build_tree=.true., &
+        thisdepth=2, opt_build_tree=.true., &
         opt_splittable=(/.false.,.true./))
 
     ! make sure has expected results; test failure conditions
