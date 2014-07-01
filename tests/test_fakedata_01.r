@@ -27,7 +27,8 @@ source("../R/predict.forest.r")
 
 ### PREPARE FAKE DATA DATASET ####
 # load training data
-df = read.csv("../data/easy_2var_data.csv")
+load("../data/easy_2var_data.rda")
+df = easy_2var_data
 
 # create testing data
 xnew = matrix(c(

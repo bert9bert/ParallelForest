@@ -18,7 +18,6 @@ Medium Priority
 
 Low Priority
 ------------
-* store testing data in (compressed) R format
 * implement more memory friendly way to pass tree/forest from compiled Fortran to R
 * Implement tree grow and predict APIs
 * review and fix any bad pointer practices
