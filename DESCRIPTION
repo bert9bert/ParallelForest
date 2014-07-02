@@ -5,7 +5,7 @@ Title: Random Decision Tree Forest Classifier with Parallel Computing
 Authors@R: c(person("Bertram", "Ieong", role=c("aut","cre","cph"), email="contactme@bertramieong.com"))
 Depends: methods
 Suggests:
-Description: Growing and predicting of random decision tree classifer using parallel computing, based on Fortran and OpenMP.
+Description: Growing and predicting of random decision tree classifier using parallel computing, based on Fortran and OpenMP.
 License: AGPL-3
 URL: https://github.com/bert9bert/ParallelForest
 BugReports: https://github.com/bert9bert/ParallelForest/issues
