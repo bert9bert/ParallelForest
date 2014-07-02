@@ -92,12 +92,6 @@ end subroutine
 ! -----  Insertion Sort for a double precision real key and integer index  -----
 
 
-subroutine rexit(msg)
-    character(*) :: msg
-    print *, msg
-    stop
-end subroutine
-
 pure subroutine insertion_sort(N, arr, arrcarry, opt_perform_index_carry)
     ! variable declarations
     integer, intent(in) :: N
