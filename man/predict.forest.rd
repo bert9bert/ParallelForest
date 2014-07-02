@@ -8,7 +8,7 @@
 predict.forest(object, newdata, \dots)
 }
 \arguments{
-	\item{object}{Object of class inheriting from `\,``forest''\,'}
+	\item{object}{Object of class inheriting from \code{"\link{forest}"}.}
 	\item{newdata}{A data frame in which to look for variables with which to predict.}
 	\item{\dots}{further arguments passed to or from other methods.}
 }

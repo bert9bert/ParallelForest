@@ -12,17 +12,33 @@ grow.forest(formula, data, subset, na.action,
     numsamps, numvars, numboots)
 }
 \arguments{
-	\item{formula}{an object of class `\,``formula''\,' (or one that can be coerced to that class): a symbolic description of the model to be fitted.}
+  \item{formula}{an object of class \code{"\link{formula}"} (or one that
+    can be coerced to that class): a symbolic description of the
+    model to be fitted.}
+
   \item{data}{an optional data frame, list or environment (or object
-    coercible by \code{\link{as.data.frame}} to a data frame) containing
+    co\\-ercible by \code{\link{as.data.frame}} to a data frame) containing
     the variables in the model.  If not found in \code{data}, the
     variables are taken from \code{environment(formula)},
-    typically the environment from which \code{lm} is called.}
+    typically the environment from which \code{grow.forest} is called.}
 
-	\item{subset}{an optional vector specifying a subset of observations to be used in the fitting process.}
-	\item{na.action}{a function which indicates what should happen when the data contain `NA's.  The default is set by the `na.action' setting of `options', and is `na.fail' if that is unset.  The `factory-fresh' default is `na.omit'.  Another possible value is `NULL', no action.  Value `na.exclude' can be useful.}
-	\item{impurity.function}{the impurity function to be used to fit decision trees, currently only `impurity.function = ``gini''\,'' is supported.}
-	\item{model, x, y}{If `TRUE' the corresponding components of the fit (the model frame, the design matrix, the response) are returned.}
+  \item{subset}{an optional vector specifying a subset of observations
+    to be used in the fitting process.}
+
+  \item{na.action}{a function which indicates what should happen
+    when the data contain \code{NA}s.  The default is set by
+    the \code{na.action} setting of \code{\link{options}}, and is
+    \code{\link{na.fail}} if that is unset.  The \sQuote{factory-fresh}
+    default is \code{\link{na.omit}}.  Another possible value is
+    \code{NULL}, no action.}
+
+	\item{impurity.function}{the impurity function to be used to fit decision trees, currently only \code{impurity.function = "gini"} is supported.}
+
+  \item{model, x, y}{logicals.  If \code{TRUE} the corresponding
+    components of the fit (the model frame, the model matrix, the
+    response) are returned.
+  }
+
 	\item{min_node_obs}{the minimum number of observations required for a node to be split.}
 	\item{max_depth}{the deepest that a tree should be fit (root node is at depth 0).}
 	\item{numsamps}{number of samples to draw with replacement for each tree in the forest (bootstrapped sample).}
