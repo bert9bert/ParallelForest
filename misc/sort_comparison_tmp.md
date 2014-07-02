@@ -1,16 +1,12 @@
-When replacing the insertion sort with the inline quick sort in the package, I took some timings to fit and predict trees and forests on the `low_high_earners.rda` dataset.
+When replacing the insertion sort with the inline quick sort in the package, I took some timings to grow and predict trees and forests on the `low_high_earners.rda` dataset. These are the times elapsed.
 
-|                          |       Time Elapsed (seconds)           |
-|                          |:-------------------------------------: |
-|                          |       Tree         |     Forest        |
-|                          |--------------------|------------------ |
-|                          |    Grow | Predict  |   Grow | Predict  |
-|:-------------------------|--------:|---------:|-------:|--------: |
-| Insertion Sort[^fn1]     | 127.292 |   0.427  | 67.191 |   0.348  |
-| Inline Quick Sort[^fn2]  |   2.059 |   0.395  |  1.422 |   0.377  |
 
-[^fn1]: As of commit 15cf596b724cf5e6ffa51bb53263f393d6d4c2c5.
-[^fn2]: As of commit 4b1528d36081f275d47975d8178ef2921902cd62.
+|                          |    Grow Tree | Predict Tree |   Grow Forest | Predict Forest |
+|:-------------------------|-------------:|-------------:|--------------:|--------------: |
+| Insertion Sort           | 127.292 sec  |   0.427 sec  | 67.191 sec    |   0.348 sec    |
+| Inline Quick Sort        |   2.059 sec  |   0.395 sec  |  1.422 sec    |   0.377 sec    |
+
+The insertion sort was as of commit 15cf596b724cf5e6ffa51bb53263f393d6d4c2c5, and the inline quick sort was as of commit 4b1528d36081f275d47975d8178ef2921902cd62.
 
 <!--
 INSERTION SORT
