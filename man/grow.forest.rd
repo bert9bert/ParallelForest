@@ -12,7 +12,7 @@ grow.forest(formula, data, subset, na.action,
     numsamps, numvars, numboots)
 }
 \arguments{
-	\item{formula}{an object of class ‘"formula"’ (or one that can be coerced to
+	\item{formula}{an object of class ‘“formula”’ (or one that can be coerced to
           that class): a symbolic description of the model to be
           fitted.}
 	\item{data}{an optional data frame, list or environment (or object
@@ -27,8 +27,8 @@ grow.forest(formula, data, subset, na.action,
           of ‘options’, and is ‘na.fail’ if that is unset.  The
           ‘factory-fresh’ default is ‘na.omit’.  Another possible value
           is ‘NULL’, no action.  Value ‘na.exclude’ can be useful.}
-	\item{impurity.function}{the impurity function to be used to fit decision trees, currently only 'impurity.function = "gini"' is supported.}
-	\item{model, x, y}{If 'TRUE' the corresponding components of
+	\item{impurity.function}{the impurity function to be used to fit decision trees, currently only ‘impurity.function = “gini”’ is supported.}
+	\item{model, x, y}{If ‘TRUE' the corresponding components of
           the fit (the model frame, the design matrix, the response) are returned.}
 	\item{min_node_obs}{the minimum number of observations required for a node to be split.}
 	\item{max_depth}{the deepest that a tree should be fit (root node is at depth 0).}
