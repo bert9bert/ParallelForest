@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 
 
-PERFORM_TREE_TESTS = TRUE
+PERFORM_TREE_TESTS = FALSE
 PERFORM_FOREST_TESTS = TRUE
 
 
