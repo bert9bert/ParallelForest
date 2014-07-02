@@ -18,6 +18,7 @@ setwd("~/ParallelForest/tests/")
 dyn.load("../src/ParallelForest.so")
 is.loaded("ParallelForest")
 
+source("../R/s4class_utils.r")
 source("../R/forest.r")
 source("../R/tree.r")
 source("../R/grow.tree.r")

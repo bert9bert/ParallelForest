@@ -2,22 +2,24 @@
 #   Defines a predict method for the class forest to make predictions on
 #       fitted forests.
 #   Copyright (C) 2014  Bertram Ieong
+#   No warranty provided.
 #------------------------------------------------------------------------------
 
-
+# method to be used for predict function in forest S4 class
 predict.forest = function(object, newdata, ...){
 
+    ### Create design matrix ###
     fmla.str = deparse(object@fmla)
     Yvar.str = strsplit(fmla.str," ~ ")[[1]][1]
-    newdata[,Yvar.str] = rep(-1,nrow(newdata))  # TODO: find a better way than this
 
-    xtest = model.frame(object@fmla, data=newdata)[,-1]
+    newdata.tmp = newdata
+    newdata.tmp[,Yvar.str] = rep(-1,nrow(newdata.tmp))
+
+    xtest = model.frame(object@fmla, data=newdata.tmp)[,-1]
     xtest.tof = as.matrix(xtest)
     storage.mode(xtest.tof) = "double"
 
-    # input assertions
-    # TODO: write input assertion checks
-
+    # get new data size #
     n.new = as.integer(nrow(xtest))
     p = as.integer(ncol(xtest))
 
@@ -25,6 +27,7 @@ predict.forest = function(object, newdata, ...){
         stop("New data has different number of variables than training data.")
     }
 
+    ### Send to compiled Fortran wrapper to get forest prediction ###
     retpred = .Fortran("predict_forest_wrapper",
         (object@flattened.nodes)$treenum,
         (object@flattened.nodes)$tag,
@@ -45,8 +48,9 @@ predict.forest = function(object, newdata, ...){
         ynew_pred=integer(n.new)
         )
 
+    ### Return vector with forest prediction ###
     return(retpred$ynew_pred)
 }
 
-
+# set the predict function with the method defined above for the forest S4 class
 setMethod(f = "predict", signature = "forest", definition = predict.forest)
