@@ -369,8 +369,10 @@ function test_tree2flat_flat2tree_01() result(exitflag)
 
     exitflag = -1
 
-    print *, " "
-    print *, "--------- Running Test Function test_tree2flat_flat2tree_01 ------------------"
+    if(verbose) then
+        print *, " "
+        print *, "--------- Running Test Function test_tree2flat_flat2tree_01 ------------------"
+    endif
 
     !--- create test tree ---
     ! create root node
@@ -544,9 +546,6 @@ function test_tree2flat_flat2tree_01() result(exitflag)
             was flattened and unflattened incorrectly")
     endif
 
-
-    print *, ""
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 

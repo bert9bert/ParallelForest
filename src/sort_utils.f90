@@ -145,8 +145,12 @@ function test_qsort_01() result(exitflag)
     integer :: arrcarry(N), arrcarry_correct(N)
     integer :: exitflag
 
-    print *, " "
-    print *, "---------- Running Test Function test_qsort_01 -------------------"
+    logical, parameter :: debug = .false.
+
+    if(debug) then
+        print *, " "
+        print *, "---------- Running Test Function test_qsort_01 -------------------"
+    endif
 
     ! define real array to sort, integer array to carry, and corresponding
     ! sorted arrays
@@ -177,7 +181,6 @@ function test_qsort_01() result(exitflag)
     if(any(arr .ne. arr_correct)) call rexit("Sort failed.")
     if(any(arrcarry .ne. arrcarry_correct)) call rexit("Sort carry failed.")
 
-    print *, "Test successful if test executed without error."
 end function
 
 
@@ -189,8 +192,12 @@ function test_insertion_sort_01() result(exitflag)
     integer :: arrcarry(N), arrcarry_correct(N)
     integer :: exitflag
 
-    print *, " "
-    print *, "---------- Running Test Function test_insertion_sort_01 -------------------"
+    logical, parameter :: debug = .false.
+
+    if(debug) then
+        print *, " "
+        print *, "---------- Running Test Function test_insertion_sort_01 -------------------"
+    endif
 
     ! define real array to sort, integer array to carry, and corresponding
     ! sorted arrays
@@ -221,7 +228,6 @@ function test_insertion_sort_01() result(exitflag)
     if(any(arr .ne. arr_correct)) call rexit("Sort failed.")
     if(any(arrcarry .ne. arrcarry_correct)) call rexit("Sort carry failed.")
 
-    print *, "Test successful if test executed without error."
 end function
 
 end module sort_utils

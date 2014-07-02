@@ -436,8 +436,10 @@ function test_splitnode_01() result(exitflag)
 
     exitflag = -1
 
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_01 -------------------"
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_splitnode_01 -------------------"
+    endif
 
     ! set up sorted Y and X data
     sortedYcorresp = reshape((/1,1,1,1,1,1,1,1,1,0,0,0,0/), &
@@ -468,7 +470,6 @@ function test_splitnode_01() result(exitflag)
     if(thisnode%splitvalue /= bestsplit_value_correct) &
         call rexit("Test failed: Wrong value to split variable at")
 
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 end function
@@ -495,8 +496,10 @@ function test_splitnode_02() result(exitflag)
 
     exitflag = -1
 
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_02 -------------------"
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_splitnode_02 -------------------"
+    endif
 
     ! set up Y and X data
     N = sqrtN**2
@@ -539,12 +542,14 @@ function test_splitnode_02() result(exitflag)
         call rexit("Test failed: Wrong splitting variable")
 
     if(thisnode%splitvalue /= bestsplit_value_correct) then
-        print *, "Test failure upcoming..."
-        print *, "Computed split value = ", thisnode%splitvalue
+        if(verbose) then
+            print *, "Test failure upcoming..."
+            print *, "Computed split value = ", thisnode%splitvalue
+        endif
+
         call rexit("Test failed: Wrong value to split variable at")
     endif
 
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 end function
@@ -562,7 +567,14 @@ function test_splitnode_03() result(exitflag)
     integer :: min_node_obs
     integer :: exitflag
 
+    logical, parameter :: verbose = .false.
+
     exitflag = -1
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_splitnode_03 -------------------"
+    endif
 
     ! set up sorted Y and X data
     sortedYcorresp = reshape((/1,1,1,1,1,1,1,0,0,0/), &
@@ -575,16 +587,12 @@ function test_splitnode_03() result(exitflag)
     min_node_obs = N
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, min_node_obs, 2, 1, .false.)
 
-    ! print results
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_03 -------------------"
 
     ! test failure conditions
     if(thisnode%has_subnodes .eqv. .true.) then
         call rexit("Test failed: Node has same as min number of obs per node but was split.")
     endif
 
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 end function
@@ -602,7 +610,14 @@ function test_splitnode_04() result(exitflag)
     integer :: max_depth
     integer :: exitflag
 
+    logical, parameter :: verbose = .false.
+
     exitflag = -1
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_splitnode_04 -------------------"
+    endif
 
     ! set up sorted Y and X data
     sortedYcorresp = reshape((/1,1,1,1,1,1,1,0,0,0/), &
@@ -615,16 +630,11 @@ function test_splitnode_04() result(exitflag)
     max_depth = 5
     thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, max_depth, max_depth, .false.)
 
-    ! print results
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_04 -------------------"
 
     ! test failure conditions
     if(thisnode%has_subnodes .eqv. .true.) then
         call rexit("Test failed: Node at max depth but was split.")
     endif
-
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 end function
@@ -640,10 +650,14 @@ function test_splitnode_05() result(exitflag)
     type (node) :: thisnode0, thisnode1, thisnode_alt
     integer :: exitflag
 
+    logical, parameter :: verbose = .false.
+
     exitflag = -1
 
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_05 -------------------"
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_splitnode_05 -------------------"
+    endif
 
     ! set up homogenous Y with all 0s, homogenous Y with all 1s, and X data
     sortedYcorresp0 = reshape((/0,0,0,0,0,0,0,0,0,0/), &
@@ -675,7 +689,6 @@ function test_splitnode_05() result(exitflag)
     if(thisnode_alt%has_subnodes .eqv. .true.) &
         call rexit("Test failed: Homogenous node but was split.")
 
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 end function
@@ -696,8 +709,10 @@ function test_splitnode_06() result(exitflag)
 
     logical :: verbose = .false.
 
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_06 -------------------"
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_splitnode_06 -------------------"
+    endif
 
     node1%depth = 87
     node1%majority = 1
@@ -759,14 +774,16 @@ function test_splitnode_06() result(exitflag)
         (node2%leftnode%parentnode%splitvarnum  /= node2%splitvarnum) .or. &
         (node2%leftnode%parentnode%splitvalue   /= node2%splitvalue) ) then
 
-        print *, "Test failed, program stop coming..."
+        if(verbose) then
+            print *, "Test failed, program stop coming..."
 
-        print *, "left node's (NODE 2's left subnode) parent node's attributes:"
-        print fmt, node2%leftnode%parentnode%depth, &
-            node2%leftnode%parentnode%majority, &
-            node2%leftnode%parentnode%has_subnodes, &
-            node2%leftnode%parentnode%splitvarnum, &
-            node2%leftnode%parentnode%splitvalue
+            print *, "left node's (NODE 2's left subnode) parent node's attributes:"
+            print fmt, node2%leftnode%parentnode%depth, &
+                node2%leftnode%parentnode%majority, &
+                node2%leftnode%parentnode%has_subnodes, &
+                node2%leftnode%parentnode%splitvarnum, &
+                node2%leftnode%parentnode%splitvalue
+        endif
 
         call rexit("Test failed: node 2's left subnode's parentnode attributes do not match those of node 2")
     endif
@@ -802,7 +819,6 @@ function test_splitnode_06() result(exitflag)
         call rexit("Test failed: miscellaneous additional tests on node2's right subnode")
     endif
 
-    print *, "Test successful if test executed without error."
 end function
 
 
@@ -817,9 +833,13 @@ function test_splitnode_07() result(exitflag)
 
     integer :: exitflag
 
+    logical, parameter :: verbose = .false.
 
-    print *, " "
-    print *, "---------- Running Test Function test_splitnode_07 -------------------"
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_splitnode_07 -------------------"
+    endif
 
     exitflag = -1
 
@@ -1004,7 +1024,7 @@ function test_splitnode_07() result(exitflag)
 
 
     exitflag = 0
-    print *, "Test successful if test executed without error."
+
 end function
 
 
@@ -1037,8 +1057,10 @@ function test_grow_predict_01() result(exitflag)
 
     exitflag = -1
 
-    print *, " "
-    print *, "--------- Running Test Function test_grow_predict_01 ------------------"
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_predict_01 -------------------"
+    endif
 
     ! -----  Fit tree on pre-determined X and Y data, and compare  -----
     ! -----  against expected results  -----
@@ -1251,28 +1273,26 @@ function test_grow_predict_01() result(exitflag)
 
     ! check failure condition
     if(any(Ynew/=Ynewhat)) then
-        print *, "Test failed. Program stop upcomming..."
+        if(verbose) then
+            print *, "Test failed. Program stop upcomming..."
 
-        print *, "Xnew = "
-        do i=1,Nnew
-            print '(2f12.3)', Xnew(i,1), Xnew(i,2)
-        enddo
+            print *, "Xnew = "
+            do i=1,Nnew
+                print '(2f12.3)', Xnew(i,1), Xnew(i,2)
+            enddo
 
-        print *, "Ynewhat Ynew"
-        do i=1,Nnew
-            print '(i8,i5)', Ynewhat(i), Ynew(i)
-        enddo
-
+            print *, "Ynewhat Ynew"
+            do i=1,Nnew
+                print '(i8,i5)', Ynewhat(i), Ynew(i)
+            enddo
+        endif
+        
         call rexit("Predicted values not same as actual values.")
     endif
 
 
     exitflag = 0
 
-    print *, ""
-    print *, "Test successful if test executed without error."
-
-    
 end function
 
 
@@ -1287,7 +1307,12 @@ function test_grow_01() result(exitflag)
 
     integer :: exitflag
 
-    print *, "--------- Running Test Function test_grow_01 ------------------"
+    logical, parameter :: verbose = .false.
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_01 -------------------"
+    endif
 
     exitflag = -1
     
@@ -1309,8 +1334,6 @@ function test_grow_01() result(exitflag)
 
     exitflag = 0
 
-    print *, ""
-    print *, "Test successful if test executed without error."
 end function
 
 function test_grow_02() result(exitflag)
@@ -1322,9 +1345,14 @@ function test_grow_02() result(exitflag)
     integer :: min_node_obs, max_depth
     type (node) :: fittedtree
 
+    logical, parameter :: verbose = .false.
+
     integer :: exitflag
 
-    print *, "--------- Running Test Function test_grow_02 ------------------"
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_02 -------------------"
+    endif
 
     exitflag = -1
     
@@ -1346,8 +1374,6 @@ function test_grow_02() result(exitflag)
 
     exitflag = 0
 
-    print *, ""
-    print *, "Test successful if test executed without error."
 end function
 
 function test_grow_03() result(exitflag)
@@ -1361,7 +1387,12 @@ function test_grow_03() result(exitflag)
 
     integer :: exitflag
 
-    print *, "--------- Running Test Function test_grow_03 ------------------"
+    logical, parameter :: verbose = .false.
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_03 -------------------"
+    endif
 
     exitflag = -1
     
@@ -1383,8 +1414,6 @@ function test_grow_03() result(exitflag)
 
     exitflag = 0
 
-    print *, ""
-    print *, "Test successful if test executed without error."
 end function
 
 
@@ -1399,7 +1428,12 @@ function test_grow_04() result(exitflag)
 
     integer :: exitflag
 
-    print *, "--------- Running Test Function test_grow_04 ------------------"
+    logical, parameter :: verbose = .false.
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_04 -------------------"
+    endif
 
     exitflag = -1
     
@@ -1421,8 +1455,6 @@ function test_grow_04() result(exitflag)
 
     exitflag = 0
 
-    print *, ""
-    print *, "Test successful if test executed without error."
 end function
 
 
@@ -1437,7 +1469,12 @@ function test_grow_05() result(exitflag)
 
     integer :: exitflag
 
-    print *, "--------- Running Test Function test_grow_05 ------------------"
+    logical, parameter :: verbose = .false.
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_05 -------------------"
+    endif
 
     exitflag = -1
     
@@ -1459,8 +1496,6 @@ function test_grow_05() result(exitflag)
 
     exitflag = 0
 
-    print *, ""
-    print *, "Test successful if test executed without error."
 end function
 
 end module classification

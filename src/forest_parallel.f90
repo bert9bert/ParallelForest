@@ -194,7 +194,7 @@ subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, op
         if(present(opt_force_numsamps_evensplits)) then
             if(opt_force_numsamps_evensplits) then
                 numsamps = in_numsamps + mod(in_numsamps,num_Yunique)
-                print *, "Requested num of samples not split even, forcing to split even number."
+                if(verbose) print *, "Requested num of samples not split even, forcing to split even number."
             else
                 call rexit("ERROR")
             endif
@@ -506,10 +506,15 @@ function test_bootstrap_01() result(exitflag)
 
     integer :: i,j
 
+    logical, parameter :: verbose = .false.
+
     exitflag = -1
 
-    print *, " "
-    print *, "---------- Running Test Function test_bootstrap_01 -------------------"
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_bootstrap_01 -------------------"
+    endif
 
     ! --- create bootstrap sample on pre-defined data ---
     Y = (/0,1,2,3,4,5,6,7,8,9/)
@@ -544,7 +549,6 @@ function test_bootstrap_01() result(exitflag)
     if(all(Y_boot1==Y_boot2) .and. all(Y_boot2==Y_boot3)) call rexit("Test failed.")
 
 
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 
@@ -565,10 +569,16 @@ function test_bootstrap_balanced_01() result(exitflag)
 
     integer :: i,j
 
+    logical, parameter :: verbose = .false.
+
     exitflag = -1
 
-    print *, " "
-    print *, "---------- Running Test Function test_bootstrap_balanced_01 -------------------"
+
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_bootstrap_balanced_01 -------------------"
+    endif
 
     ! --- create bootstrap sample on pre-defined data ---
     Y = (/1,1,1,1,1,1,0,0,0,0/)
@@ -605,8 +615,6 @@ function test_bootstrap_balanced_01() result(exitflag)
     if(all(X_boot1==X_boot2) .and. all(X_boot2==X_boot3)) call rexit("Test failed: not random.")
 
 
-    print *, "Test successful if test executed without error."
-
     exitflag = 0
 
 end function
@@ -625,10 +633,16 @@ function test_grow_forest_01() result(exitflag)
 
     integer :: i,j
 
+    logical, parameter :: verbose = .false.
+
     exitflag = -1
 
-    print *, " "
-    print *, "---------- Running Test Function test_grow_forest_01 -------------------"
+
+
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_forest_01 -------------------"
+    endif
 
     ! --- create pre-defined data and grow a forest ---
     Y = (/1,1,1,1,1,1,0,0,0,0/)
@@ -642,17 +656,16 @@ function test_grow_forest_01() result(exitflag)
     if(.not. size(ff)==numboots) call rexit("Test failed.")
 
     ! --- test failure conditions, manual ---
-    print *, "== Manual Testing Instructions =="
-    print *, "Part of this test cannot be automated and must be done manually."
-    print *, "To do so, set the verbose flag to .true. in grow_forest(...),"
-    print *, "recompile the test framework, and check the following:"
-    print *, "    1. The correct number of trees are generated"
-    print *, "    2. The correct number of variables are selected"
-    print *, "    3. There is some randomness in the variables selected"
-    print *, "    4. The size of the bootstrapped Y and X are correct"
-
-    print *, ""
-    print *, "Test successful if test executed without error."
+    if(verbose) then
+        print *, "== Manual Testing Instructions =="
+        print *, "Part of this test cannot be automated and must be done manually."
+        print *, "To do so, set the verbose flag to .true. in grow_forest(...),"
+        print *, "recompile the test framework, and check the following:"
+        print *, "    1. The correct number of trees are generated"
+        print *, "    2. The correct number of variables are selected"
+        print *, "    3. There is some randomness in the variables selected"
+        print *, "    4. The size of the bootstrapped Y and X are correct"
+    endif
 
     exitflag = 0
 
@@ -681,8 +694,10 @@ function test_grow_predict_forest_01() result(exitflag)
 
     exitflag = -1
 
-    print *, " "
-    print *, "---------- Running Test Function test_grow_predict_forest_01 -------------------"
+    if(verbose) then
+        print *, " "
+        print *, "---------- Running Test Function test_grow_predict_forest_01 -------------------"
+    endif
 
     ! --- create pre-defined data and grow a forest ---
     Y      = (/ 1, 1, 1, 1, 1, 0, 0, 0, 0, 0/)
@@ -721,8 +736,6 @@ function test_grow_predict_forest_01() result(exitflag)
     if (.not. all(Ynewhat==Ynew)) call rexit("Test failed.")
 
 
-    print *, ""
-    print *, "Test successful if test executed without error."
 
     exitflag = 0
 
