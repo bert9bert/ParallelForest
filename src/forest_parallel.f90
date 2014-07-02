@@ -7,7 +7,6 @@
 module forest_parallel
 
 
-use OMP_LIB
 use random_utils
 use utils
 use tree_utils
@@ -336,12 +335,6 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     logical, parameter :: verbose = .false.
     logical, parameter :: verbose_parallel = .true.
 
-    ! Parallel setup
-    if(present(OPT_NUM_THREADS)) then
-        call OMP_SET_NUM_THREADS(OPT_NUM_THREADS)
-    endif
-
-
     ! --- setup ---
     ! Get data size
     N = size(X,1)
@@ -366,9 +359,6 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     !$OMP           variables_selected, variables_selected_nums, &
     !$OMP           Y_boot, X_boot)
     do treenum=1,numboots
-        if(verbose_parallel) then
-            print '("THIS IS THREAD NO. ", i2, " (", i2, " THREADS RUNNING)")', OMP_GET_THREAD_NUM(), OMP_GET_NUM_THREADS()
-        endif
 
         if(verbose) then
             print *, "-----------------------------------------------"
