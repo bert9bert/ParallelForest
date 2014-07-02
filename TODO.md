@@ -34,3 +34,4 @@ For next version
 * Implement passing of optional arguments such as num threads to wrappers
 * Implement changing to non-default thread number
 * In wrappers, look into using R logicals for returned Fortran logicals
+* Return bootstrapped numsamps
