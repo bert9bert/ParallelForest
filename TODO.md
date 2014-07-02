@@ -4,7 +4,6 @@ For this version
 
 High Priority
 -------------
-* Delete prints or implement them another way
 * Make sure that package passes checks for all OSs, including appropriate make files
 	* Linux
 	* Mac
