@@ -1,2 +1,11 @@
+
+OBJECTS = \
+utils.o random_utils.o tree_utils.o sort_utils.o \
+impurity_measures.o classification.o forest_parallel.o \
+grow_wrapper.o predict_wrapper.o \
+grow_forest_wrapper.o predict_forest_wrapper.o \
+fortran_unit_tests_wrapper.o
+
+
 PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS)
 PKG_LIBS = $(SHLIB_OPENMP_FCFLAGS)
