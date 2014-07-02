@@ -161,7 +161,7 @@ subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, op
 
         tmp_int_arr_1d_no1 = Y
         tmp_dbl_arr_1d_no1 = real(tmp_int_arr_1d_no1, dp)
-        call insertion_sort(N, tmp_dbl_arr_1d_no1, tmp_int_arr_1d_no2)
+        call qsort_inline_dp_int(N, tmp_dbl_arr_1d_no1, tmp_int_arr_1d_no2)
         tmp_int_arr_1d_no1 = int(tmp_dbl_arr_1d_no1)  ! TODO: make sure rounding is OK
 
 

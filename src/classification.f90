@@ -223,7 +223,7 @@ recursive function splitnode(Y, X, P, N, &
 
     do j=1,P
         sortedYcorresp(:,j) = Y
-        call insertion_sort(N, sortedX(:,j), sortedYcorresp(:,j), .false.)
+        call qsort_inline_dp_int(N, sortedX(:,j), sortedYcorresp(:,j), .false.)
     enddo
 
     if(.not. present(opt_build_tree)) then
