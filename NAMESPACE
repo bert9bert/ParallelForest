@@ -1,4 +1,6 @@
 useDynLib(ParallelForest)
 
-export( grow.forest,
-        predict.forest)
+import(methods)
+
+export(grow.forest)
+exportClasses(forest)
