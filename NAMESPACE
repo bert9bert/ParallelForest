@@ -3,4 +3,6 @@ useDynLib(ParallelForest)
 import(methods)
 
 export(grow.forest)
+export(predict.forest)
 exportClasses(forest)
+exportMethods(predict)

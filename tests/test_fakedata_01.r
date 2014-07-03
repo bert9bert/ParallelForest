@@ -4,29 +4,15 @@
 #------------------------------------------------------------------------------
 
 
-PERFORM_TREE_TESTS = TRUE
+PERFORM_TREE_TESTS = FALSE
 PERFORM_FOREST_TESTS = TRUE
 
 
 ### SETUP ###
-# set directory to where the shared library is stored
-setwd("~/ParallelForest/tests/")
-# source("test_fakedata_01.r")
-
-
-# load the shared libraries compiled in Fortran
-dyn.load("../src/ParallelForest.so")
-is.loaded("ParallelForest")
-
-source("../R/s4classes.r")
-source("../R/grow.tree.r")
-source("../R/predict.tree.r")
-source("../R/grow.forest.r")
-source("../R/predict.forest.r")
 
 ### PREPARE FAKE DATA DATASET ####
 # load training data
-load("../data/easy_2var_data.rda")
+data(easy_2var_data)
 df = easy_2var_data
 
 # create testing data
