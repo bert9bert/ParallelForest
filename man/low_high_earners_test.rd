@@ -1,6 +1,6 @@
-\name{low_high_earners}
+\name{low_high_earners_test}
 \docType{data}
-\alias{low_high_earners}
+\alias{low_high_earners_test}
 \title{Low earners and high earners}
 \description{Dataset of low earners and high earners for classification. \code{low_high_earners} is the training dataset and \code{low_high_earners_test} is the testing dataset.}
 \usage{low_high_earners}
