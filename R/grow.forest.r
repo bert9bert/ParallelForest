@@ -57,9 +57,12 @@ grow.forest = function(formula, data, subset, na.action,
     if(length(y.unique.sorted)>2) stop(paste("Dependent variable can only have two classes.",
         "Support for more classes may be implemented in a future version of this package"))
 
-    if(sum(y.unique.sorted==c(0,1))!=2) stop(paste("Dependent variable must be automatically", 
-        "coercible to classes 0 and 1. Please refactor the dependent variable to 0 and 1.",
-        "More flexible automatic coercion may be implemented in a future version of this package."))
+    if(sum(y.unique.sorted==c(0,1))!=2) stop(paste("The values of the",
+        "dependent variable must be automatically coercible to",
+        "integers 0 and 1. Please adjust the dependent variable in your data",
+        "so that it contains only the integers 0 and 1.",
+        "More flexible automatic coercion will be implemented in",
+        "the next version of this package."))
 
     # get data size
     n = nrow(xtrain)
@@ -133,7 +136,7 @@ grow.forest = function(formula, data, subset, na.action,
         )
 
     ### Store model frame, x, and y if requested ###
-    if(model) fitted.forest@model = model
+    if(model) fitted.forest@model = m
     if(x) fitted.forest@x     = xtrain
     if(y) fitted.forest@y     = ytrain
 
