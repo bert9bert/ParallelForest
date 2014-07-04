@@ -1,0 +1,6 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{TESTBLAH}
+-->
+
+**Testing**
