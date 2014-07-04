@@ -3,6 +3,8 @@
 #   Copyright (C) 2014  Bertram Ieong
 #------------------------------------------------------------------------------
 
+library(ParallelForest)
+
 
 PERFORM_TREE_TESTS = FALSE
 PERFORM_FOREST_TESTS = TRUE
@@ -80,7 +82,7 @@ if(PERFORM_FOREST_TESTS){
 
     # test failure conditions
     if(sum(ynew==fforest_ynewhat)/length(ynew) <= 0.75) {
-       stop("Forest prediction on training data performs worse than 75%.")
+       stop("Forest prediction on testing data performs worse than 75%.")
     }
 
 }

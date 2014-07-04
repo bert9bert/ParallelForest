@@ -3,30 +3,15 @@
 #   Copyright (C) 2014  Bertram Ieong
 #------------------------------------------------------------------------------
 
+library(ParallelForest)
 
 PERFORM_TREE_TESTS = FALSE
 PERFORM_FOREST_TESTS = TRUE
 
 
 ### SETUP ###
-# set directory to where the shared library is stored
-setwd("~/ParallelForest/tests/")
-# source("test_realdata_01.r")
-
-
-
-# load the shared libraries compiled in Fortran
-dyn.load("../src/ParallelForest.so")
-is.loaded("ParallelForest")
-
-source("../R/s4classes.r")
-source("../R/grow.tree.r")
-source("../R/predict.tree.r")
-source("../R/grow.forest.r")
-source("../R/predict.forest.r")
-
 # Load real dataset
-load("../data/low_high_earners.rda")
+data(low_high_earners)
 
 
 if(PERFORM_TREE_TESTS){
