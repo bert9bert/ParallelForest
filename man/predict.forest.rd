@@ -1,6 +1,8 @@
 \name{predict.forest}
 \alias{predict.forest}
+\alias{predict.tree}
 \alias{predict,forest-method}
+\alias{predict,tree-method}
 \title{Predict method for random decision forest classifier fits}
 \description{
   Predict method for random decision forest classifier fits
