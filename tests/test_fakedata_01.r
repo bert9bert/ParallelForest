@@ -67,7 +67,8 @@ if(PERFORM_FOREST_TESTS){
 
     ### TEST 01 (ON EASY TO FIT DATA) ###
     fforest = grow.forest(Y~X1+X2, data=df, min_node_obs=min_node_obs, max_depth=max_depth,
-        numsamps=numsamps, numvars=numvars, numboots=numboots)
+        numsamps=numsamps, numvars=numvars, numboots=numboots,
+        model=TRUE, x=TRUE, y=TRUE)
     fforest_samepred = predict(fforest, df)
 
     # test failure conditions
