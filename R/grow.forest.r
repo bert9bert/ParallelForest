@@ -11,7 +11,6 @@ grow.forest = function(formula, data, subset, na.action,
     min_node_obs, max_depth, 
     numsamps, numvars, numboots){
 
-
     ### Input Assertions ###
     if(length(min_node_obs)!=1) stop ("min_node_obs must be a scalar.")
     if(length(max_depth)!=1)    stop ("max_depth must be a scalar.")

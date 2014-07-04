@@ -4,7 +4,6 @@ For this version
 
 High Priority
 -------------
-* Implement tree grow and predict APIs
 * Implement more memory friendly way to pass tree/forest from compiled Fortran to R
 * Make sure that package passes checks for all OSs, including appropriate make files
 	* Linux

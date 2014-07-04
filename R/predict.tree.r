@@ -2,22 +2,24 @@
 #   Defines a predict method for the class tree to make predictions on
 #       fitted tree.
 #   Copyright (C) 2014  Bertram Ieong
+#   No warranty provided.
 #------------------------------------------------------------------------------
 
-
+# method to be used for predict function in tree S4 class
 predict.tree = function(object, newdata, ...){
 
+    ### Create design matrix ###
     fmla.str = deparse(object@fmla)
     Yvar.str = strsplit(fmla.str," ~ ")[[1]][1]
-    newdata[,Yvar.str] = rep(-1,nrow(newdata))  # TODO: find a better way than this
 
-    xtest = model.frame(object@fmla, data=newdata)[,-1]
+    newdata.tmp = newdata
+    newdata.tmp[,Yvar.str] = rep(-1,nrow(newdata.tmp))
+
+    xtest = model.frame(object@fmla, data=newdata.tmp)[,-1]
     xtest.tof = as.matrix(xtest)
     storage.mode(xtest.tof) = "double"
 
-    # input assertions
-    # TODO: write input assertion checks
-
+    # get new data size #
     n.new = as.integer(nrow(xtest))
     p = as.integer(ncol(xtest))
 
@@ -25,6 +27,7 @@ predict.tree = function(object, newdata, ...){
         stop("New data has different number of variables than training data.")
     }
 
+    ### Send to compiled Fortran wrapper to get tree prediction ###
     retpred = .Fortran("predict_tree_wrapper",
         (object@flattened.nodes)$tag,
         (object@flattened.nodes)$tagparent,
@@ -43,8 +46,9 @@ predict.tree = function(object, newdata, ...){
         ynew_pred=integer(n.new)
         )
 
+    ### Return vector with tree prediction ###
     return(retpred$ynew_pred)
 }
 
-
+# set the predict function with the method defined above for the tree S4 class
 setMethod(f = "predict", signature = "tree", definition = predict.tree)
