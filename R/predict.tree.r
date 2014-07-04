@@ -25,7 +25,7 @@ predict.tree = function(object, newdata, ...){
         stop("New data has different number of variables than training data.")
     }
 
-    retpred = .Fortran("predict_wrapper",
+    retpred = .Fortran("predict_tree_wrapper",
         (object@flattened.nodes)$tag,
         (object@flattened.nodes)$tagparent,
         (object@flattened.nodes)$tagleft,

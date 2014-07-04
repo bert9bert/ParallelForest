@@ -44,7 +44,7 @@ grow.tree = function(formula, data, subset, weights, na.action,
     retlen = 2^(max_depth + 1 - TOP_NODE_NUM) - 1
 
     # send to Fortran wrapper to grow forest
-    ret = .Fortran("grow_wrapper",
+    ret = .Fortran("grow_tree_wrapper",
         n=as.integer(n), p=as.integer(p),
         xtrain=xtrain.tof, ytrain=ytrain.tof,
         min_node_obs=as.integer(min_node_obs), max_depth=as.integer(max_depth), 

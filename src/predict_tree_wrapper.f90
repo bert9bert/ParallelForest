@@ -4,7 +4,7 @@
 !------------------------------------------------------------------------------
 
 
-subroutine predict_wrapper(tag, tagparent, tagleft, tagright, is_topnode, &
+subroutine predict_tree_wrapper(tag, tagparent, tagleft, tagright, is_topnode, &
     depth, majority, has_subnodes, splitvarnum, splitvalue, numnodes, &
     N, P, Xnew, Ynew_pred)
 

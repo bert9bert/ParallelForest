@@ -4,7 +4,7 @@
 !------------------------------------------------------------------------------
 
 
-subroutine grow_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retlen, &
+subroutine grow_tree_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retlen, &
     tag_padded, tagparent_padded, tagleft_padded, tagright_padded, is_topnode_padded, &
     depth_padded, majority_padded, has_subnodes_padded, splitvarnum_padded, splitvalue_padded, &
     numnodes)
