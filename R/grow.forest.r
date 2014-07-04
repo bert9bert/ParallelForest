@@ -29,6 +29,7 @@ grow.forest = function(formula, data, subset, na.action,
         stop("Only the Gini impurity function is currently supported.")
     }
 
+
     ### Create design matrix and dependent variable vector ###
     # create model frame #
     if(missing(subset) & missing(na.action)){
@@ -73,6 +74,15 @@ grow.forest = function(formula, data, subset, na.action,
     # subroutine should return
     TOP_NODE_NUM = 0
     retlen = 2^(max_depth + 1 - TOP_NODE_NUM) - 1
+
+    # check feasibility of passing Fortran to R results through memroy
+    if((as.integer(retlen*numboots) > .Machine$integer.max) | (is.na(as.integer(retlen*numboots)))){
+        stop(paste("grow.forest currently does not support",
+            "inputs where (2^(max_depth + 1) - 1) * numboots exceeds",
+            .Machine$integer.max,
+            ". Support for larger values will be added in the next version of this package."))
+    }
+
 
     # send to Fortran wrapper to grow forest
     ret = .Fortran("grow_forest_wrapper",
