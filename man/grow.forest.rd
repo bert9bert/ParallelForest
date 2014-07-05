@@ -2,7 +2,7 @@
 \alias{grow.forest}
 \title{Growing random decision forest classifier}
 \description{
-	Growing random decision forest classifier
+	Grow random decision forest classifier
 }
 \usage{
 grow.forest(formula, data, subset, na.action,
@@ -17,7 +17,7 @@ grow.forest(formula, data, subset, na.action,
     model to be fitted.}
 
   \item{data}{an optional data frame, list or environment (or object
-    co\\-ercible by \code{\link{as.data.frame}} to a data frame) containing
+    coercible by \code{\link{as.data.frame}} to a data frame) containing
     the variables in the model.  If not found in \code{data}, the
     variables are taken from \code{environment(formula)},
     typically the environment from which \code{grow.forest} is called.}
