@@ -1,10 +1,7 @@
 
 For this version
 ================
-* finish writing intro vignette
 * proofread manuals
-
-
 
 
 For next version

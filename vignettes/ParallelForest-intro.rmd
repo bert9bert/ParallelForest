@@ -9,40 +9,42 @@ The **ParallelForest** Package
 Introduction
 ------------
 
-
-How to Use
-----------
+**ParallelForest** is an R package implementing random forest classification using parallel computing, built with Fortran and OpenMP in the backend.
 
 
 An Example
 ----------
+As an example of how to use the **ParallelForest** package, let's consider a dataset of income and other person-level characteristics based off the U.S. Census Bureau's Current Population Surveys in 1994 and 1995, where each observation is a person. This dataset can be downloaded from the UCI Machine Learning Repository [here](http://archive.ics.uci.edu/ml/datasets/Census-Income+%28KDD%29), which provides both a training dataset and a testing dataset.
 
-Load the package.
+The dependent variable in this dataset is a dummy variable indicating whether the person's income was under or over $50,000.
+
+After some cleaning, and keeping only the continuous, ordinal, and binary categorical variables, we are left with 7 independent variables, 199,522 observations in the training dataset and 99,761 observations in the testing dataset. These independent variables are age, wage per hour, capital gains, capital losses, dividends from stocks, number of persons worked for employer, and weeks worked in year.
+
+
+First, load the package into R, then load the training and testing datasets.
 
 ```{r}
 library(ParallelForest)
+
+data(low_high_earners)       # training dataset
+data(low_high_earners_test)  # testing dataset
 ```
 
-Load some training and testing data.
+Then fit a forest to the training data.
 ```{r}
-data(low_high_earners)
-data(low_high_earners_test)
-```
-
-Fit the forest.
-```{r}
-fforest = grow.forest(Y~., data=low_high_earners, min_node_obs=1000, max_depth=10,
+fforest = grow.forest(Y~., data=low_high_earners, 
+    min_node_obs=1000, max_depth=10,
     numsamps=100000, numvars=5, numboots=5)
 ```
 
-Put the training data back in.
+Then use the fitted forest to get predictions on the training data itself, and compute the percentage of observations predicted correctly. Since this is a random forest method, the prediction on the training dataset won't necessarily be perfect.
 ```{r}
 fforest_samepred = predict(fforest, low_high_earners)
 pctcorrect_samepred = sum(low_high_earners$Y==fforest_samepred)/nrow(low_high_earners)
 print(pctcorrect_samepred)
 ```
 
-Now put the testing data in.
+Now use the fitted forest to get predictions on the testing data, and compute the percentage of observations predicted correctly.
 ```{r}
 fforest_newpred = predict(fforest, low_high_earners_test)
 pctcorrect_newpred = sum(low_high_earners$Y==fforest_newpred)/nrow(low_high_earners)
