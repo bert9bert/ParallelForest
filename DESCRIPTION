@@ -1,11 +1,11 @@
 Package: ParallelForest
 Version: 1.0.0
-Date: 2014-06-27
+Date: 2014-07-05
 Title: Random Decision Tree Forest Classifier with Parallel Computing
 Authors@R: c(person("Bertram", "Ieong", role=c("aut","cre","cph"), email="contactme@bertramieong.com"))
 Depends: R (>= 2.10), methods
 Suggests: knitr
-Description: Growing and predicting of random decision tree classifier using parallel computing, based on Fortran and OpenMP.
+Description: R package for random forest classifiers using parallel computing, built with Fortran and OpenMP in the backend.
 License: AGPL-3
 URL: https://github.com/bert9bert/ParallelForest
 BugReports: https://github.com/bert9bert/ParallelForest/issues

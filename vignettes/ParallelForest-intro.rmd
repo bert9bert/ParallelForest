@@ -1,6 +1,51 @@
 <!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{TESTBLAH}
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Introduction to the ParallelForest Package}
 -->
 
-**Testing**
+The **ParallelForest** Package
+==============================
+
+Introduction
+------------
+
+
+How to Use
+----------
+
+
+An Example
+----------
+
+Load the package.
+
+```{r}
+library(ParallelForest)
+```
+
+Load some training and testing data.
+```{r}
+data(low_high_earners)
+data(low_high_earners_test)
+```
+
+Fit the forest.
+```{r}
+fforest = grow.forest(Y~., data=low_high_earners, min_node_obs=1000, max_depth=10,
+    numsamps=100000, numvars=5, numboots=5)
+```
+
+Put the training data back in.
+```{r}
+fforest_samepred = predict(fforest, low_high_earners)
+pctcorrect_samepred = sum(low_high_earners$Y==fforest_samepred)/nrow(low_high_earners)
+print(pctcorrect_samepred)
+```
+
+Now put the testing data in.
+```{r}
+fforest_newpred = predict(fforest, low_high_earners_test)
+pctcorrect_newpred = sum(low_high_earners$Y==fforest_newpred)/nrow(low_high_earners)
+print(pctcorrect_newpred)
+```
+
