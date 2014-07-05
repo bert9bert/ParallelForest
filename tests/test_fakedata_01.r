@@ -73,7 +73,7 @@ if(PERFORM_FOREST_TESTS){
 
     # test failure conditions
     if(sum(df$Y==fforest_samepred)/nrow(df) <= 0.75) {
-       stop("Forest prediction on training data performs worse than 80%.")
+       stop("Forest prediction on training data performs worse than 75%.")
     }
 
     ### TEST 02 (NEW DATA) ###

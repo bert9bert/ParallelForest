@@ -46,7 +46,7 @@ grow.forest(formula, data, subset, na.action,
 	\item{numboots}{number of trees in the forest.}
 }
 \details{
-  Bootstrapped samples will be automatically balanced between dependent variable classes. Dependent variable must be automatically coercible to 0 and 1. Predictor variables should only be continuous, ordinal, or categorical with only two categories (do not include nominal/categorical variables with three or more categories). Numsamps will be increased as necessary to achieve a number that can divide the number of dependent variable classes so that bootstrapped samples will be balanced.
+  Bootstrapped samples will be automatically balanced between dependent variable classes. The number of sampled observations per tree will be increased as necessary to achieve a number that can divide the number of dependent variable classes so that bootstrapped samples will be balanced. Dependent variable must be automatically coercible to 0 and 1. Predictor variables should only be continuous, ordinal, or categorical with only two categories (do not include nominal variables or categorical variables with three or more categories).
 }
 \examples{
   data(easy_2var_data)
