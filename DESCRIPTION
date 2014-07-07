@@ -1,7 +1,7 @@
 Package: ParallelForest
 Version: 1.0.0
-Date: 2014-07-05
-Title: Random Decision Forest Classifier with Parallel Computing
+Date: 2014-07-07
+Title: Random Forest Classification with Parallel Computing
 Authors@R: c(person("Bertram", "Ieong", role=c("aut","cre","cph"), email="contactme@bertramieong.com"))
 Depends: R (>= 2.10), methods
 Suggests: knitr
