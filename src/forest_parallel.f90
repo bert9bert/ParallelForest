@@ -422,12 +422,11 @@ end function
 
 
 
-function predict_forest(fittedforest, X, OPT_NUM_THREADS) result(Ypred)
+function predict_forest(fittedforest, X) result(Ypred)
     ! --- Variable Declarations ---
     ! Input/Output variables
     type (node), intent(in) :: fittedforest(:)
     real(dp), intent(in) :: X(:,:)
-    integer, optional, intent(in) :: OPT_NUM_THREADS
     integer, allocatable :: Ypred(:)
 
     ! Private variables
@@ -439,11 +438,6 @@ function predict_forest(fittedforest, X, OPT_NUM_THREADS) result(Ypred)
 
     ! Debugging variables
     logical, parameter :: verbose = .false.
-
-    ! Parallel setup
-    if(present(OPT_NUM_THREADS)) then
-        call OMP_SET_NUM_THREADS(OPT_NUM_THREADS)
-    endif
 
 
     ! --- setup ---
