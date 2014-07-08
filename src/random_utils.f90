@@ -1,7 +1,3 @@
-!------------------------------------------------------------------------------
-!   Fortran functions and subroutines to assist in generating random numbers.
-!   Copyright (C) 2014  Bertram Ieong  EXCEPT  outside code as indicated below.
-!------------------------------------------------------------------------------
 
 
 module random_utils
@@ -10,15 +6,16 @@ implicit none
 
 contains
 
-!-----  Begin Outside Code  -----
-! This code is taken from
-! https://gcc.gnu.org/onlinedocs/gfortran/RANDOM_005fSEED.html#RANDOM_005fSEED
 
 subroutine init_random_seed()
+! The code for this subroutine is adapted from
+! https://gcc.gnu.org/onlinedocs/gfortran/RANDOM_005fSEED.html#RANDOM_005fSEED
+
     use iso_fortran_env, only: int64
     implicit none
     integer, allocatable :: seed(:)
     integer :: i, n, un, istat, dt(8), pid
+    integer :: getpid  ! function return types
     integer(int64) :: t
 
     call random_seed(size = n)
@@ -65,6 +62,6 @@ contains
         lcg = int(mod(s, int(huge(0), int64)), kind(0))
     end function lcg
 end subroutine init_random_seed
-!-----  End Outside Code  -----
+
 
 end module random_utils
