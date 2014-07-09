@@ -2,6 +2,8 @@
 
 module random_utils
 
+use utils
+
 implicit none
 
 contains
@@ -11,7 +13,6 @@ subroutine init_random_seed()
 ! The code for this subroutine is adapted from
 ! https://gcc.gnu.org/onlinedocs/gfortran/RANDOM_005fSEED.html#RANDOM_005fSEED
 
-    use utils, only: intdp
     implicit none
     integer, allocatable :: seed(:)
     integer :: i, n, un, istat, dt(8), pid
@@ -21,7 +22,7 @@ subroutine init_random_seed()
     call random_seed(size = n)
     allocate(seed(n))
     ! First try if the OS provides a random number generator
-    open(newunit=un, file="/dev/urandom", access="stream", &
+    open(unit=newunit(un), file="/dev/urandom", access="stream", &
          form="unformatted", action="read", status="old", iostat=istat)
     if (istat == 0) then
        read(un) seed

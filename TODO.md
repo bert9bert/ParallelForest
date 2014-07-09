@@ -2,9 +2,6 @@
 
 To Do List
 ==========
-Patch
------
-* Fix other Solaris compilation errors.
 
 Feature Expansions
 ------------------
