@@ -5,7 +5,6 @@ To Do List
 Patch
 -----
 * Declare dependencies in `src/Makevars` so that package can be built from source with a parallel make.
-* Replace use of int64, which is a Fortran 2008 feature.
 * Fix other Solaris compilation errors.
 
 Feature Expansions
