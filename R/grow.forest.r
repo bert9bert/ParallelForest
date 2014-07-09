@@ -9,24 +9,7 @@
 grow.forest = function(formula, data, subset, na.action,
     impurity.function = "gini", model = FALSE, x = FALSE, y = FALSE,
     min_node_obs, max_depth, 
-    numsamps, numvars, numboots){
-
-    ### Input Assertions ###
-    if(length(min_node_obs)!=1) stop ("min_node_obs must be a scalar.")
-    if(length(max_depth)!=1)    stop ("max_depth must be a scalar.")
-    if(length(numsamps)!=1)     stop ("numsamps must be a scalar.")
-    if(length(numvars)!=1)      stop ("numvars must be a scalar.")
-    if(length(numboots)!=1)     stop ("numboots must be a scalar.")
-
-    if(min_node_obs<1) stop ("min_node_obs must be at least 1.")
-    if(max_depth<0)    stop ("max_depth must be at least 0.")
-    if(numsamps<1)     stop ("numsamps must be at least 1.")
-    if(numvars<1)      stop ("numvars must be at least 1.")
-    if(numboots<1)     stop ("numboots must be at least 1.")
-
-    if(impurity.function!="gini"){
-        stop("Only the Gini impurity function is currently supported.")
-    }
+    numsamps, numvars, numboots=5){
 
 
     ### Create design matrix and dependent variable vector ###
@@ -67,6 +50,39 @@ grow.forest = function(formula, data, subset, na.action,
     # get data size
     n = nrow(xtrain)
     p = ncol(xtrain)
+
+
+    ### Put in default values if missing ###
+    if(missing(min_node_obs)){
+        min_node_obs = ceiling(n/200)
+    }
+    if(missing(max_depth)){
+        max_depth = ceiling(n/20000)
+    }
+    if(missing(numsamps)){
+        numsamps = ceiling(n/2)
+    }
+    if(missing(numvars)){
+        numvars = ceiling(0.70 * p)
+    }
+
+
+    ### Input Assertions ###
+    if(length(min_node_obs)!=1) stop ("min_node_obs must be a scalar.")
+    if(length(max_depth)!=1)    stop ("max_depth must be a scalar.")
+    if(length(numsamps)!=1)     stop ("numsamps must be a scalar.")
+    if(length(numvars)!=1)      stop ("numvars must be a scalar.")
+    if(length(numboots)!=1)     stop ("numboots must be a scalar.")
+
+    if(min_node_obs<1) stop ("min_node_obs must be at least 1.")
+    if(max_depth<0)    stop ("max_depth must be at least 0.")
+    if(numsamps<1)     stop ("numsamps must be at least 1.")
+    if(numvars<1)      stop ("numvars must be at least 1.")
+    if(numboots<1)     stop ("numboots must be at least 1.")
+
+    if(impurity.function!="gini"){
+        stop("Only the Gini impurity function is currently supported.")
+    }
 
 
     ### Fit forest with Fortran compiled program ###

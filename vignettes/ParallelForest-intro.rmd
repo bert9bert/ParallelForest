@@ -11,9 +11,18 @@ Introduction
 
 **ParallelForest** is an R package implementing random forest classification using parallel computing, built with Fortran and OpenMP in the backend.
 
+Basic Usage
+-----------
+After loading the package, the `grow.forest` function is used to grow (fit) a random forest, which returns a fitted forest object. Afterwards, the `predict` function can be used to make predictions on the fitted forest with new data. An example is provided in the next section. For more details on the function calls, please see the help pages.
+```r
+install.packages("ParallelForest")  # install package if not done so already
+library(ParallelForest)  # load the ParallelForest package
+?grow.forest             # get the help page for growing a forest
+?predict.forest          # get the help page for predicting on a fitted forest
+```
 
-An Example
-----------
+An Example with U.S. Census Data
+--------------------------------
 As an example of how to use the **ParallelForest** package, let's consider a dataset of income and other person-level characteristics based off the U.S. Census Bureau's Current Population Surveys in 1994 and 1995, where each observation is a person. This dataset can be downloaded from the UCI Machine Learning Repository [here](http://archive.ics.uci.edu/ml/datasets/Census-Income+%28KDD%29), which provides both a training dataset and a testing dataset.
 
 The dependent variable in this dataset is a dummy variable indicating whether the person's income was under or over $50,000.
@@ -26,16 +35,45 @@ First, load the package into R, then load the training and testing datasets.
 ```{r}
 library(ParallelForest)
 
-data(low_high_earners)       # training dataset
-data(low_high_earners_test)  # testing dataset
+data(low_high_earners)       # cleaned and prepared training dataset
+data(low_high_earners_test)  # cleaned and prepared testing dataset
 ```
 
-Then fit a forest to the training data.
+### Fitting a Forest
+
+Then fit a forest to the training data. A variety of control parameters can be specified to control how the forest will be fit. However, if none are specified, like below, then the package will try to choose reasonable values for them. To explicitly choose these control parameters, see the help file (see `?grow.forest` in R).
 ```{r}
-fforest = grow.forest(Y~., data=low_high_earners, 
-    min_node_obs=1000, max_depth=10,
-    numsamps=100000, numvars=5, numboots=5)
+fforest = grow.forest(Y~., data=low_high_earners)
 ```
+
+### The Control Parameters for Fitting
+
+Since we did not choose any of the control parameters, let's see what the package chose for them. Notice that this package uses S4 classes, so we need to use `@` instead of `$` to pull out values of the fitted forest object.
+
+Since we did not choose the minimum number of observations required for a node to be split, what did the package choose?
+```{r}
+fforest@min_node_obs
+```
+Since we did not choose the deepest that a tree should be fit, what did the package choose?
+```{r}
+fforest@max_depth
+```
+Since we did not choose the number of samples to draw with replacement for each tree in the forest, what did the package choose?
+```{r}
+fforest@numsamps
+```
+Since we did not choose the number of variables to be randomly selected without replacement for each tree in the forest, what did the package choose?
+```{r}
+fforest@numvars
+```
+Since we did not choose the number of trees in the forest, what did the package choose?
+```{r}
+fforest@numboots
+```
+
+We could have set any of these control parameters when we first used `grow.forest`.
+
+### Prediction on the Training Data and on New Data
 
 Then use the fitted forest to get predictions on the training data itself, and compute the percentage of observations predicted correctly. Since this is a random forest method, the prediction on the training dataset won't necessarily be perfect.
 ```{r}

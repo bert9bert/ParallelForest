@@ -32,18 +32,18 @@ grow.forest(formula, data, subset, na.action,
     default is \code{\link{na.omit}}.  Another possible value is
     \code{NULL}, no action.}
 
-	\item{impurity.function}{the impurity function to be used to fit decision trees, currently only \code{impurity.function = "gini"} is supported.}
+	\item{impurity.function}{the impurity function to be used to fit decision trees, currently only \code{"gini"} is supported.}
 
   \item{model, x, y}{logicals.  If \code{TRUE} the corresponding
     components of the fit (the model frame, the model matrix, the
     response) are returned.
   }
 
-	\item{min_node_obs}{the minimum number of observations required for a node to be split.}
-	\item{max_depth}{the deepest that a tree should be fit (root node is at depth 0).}
-	\item{numsamps}{number of samples to draw with replacement for each tree in the forest (bootstrapped sample).}
-	\item{numvars}{number of variables to be randomly selected without replacement for each tree in the forest.}
-	\item{numboots}{number of trees in the forest.}
+	\item{min_node_obs}{the minimum number of observations required for a node to be split. If not provided as input, the package will attempt to choose a reasonable value.}
+	\item{max_depth}{the deepest that a tree should be fit (root node is at depth 0). If not provided as input, the package will attempt to choose a reasonable value.}
+	\item{numsamps}{number of samples to draw with replacement for each tree in the forest (bootstrapped sample). If not provided as input, the package will attempt to choose a reasonable value.}
+	\item{numvars}{number of variables to be randomly selected without replacement for each tree in the forest. If not provided as input, the package will attempt to choose a reasonable value.}
+	\item{numboots}{number of trees in the forest. If not provided as input, the package will attempt to choose a reasonable value.}
 }
 \details{
   Bootstrapped samples will be automatically balanced between dependent variable classes. The number of sampled observations per tree will be increased as necessary to achieve a number that can divide the number of dependent variable classes so that bootstrapped samples will be balanced. Dependent variable must be automatically coercible to 0 and 1. Predictor variables should only be continuous, ordinal, or categorical with only two categories (do not include nominal variables or categorical variables with three or more categories).
