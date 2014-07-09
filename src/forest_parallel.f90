@@ -7,8 +7,8 @@
 module forest_parallel
 
 
-use random_utils
 use utils
+use random_utils
 use tree_utils
 use sort_utils
 use impurity_measures
