@@ -20,6 +20,11 @@ PKG_LIBS = $(SHLIB_OPENMP_FCFLAGS)
 all: $(SHLIB)
 
 #####  Declare dependencies and make instructions for objects  #####
+
+random_utils.o: utils.o \
+random_utils.f90
+	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  random_utils.f90 -o random_utils.o
+
 tree_utils.o: utils.o \
 tree_utils.f90
 	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  tree_utils.f90 -o tree_utils.o
