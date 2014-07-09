@@ -6,7 +6,7 @@
 
 \title{Class \code{"forest"}}
 \description{
-A forest of decision tree classifiers used for ensemble prediction.
+A forest of decision tree classifiers to be used for ensemble prediction.
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("forest", ...)}.
@@ -14,19 +14,19 @@ Objects can be created by calls of the form \code{new("forest", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{n}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{p}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{min_node_obs}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{max_depth}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{numsamps}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{numvars}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{numboots}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{numnodes}:}{Object of class \code{"integer"} ~~ }
-    \item{\code{flattened.nodes}:}{Object of class \code{"data.frame"} ~~ }
-    \item{\code{model}:}{Object of class \code{"data.frame"} ~~ }
-    \item{\code{x}:}{Object of class \code{"data.frameORvector"} ~~ }
-    \item{\code{y}:}{Object of class \code{"vector"} ~~ }
-    \item{\code{fmla}:}{Object of class \code{"formula"} ~~ }
+    \item{\code{n}:}{Number of observations in dataset used to fit this forest.}
+    \item{\code{p}:}{Number of independent variables in dataset used to fit this forest.}
+    \item{\code{min_node_obs}:}{Leaf of any tree in this forest will not be split unless it has more observations than this value.}
+    \item{\code{max_depth}:}{Maximum depth of any tree in this forest}
+    \item{\code{numsamps}:}{Number of observations randomly drawn with replacement used to fit a tree in this forest.}
+    \item{\code{numvars}:}{Number of independent variables randomly drawn without replacement used to fit a tree in this forest.}
+    \item{\code{numboots}:}{Number of trees in this forest.}
+    \item{\code{numnodes}:}{Vector with the number of nodes that each tree has in this forest.}
+    \item{\code{flattened.nodes}:}{Data frame containing information on the nodes of the trees in this forest.}
+    \item{\code{model}:}{Model frame used to fit this forest.}
+    \item{\code{x}:}{Design (independent variables) matrix used to fit this forest.}
+    \item{\code{y}:}{Dependent variable vector used to fit this forest.}
+    \item{\code{fmla}:}{Formula used to construct the model frame from the data.}
   }
 }
 
