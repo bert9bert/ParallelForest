@@ -5,7 +5,8 @@ To Do List
 
 Feature Expansions
 ------------------
-* **Implement more flexible data handling**
+* **Implement more flexible data handling** (write tests)
+* overload S4 `$`
 * Implement passing of optional arguments such as the number of threads to use to wrappers
 * Implement changing to non-default thread number
 * Return bootstrapped numsamps actually used

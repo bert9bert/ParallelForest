@@ -30,22 +30,15 @@ grow.forest = function(formula, data, subset, na.action,
     ytrain = m[,1]
     xtrain = m[,-1]
 
-    ytrain.tof = as.integer(ytrain)
+    retlist = prep.depvar.in(ytrain)
+
+    myvars = names(retlist) %in% "y.prepped"
+    depvar.restore.info = retlist[!myvars]
+
+    ytrain.tof = retlist$y.prepped
     xtrain.tof = as.matrix(xtrain)
     storage.mode(xtrain.tof) = "double"
 
-    # assert that Y must be 0 or 1
-    y.unique.sorted = sort(unique(ytrain.tof))
-    if(length(y.unique.sorted)<2) stop("Dependent variable must have two classes.")
-    if(length(y.unique.sorted)>2) stop(paste("Dependent variable can only have two classes.",
-        "Support for more classes may be implemented in a future version of this package"))
-
-    if(sum(y.unique.sorted==c(0,1))!=2) stop(paste("The values of the",
-        "dependent variable must be automatically coercible to",
-        "integers 0 and 1. Please adjust the dependent variable in your data",
-        "so that it contains only the integers 0 and 1.",
-        "More flexible automatic coercion will be implemented in",
-        "the next version of this package."))
 
     # get data size
     n = nrow(xtrain)
@@ -93,7 +86,7 @@ grow.forest = function(formula, data, subset, na.action,
     TOP_NODE_NUM = 0
     retlen = 2^(max_depth + 1 - TOP_NODE_NUM) - 1
 
-    # check feasibility of passing Fortran to R results through memroy
+    # check feasibility of passing Fortran to R results through memory
     if((as.integer(retlen*numboots) > .Machine$integer.max) | (is.na(as.integer(retlen*numboots)))){
         stop(paste("grow.forest currently does not support",
             "inputs where (2^(max_depth + 1) - 1) * numboots exceeds",
@@ -148,7 +141,8 @@ grow.forest = function(formula, data, subset, na.action,
         numboots=ret$numboots,
         numnodes=ret$numnodes,
         flattened.nodes=flattened.nodes,
-        fmla=formula
+        fmla=formula,
+        depvar.restore.info=depvar.restore.info
         )
 
     ### Store model frame, x, and y if requested ###

@@ -19,7 +19,8 @@ setClass("forest", representation(  n = "integer",
                                     model = "data.frame",
                                     x = "data.frameORvector",
                                     y = "vector",
-                                    fmla = "formula"
+                                    fmla = "formula",
+                                    depvar.restore.info = "list"
                                     ))
 
 
