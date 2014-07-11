@@ -3,7 +3,7 @@
 !   Copyright (C) 2014  Bertram Ieong
 !------------------------------------------------------------------------------
 
-subroutine predict_forest_wrapper(treenum, &
+subroutine predict_forest_wrapper( &
     tag, tagparent, tagleft, tagright, is_topnode, &
     depth, majority, has_subnodes, splitvarnum, splitvalue, numnodes, &
     numboots, &
@@ -23,7 +23,6 @@ subroutine predict_forest_wrapper(treenum, &
     integer, intent(in) :: numboots, N, P
     integer, intent(in) :: numnodes(numboots)
 
-    integer, intent(in) :: treenum(sum(numnodes))
     integer, intent(in) :: tag(sum(numnodes)), &
         tagparent(sum(numnodes)), tagleft(sum(numnodes)), tagright(sum(numnodes))
     logical, intent(in) :: is_topnode(sum(numnodes))

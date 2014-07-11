@@ -101,7 +101,7 @@ subroutine grow_tree_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retl
 
         print *, "Flattended Tree"
         print *, "tag tagparent tagleft tagright is_topnode &
-                depth majority has_subnodes splitvarnum splitvalue"
+                & depth majority has_subnodes splitvarnum splitvalue"
 
         fmt = '(i4, i10, i8, i9, l11, i6, i9, l13, i12, f11.3 )'
         do i=1,size(tag)

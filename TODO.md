@@ -6,7 +6,7 @@ To Do List
 Feature Expansions
 ------------------
 * **Implement more flexible data handling** (write tests)
-* overload S4 `$`
+* **overload S4 `$`**
 * Implement passing of optional arguments such as the number of threads to use to wrappers
 * Implement changing to non-default thread number
 * Return bootstrapped numsamps actually used
@@ -14,6 +14,8 @@ Feature Expansions
 
 Performance Improvements
 ------------------------
+* **fix warnings with `-Wall` compilation**
+* **delete return of the tree numbers in grow.forest**
 * Implement more memory friendly way to pass tree/forest from compiled Fortran to R
 * In classification.f90:365-368, investigate whether memory will build up in the stack because of the many allocations of Xleft, etc.
 * Review and fix any bad pointer practices
@@ -22,5 +24,5 @@ Performance Improvements
 * Make balanced bootstrap more memory friendly
 * Make countnodes() API more elegant
 * Have predict.forest create its model frame (in particular, its design matrix) in a more memory friendly way
-* In wrappers, look into using R logicals for returned Fortran logicals
+
 

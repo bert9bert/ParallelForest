@@ -175,8 +175,7 @@ recursive function flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
     integer :: numnodes
 
     ! counting and indexing variables
-    integer :: idx
-    integer :: i
+    integer :: idx, i
 
 
     !--- Find the number of nodes in this tree ---
@@ -437,7 +436,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
     if(verbose) then
         print *, "Flattended Tree"
         print *, "tag tagparent tagleft tagright is_topnode &
-                depth majority has_subnodes splitvarnum splitvalue"
+                & depth majority has_subnodes splitvarnum splitvalue"
 
         fmt = '(i4, i10, i8, i9, l11, i6, i9, l13, i12, f11.3 )'
         do i=1,size(tag)
@@ -507,7 +506,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%tag          /=     tree_unflattened%tag) ) then
 
         call rexit("Test failed: root node &
-            was flattened and unflattened incorrectly")
+            & was flattened and unflattened incorrectly")
     endif
 
     if( (tree%leftnode%depth        /=     tree_unflattened%leftnode%depth) .or. &
@@ -516,7 +515,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%leftnode%tag          /=     tree_unflattened%leftnode%tag) ) then
 
         call rexit("Test failed: left node &
-            was flattened and unflattened incorrectly")
+            & was flattened and unflattened incorrectly")
     endif
 
     if( (tree%rightnode%depth        /=     tree_unflattened%rightnode%depth) .or. &
@@ -525,7 +524,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%rightnode%tag          /=     tree_unflattened%rightnode%tag) ) then
 
         call rexit("Test failed: right node &
-            was flattened and unflattened incorrectly")
+            & was flattened and unflattened incorrectly")
     endif
 
     if( (tree%rightnode%leftnode%depth        /=     tree_unflattened%rightnode%leftnode%depth) .or. &
@@ -534,7 +533,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%rightnode%leftnode%tag          /=     tree_unflattened%rightnode%leftnode%tag) ) then
 
         call rexit("Test failed: right node's left node &
-            was flattened and unflattened incorrectly")
+            & was flattened and unflattened incorrectly")
     endif
 
     if( (tree%rightnode%rightnode%depth        /=     tree_unflattened%rightnode%rightnode%depth) .or. &
@@ -543,7 +542,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
         (tree%rightnode%rightnode%tag          /=     tree_unflattened%rightnode%rightnode%tag) ) then
 
         call rexit("Test failed: right node's right node &
-            was flattened and unflattened incorrectly")
+            & was flattened and unflattened incorrectly")
     endif
 
 

@@ -35,7 +35,7 @@ pure subroutine qsort_inline_dp_int(N, array, array_carry, opt_perform_index_car
     type(pair_dp_int) :: array_pairs(N)
 
     ! counting variables
-    integer :: i,j
+    integer :: i
 
 
     ! ---  Resolve optional arguments  ---
@@ -100,7 +100,9 @@ pure subroutine insertion_sort(N, arr, arrcarry, opt_perform_index_carry)
     logical, optional, intent(in) :: opt_perform_index_carry
     logical :: perform_index_carry
 
-    real(dp) :: elem, elemcarry
+    real(dp) :: elem
+    integer :: elemcarry
+
     integer :: i,j
 
     ! figure out if arrcarry should be carried as inputted or if 
@@ -147,6 +149,8 @@ function test_qsort_01() result(exitflag)
 
     logical, parameter :: debug = .false.
 
+    exitflag = -1
+
     if(debug) then
         print *, " "
         print *, "---------- Running Test Function test_qsort_01 -------------------"
@@ -181,6 +185,8 @@ function test_qsort_01() result(exitflag)
     if(any(arr .ne. arr_correct)) call rexit("Sort failed.")
     if(any(arrcarry .ne. arrcarry_correct)) call rexit("Sort carry failed.")
 
+    exitflag = 0
+
 end function
 
 
@@ -193,6 +199,8 @@ function test_insertion_sort_01() result(exitflag)
     integer :: exitflag
 
     logical, parameter :: debug = .false.
+
+    exitflag = -1
 
     if(debug) then
         print *, " "
@@ -227,6 +235,8 @@ function test_insertion_sort_01() result(exitflag)
     ! check failure conditions
     if(any(arr .ne. arr_correct)) call rexit("Sort failed.")
     if(any(arrcarry .ne. arrcarry_correct)) call rexit("Sort carry failed.")
+
+    exitflag = 0
 
 end function
 

@@ -306,8 +306,7 @@ end subroutine
 
 
 function grow_forest(Y, X, min_node_obs, max_depth, &
-    numsamps, numvars, numboots, &
-    OPT_NUM_THREADS) &
+    numsamps, numvars, numboots) &
     result(fittedforest)
 
     ! --- Declare Variables ---
@@ -317,7 +316,6 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     integer, intent(in) :: min_node_obs, max_depth
     integer, intent(in) :: numsamps, numvars, numboots
     type (node) :: fittedforest(numboots)
-    integer, optional, intent(in) :: OPT_NUM_THREADS
 
     ! Private Variables
     integer :: N, P
@@ -561,7 +559,7 @@ function test_bootstrap_balanced_01() result(exitflag)
     real(dp) :: X(N,P)
     real(dp), allocatable :: X_boot1(:,:), X_boot2(:,:), X_boot3(:,:)
 
-    integer :: i,j
+    integer :: j
 
     logical, parameter :: verbose = .false.
 
@@ -625,8 +623,6 @@ function test_grow_forest_01() result(exitflag)
 
     type (node) :: ff(numboots)
 
-    integer :: i,j
-
     logical, parameter :: verbose = .false.
 
     exitflag = -1
@@ -682,7 +678,6 @@ function test_grow_predict_forest_01() result(exitflag)
 
     type (node) :: ff(numboots)
 
-    integer :: i,j
 
     logical, parameter :: verbose = .false.
 

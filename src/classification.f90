@@ -60,7 +60,7 @@ function predict(fittedtree, X) result(Ypred)
     ! variable declarations
     type (node), intent(in) :: fittedtree
     real(dp), intent(in) :: X(:,:)
-    real(dp), allocatable :: Ypred(:)
+    integer, allocatable :: Ypred(:)
 
     integer :: N, P
     integer :: obs
@@ -90,7 +90,7 @@ recursive function predict_rec_hlpr(t, X_row, P) result(pred)
     type (node), intent(in) :: t
     real(dp), intent(in) :: X_row(:)
     integer, intent(in) :: P
-    real(dp) :: pred
+    integer :: pred
 
     ! argument checks
     if(size(X_row) /= P) call rexit("Error: Length of X_row is not P.")
@@ -561,8 +561,6 @@ function test_splitnode_03() result(exitflag)
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
     integer :: sortedYcorresp(N,P)
-    integer :: bestsplit_varnum_correct
-    real(dp) :: bestsplit_value_correct
     type (node) :: thisnode
     integer :: min_node_obs
     integer :: exitflag
@@ -604,8 +602,6 @@ function test_splitnode_04() result(exitflag)
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
     integer :: sortedYcorresp(N,P)
-    integer :: bestsplit_varnum_correct
-    real(dp) :: bestsplit_value_correct
     type (node) :: thisnode
     integer :: max_depth
     integer :: exitflag
@@ -708,6 +704,8 @@ function test_splitnode_06() result(exitflag)
     character(len=50) :: fmt
 
     logical :: verbose = .false.
+
+    exitflag = -1
 
     if(verbose) then
         print *, " "
@@ -818,6 +816,8 @@ function test_splitnode_06() result(exitflag)
         (node2%rightnode%has_subnodes .neqv. .false.) ) then
         call rexit("Test failed: miscellaneous additional tests on node2's right subnode")
     endif
+
+    exitflag = 0
 
 end function
 

@@ -29,7 +29,6 @@ predict.forest = function(object, newdata, ...){
 
     ### Send to compiled Fortran wrapper to get forest prediction ###
     retpred = .Fortran("predict_forest_wrapper",
-        (object@flattened.nodes)$treenum,
         (object@flattened.nodes)$tag,
         (object@flattened.nodes)$tagparent,
         (object@flattened.nodes)$tagleft,
