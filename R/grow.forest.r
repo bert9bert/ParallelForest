@@ -120,7 +120,6 @@ grow.forest = function(formula, data, subset, na.action,
 
     # unpad returned arrays and put everything into a forest object
     flattened.nodes = data.frame(
-        treenum=ret$treenum_padded[1:sum(ret$numnodes)],
         tag=ret$tag_padded[1:sum(ret$numnodes)],
         tagparent=ret$tagparent_padded[1:sum(ret$numnodes)],
         tagleft=ret$tagleft_padded[1:sum(ret$numnodes)],
