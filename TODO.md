@@ -14,7 +14,6 @@ Feature Expansions
 Performance Improvements
 ------------------------
 * **fix warnings with `-Wall` compilation**
-* get rid of tree number passing in grow forest wrapper
 * Implement more memory friendly way to pass tree/forest from compiled Fortran to R
 * In classification.f90:365-368, investigate whether memory will build up in the stack because of the many allocations of Xleft, etc.
 * Review and fix any bad pointer practices
