@@ -31,13 +31,13 @@ yfac2 = as.factor(ystr2)  # should work
 yfac1 = as.factor(ystr1)  # should fail
 yfac3 = as.factor(ystr3)  # should fail
 yfac2but3 = as.factor(c("bob","adam","adam","bob","adam","adam",  # should work
-	"charles","charles","bob","charles","charles","bob"))[7:12]
+    "charles","charles","bob","charles","charles","bob"))[7:12]
 
 yord2 = as.ordered(ystr2)  # should work
 yord1 = as.ordered(ystr1)  # should fail
 yord3 = as.ordered(ystr3)  # should fail
 yord2but3 = as.ordered(c("bob","adam","adam","bob","adam","adam",  # should work
-	"charles","charles","bob","charles","charles","bob"))[7:12]
+    "charles","charles","bob","charles","charles","bob"))[7:12]
 
 
 
@@ -46,38 +46,38 @@ yord2but3 = as.ordered(c("bob","adam","adam","bob","adam","adam",  # should work
 
 # define testing functions
 shouldwork.test = function(x) {
-	retlist = prep.depvar.in(x)
-	x.back = do.call(prep.depvar.out,retlist)
-	if(!identical(x,x.back)) stop("Doesn't work, but should work!")
+    retlist = prep.depvar.in(x)
+    x.back = do.call(prep.depvar.out,retlist)
+    if(!identical(x,x.back)) stop("Doesn't work, but should work!")
 }
 
 shouldfail.test = function(x) {
 
-	trycatch.result = tryCatch(
-		{
-			retlist = prep.depvar.in(x)
-			ret = -1
-		}, 
-		error = function(e) return(0))
+    trycatch.result = tryCatch(
+        {
+            retlist = prep.depvar.in(x)
+            ret = -1
+        }, 
+        error = function(e) return(0))
 
-	if(trycatch.result!=0) stop("Doesn't fail, but should fail!")
+    if(trycatch.result!=0) stop("Doesn't fail, but should fail!")
 }
 
 # apply the vectors to the appropriate testing function
 shouldwork.vecs = list(yint01, yint56, 
-	ydbl01, ydbl56, 
-	ydec2, ydec2alt, 
-	ystr2, 
-	yfac2, yfac2but3, 
-	yord2, yord2but3)
+    ydbl01, ydbl56, 
+    ydec2, ydec2alt, 
+    ystr2, 
+    yfac2, yfac2but3, 
+    yord2, yord2but3)
 rettest.shouldwork = lapply(shouldwork.vecs, shouldwork.test)
 
 shouldfail.vecs = list(yint7, yint345, 
-	ydbl7, ydbl345, 
-	ydec1, ydec3, 
-	ystr1, ystr3, 
-	yfac1, yfac3, 
-	yord1, yord3)
+    ydbl7, ydbl345, 
+    ydec1, ydec3, 
+    ystr1, ystr3, 
+    yfac1, yfac3, 
+    yord1, yord3)
 rettest.shouldfail = lapply(shouldfail.vecs, shouldfail.test)
 
 # all tests were successful if no errors were raised
