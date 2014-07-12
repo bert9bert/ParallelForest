@@ -27,6 +27,7 @@ Objects can be created by calls of the form \code{new("forest", ...)}.
     \item{\code{x}:}{Design (independent variables) matrix used to fit this forest.}
     \item{\code{y}:}{Dependent variable vector used to fit this forest.}
     \item{\code{fmla}:}{Formula used to construct the model frame from the data.}
+    \item{\code{depvar.restore.info}:}{This is a slot that the package needs internally.}
   }
 }
 
