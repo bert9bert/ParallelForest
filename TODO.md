@@ -6,7 +6,6 @@ To Do List
 Feature Expansions
 ------------------
 * Let input `data` field be blank
-* **overload S4 `$`**
 * Implement passing of optional arguments such as the number of threads to use to wrappers
 * Implement changing to non-default thread number
 * Return bootstrapped numsamps actually used
