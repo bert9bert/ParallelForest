@@ -14,6 +14,8 @@ grow.forest = function(formula, data, subset, na.action,
 
     ### Create design matrix and dependent variable vector ###
     # create model frame #
+    if(missing(data)) data=environment(formula)
+
     if(missing(subset) & missing(na.action)){
         m = model.frame(formula, data=data)
     } else if(missing(subset) & !missing(na.action)){

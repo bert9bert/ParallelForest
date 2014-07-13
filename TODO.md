@@ -5,10 +5,8 @@ To Do List
 
 Feature Expansions
 ------------------
-* Let input `data` field be blank
 * Implement passing of optional arguments such as the number of threads to use to wrappers
-* Implement changing to non-default thread number
-* Return bootstrapped numsamps actually used
+* Return bootstrapped number of observations actually used
 * Put in more impurity functions
 
 Performance Improvements
@@ -16,7 +14,7 @@ Performance Improvements
 * **Fix warnings with `-Wall` compilation**
 * Have random number generator seed passed from R to Fortran
 * Implement more memory friendly way to pass tree/forest from compiled Fortran to R
-* In `classification.f90:365-368`, investigate whether memory will build up in the stack because of the many allocations of `Xleft`, etc.
+* In `classification.f90:375-378`, investigate whether memory will build up in the stack because of the many allocations of `Xleft`, etc.
 * Review and fix any bad pointer practices
 * Explicitly indicate public/private access in modules
 * Implement sanity check in `tree_utils.f90` to make sure erroneous nodes aren't created
