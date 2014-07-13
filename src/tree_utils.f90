@@ -324,16 +324,27 @@ end subroutine
 
 
 
+function countnodes(t) result(numnodes)
+    ! Returns the number of nodes in a tree.
 
-recursive subroutine countnodes(t, n)
-    type (node) :: t
-    integer :: n  ! for initial function call, set to 0
+    type (node), intent(in) :: t
+    integer :: numnodes
+
+    numnodes = 0
+
+    call countnodes_rec_hlpr(t,numnodes)
+
+end function
+
+recursive subroutine countnodes_rec_hlpr(t, n)
+    type (node), intent(in) :: t
+    integer, intent(inout) :: n  ! for initial function call, set to 0
 
     n=n+1
 
     if(t%has_subnodes) then
-        call countnodes(t%leftnode, n)
-        call countnodes(t%rightnode, n)
+        call countnodes_rec_hlpr(t%leftnode, n)
+        call countnodes_rec_hlpr(t%rightnode, n)
     endif
 end subroutine
 

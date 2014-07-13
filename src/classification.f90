@@ -1141,8 +1141,7 @@ function test_grow_predict_01() result(exitflag)
 
         print *, "---------------+--------+----------+--------------+---------------+------------+------"
     
-        numfittednodes = 0
-        call countnodes(fittedtree, numfittednodes)
+        numfittednodes = countnodes(fittedtree)
         print '("There are ", i5, " nodes in the fitted tree.")', numfittednodes
 
     endif

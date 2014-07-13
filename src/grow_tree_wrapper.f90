@@ -67,8 +67,7 @@ subroutine grow_tree_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retl
     endif
 
     if(verbose) then
-        numfittednodes = 0
-        call countnodes(fittedtree, numfittednodes)
+        numfittednodes = countnodes(fittedtree)
         print '("Before flatten, there are ", i5, " nodes in the fitted tree.")', numfittednodes
     endif
 
@@ -95,8 +94,7 @@ subroutine grow_tree_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retl
     splitvalue_padded(1:numnodes) = splitvalue
 
     if(verbose) then
-        numfittednodes = 0
-        call countnodes(fittedtree, numfittednodes)
+        numfittednodes = countnodes(fittedtree)
         print '("There are ", i5, " nodes in the fitted tree.")', numfittednodes
 
         print *, "Flattended Tree"
