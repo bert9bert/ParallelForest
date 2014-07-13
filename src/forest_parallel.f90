@@ -190,6 +190,7 @@ subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, op
 
     ! take care of uneven split input to numsamps
 
+    numsamps = -1
     if(mod(in_numsamps,num_Yunique)/=0) then
         if(present(opt_force_numsamps_evensplits)) then
             if(opt_force_numsamps_evensplits) then
@@ -316,6 +317,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     integer, intent(in) :: min_node_obs, max_depth
     integer, intent(in) :: numsamps, numvars, numboots
     type (node) :: fittedforest(numboots)
+    type (node_ptr) :: fittedforest_ptrarr(numboots)
 
     ! Private Variables
     integer :: N, P
@@ -399,7 +401,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
         endif
 
         ! -- fit tree to the bootstrapped data and select variables --
-        fittedforest(treenum) = grow(Y_boot, X_boot, min_node_obs, max_depth, &
+        fittedforest_ptrarr(treenum)%t => grow(Y_boot, X_boot, min_node_obs, max_depth, &
             opt_splittable=variables_selected)     
 
         deallocate(Y_boot)
@@ -408,6 +410,27 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
     enddo
     !$OMP END PARALLEL DO
+
+
+    !$OMP PARALLEL DO
+    do treenum=1,numboots
+        ! store the forest as an array of nodes as opposed to 
+        ! an array of node pointers
+
+        fittedforest(treenum)%depth = fittedforest_ptrarr(treenum)%t%depth
+        fittedforest(treenum)%majority = fittedforest_ptrarr(treenum)%t%majority
+        fittedforest(treenum)%has_subnodes = fittedforest_ptrarr(treenum)%t%has_subnodes
+        fittedforest(treenum)%tag = fittedforest_ptrarr(treenum)%t%tag
+
+        fittedforest(treenum)%splitvarnum = fittedforest_ptrarr(treenum)%t%splitvarnum
+        fittedforest(treenum)%splitvalue = fittedforest_ptrarr(treenum)%t%splitvalue
+
+        fittedforest(treenum)%leftnode => fittedforest_ptrarr(treenum)%t%leftnode
+        fittedforest(treenum)%rightnode => fittedforest_ptrarr(treenum)%t%rightnode
+
+    enddo
+    !$OMP END PARALLEL DO
+
 
     if(verbose) then
         do i=1,size(fittedforest)

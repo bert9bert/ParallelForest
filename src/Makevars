@@ -13,7 +13,7 @@ grow_forest_wrapper.o predict_forest_wrapper.o \
 fortran_unit_tests_wrapper.o
 
 #####  Compiler flags  #####
-PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS)
+PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -Wall
 PKG_LIBS = $(SHLIB_OPENMP_FCFLAGS)
 
 #####  Phony target for R's build system to invoke  #####

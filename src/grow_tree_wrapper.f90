@@ -50,12 +50,12 @@ subroutine grow_tree_wrapper(n, p, xtrain, ytrain, min_node_obs, max_depth, retl
     real(dp), allocatable :: splitvalue(:)
 
     
-    type (node) fittedtree
+    type (node), pointer :: fittedtree
 
 
 
     !--- fit tree ---
-    fittedtree = grow(ytrain, xtrain, min_node_obs, max_depth)
+    fittedtree => grow(ytrain, xtrain, min_node_obs, max_depth)
 
     
     if(verbose) then

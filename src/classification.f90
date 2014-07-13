@@ -24,7 +24,7 @@ function grow(Y, X, min_node_obs, max_depth, opt_splittable) result(fittedtree)
     real(dp), intent(in) :: X(:,:)
     integer, intent(in) :: min_node_obs, max_depth
     logical, optional, intent(in) :: opt_splittable(:)
-    type (node) :: fittedtree
+    type (node), pointer :: fittedtree
 
     integer :: N, P
     logical, allocatable :: splittable(:)
@@ -48,7 +48,7 @@ function grow(Y, X, min_node_obs, max_depth, opt_splittable) result(fittedtree)
 
     
     ! fit decision tree classifier
-    fittedtree = splitnode(Y, X, P, N, &
+    fittedtree => splitnode(Y, X, P, N, &
         min_node_obs, max_depth, &
         TOP_NODE_NUM, .true., &
         opt_splittable=splittable)
@@ -174,6 +174,9 @@ recursive function splitnode(Y, X, P, N, &
     ! debugging variables
     logical, parameter :: verbose = .false.
 
+
+    ! give initial values
+    bestsplit_varnum = -1
 
     ! allocate memory for this node
     allocate(thisnode)
@@ -391,7 +394,7 @@ recursive function splitnode(Y, X, P, N, &
             ! construct and attach left node
             allocate(thisnode%leftnode)
 
-            thisnode%leftnode = splitnode( &
+            thisnode%leftnode => splitnode( &
                 Yleft, Xleft, &
                 P, bestsplit_rownum, &
                 min_node_obs, max_depth, &
@@ -401,7 +404,7 @@ recursive function splitnode(Y, X, P, N, &
             ! construct and attach right node
             allocate(thisnode%rightnode)
 
-            thisnode%rightnode = splitnode( &
+            thisnode%rightnode => splitnode( &
                 Yright, Xright, &
                 P, N-bestsplit_rownum, &
                 min_node_obs, max_depth, &
@@ -429,7 +432,7 @@ function test_splitnode_01() result(exitflag)
     integer :: sortedYcorresp(N,P)
     integer :: bestsplit_varnum_correct
     real(dp) :: bestsplit_value_correct
-    type (node) :: thisnode
+    type (node), pointer :: thisnode
     integer :: exitflag
 
     logical, parameter :: verbose = .false.
@@ -454,7 +457,7 @@ function test_splitnode_01() result(exitflag)
     bestsplit_value_correct = 0.7_dp
 
     ! get node split
-    thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
+    thisnode => splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .false.)
 
     ! print results
     if(verbose) then
@@ -486,7 +489,7 @@ function test_splitnode_02() result(exitflag)
     integer, allocatable :: Y(:)
     integer :: bestsplit_varnum_correct
     real(dp) :: bestsplit_value_correct
-    type (node) :: thisnode
+    type (node), pointer :: thisnode
     integer :: exitflag
 
     integer :: i,j,ctr
@@ -534,7 +537,7 @@ function test_splitnode_02() result(exitflag)
     bestsplit_value_correct = 0.03_dp
 
     ! get node split
-    thisnode = splitnode(Y, X, P, N, 2, 2, 1, .false.)
+    thisnode => splitnode(Y, X, P, N, 2, 2, 1, .false.)
 
 
     ! test failure conditions
@@ -561,7 +564,7 @@ function test_splitnode_03() result(exitflag)
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
     integer :: sortedYcorresp(N,P)
-    type (node) :: thisnode
+    type (node), pointer :: thisnode
     integer :: min_node_obs
     integer :: exitflag
 
@@ -583,7 +586,7 @@ function test_splitnode_03() result(exitflag)
 
     ! get node split
     min_node_obs = N
-    thisnode = splitnode(sortedYcorresp, sortedX, P, N, min_node_obs, 2, 1, .false.)
+    thisnode => splitnode(sortedYcorresp, sortedX, P, N, min_node_obs, 2, 1, .false.)
 
 
     ! test failure conditions
@@ -602,7 +605,7 @@ function test_splitnode_04() result(exitflag)
     integer, parameter :: N=10, P=1
     real(dp) :: sortedX(N,P) 
     integer :: sortedYcorresp(N,P)
-    type (node) :: thisnode
+    type (node), pointer :: thisnode
     integer :: max_depth
     integer :: exitflag
 
@@ -624,7 +627,7 @@ function test_splitnode_04() result(exitflag)
 
     ! get node split
     max_depth = 5
-    thisnode = splitnode(sortedYcorresp, sortedX, P, N, 2, max_depth, max_depth, .false.)
+    thisnode => splitnode(sortedYcorresp, sortedX, P, N, 2, max_depth, max_depth, .false.)
 
 
     ! test failure conditions
@@ -643,7 +646,7 @@ function test_splitnode_05() result(exitflag)
     real(dp) :: sortedX(N,P), Xdata_alt(8,2)
     integer :: sortedYcorresp0(N,P), sortedYcorresp1(N,P)
     integer :: Ydata_alt(8)
-    type (node) :: thisnode0, thisnode1, thisnode_alt
+    type (node), pointer :: thisnode0, thisnode1, thisnode_alt
     integer :: exitflag
 
     logical, parameter :: verbose = .false.
@@ -665,8 +668,8 @@ function test_splitnode_05() result(exitflag)
         shape(sortedX))
 
     ! get node split for the two homogenous Y arrays
-    thisnode0 = splitnode(sortedYcorresp0, sortedX, P, N, 2, 2, 1, .false.)
-    thisnode1 = splitnode(sortedYcorresp1, sortedX, P, N, 2, 2, 1, .false.)
+    thisnode0 => splitnode(sortedYcorresp0, sortedX, P, N, 2, 2, 1, .false.)
+    thisnode1 => splitnode(sortedYcorresp1, sortedX, P, N, 2, 2, 1, .false.)
 
     ! alternate test
     Ydata_alt = (/1,1,1,1,1,1,1,1/)
@@ -674,7 +677,7 @@ function test_splitnode_05() result(exitflag)
                           0.02000_dp, 0.01000_dp, 0.03000_dp, 0.02000_dp, 0.03000_dp, 0.03000_dp, 0.03000_dp, 0.02000_dp/), &
                         shape(Xdata_alt))
 
-    thisnode_alt = splitnode(Ydata_alt, Xdata_alt, 2, 8, 1, 10, 1, .false.)
+    thisnode_alt => splitnode(Ydata_alt, Xdata_alt, 2, 8, 1, 10, 1, .false.)
 
 
     ! test failure conditions
@@ -699,7 +702,8 @@ function test_splitnode_06() result(exitflag)
 
     integer :: exitflag
 
-    type (node) :: node1, node2
+    type (node) :: node1
+    type (node), pointer :: node2
 
     character(len=50) :: fmt
 
@@ -726,7 +730,7 @@ function test_splitnode_06() result(exitflag)
         shape(sortedX))
 
     ! get node split
-    node2 = splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .true., node1)
+    node2 => splitnode(sortedYcorresp, sortedX, P, N, 2, 2, 1, .true., node1)
 
     if(verbose) then
         fmt = '(i6, i11, l15, i16, f14.2)'
@@ -829,7 +833,7 @@ function test_splitnode_07() result(exitflag)
     real(dp) :: X(N,P) 
     integer :: Y(N)
 
-    type (node) :: tree
+    type (node), pointer :: tree
 
     integer :: exitflag
 
@@ -1013,7 +1017,7 @@ function test_splitnode_07() result(exitflag)
         /)
 
     ! fit tree to the data
-    tree = splitnode(Y, X, P, N, &
+    tree => splitnode(Y, X, P, N, &
         min_node_obs=1, max_depth=10, &
         thisdepth=2, opt_build_tree=.true., &
         opt_splittable=(/.false.,.true./))
@@ -1037,7 +1041,7 @@ function test_grow_predict_01() result(exitflag)
     integer :: Y(N)
     real(dp) :: X(N,P)
     integer :: min_node_obs, max_depth
-    type (node) :: fittedtree
+    type (node), pointer :: fittedtree
     integer :: exitflag
 
     logical, parameter :: verbose = .false.
@@ -1099,7 +1103,7 @@ function test_grow_predict_01() result(exitflag)
     endif
 
     ! fit tree
-    fittedtree = grow(Y, X, min_node_obs, max_depth)
+    fittedtree => grow(Y, X, min_node_obs, max_depth)
 
 
     if(verbose) then
@@ -1302,7 +1306,7 @@ function test_grow_01() result(exitflag)
     integer :: Y(N)
     real(dp) :: X(N,P)
     integer :: min_node_obs, max_depth
-    type (node) :: fittedtree
+    type (node), pointer :: fittedtree
 
     integer :: exitflag
 
@@ -1322,7 +1326,7 @@ function test_grow_01() result(exitflag)
     Y = (/1,1,1,1,1,1,1,1,1,1/)
     X(:,1) = (/1,2,3,4,5,6,7,8,9,10/)
 
-    fittedtree = grow(Y, X, min_node_obs, max_depth)
+    fittedtree => grow(Y, X, min_node_obs, max_depth)
 
 
     ! test for failure conditions
@@ -1342,7 +1346,7 @@ function test_grow_02() result(exitflag)
     integer :: Y(N)
     real(dp) :: X(N,P)
     integer :: min_node_obs, max_depth
-    type (node) :: fittedtree
+    type (node), pointer :: fittedtree
 
     logical, parameter :: verbose = .false.
 
@@ -1362,7 +1366,7 @@ function test_grow_02() result(exitflag)
     Y = (/1,1,1,1,1,0,0,0,0,0/)
     X(:,1) = (/1,1,1,1,1,1,1,1,1,1/)
 
-    fittedtree = grow(Y, X, min_node_obs, max_depth)
+    fittedtree => grow(Y, X, min_node_obs, max_depth)
 
 
     ! test for failure conditions
@@ -1382,7 +1386,7 @@ function test_grow_03() result(exitflag)
     integer :: Y(N)
     real(dp) :: X(N,P)
     integer :: min_node_obs, max_depth
-    type (node) :: fittedtree
+    type (node), pointer :: fittedtree
 
     integer :: exitflag
 
@@ -1402,7 +1406,7 @@ function test_grow_03() result(exitflag)
     Y = (/1,1,1,1,1,0,0,0,0,0/)
     X(:,1) = (/0.1_dp,0.2_dp,0.3_dp,0.4_dp,0.5_dp,0.6_dp,0.7_dp,0.8_dp,0.9_dp,1.0_dp/)
 
-    fittedtree = grow(Y, X, min_node_obs, max_depth)
+    fittedtree => grow(Y, X, min_node_obs, max_depth)
 
 
     ! test for failure conditions
@@ -1423,7 +1427,7 @@ function test_grow_04() result(exitflag)
     integer :: Y(N)
     real(dp) :: X(N,P)
     integer :: min_node_obs, max_depth
-    type (node) :: fittedtree
+    type (node), pointer :: fittedtree
 
     integer :: exitflag
 
@@ -1443,7 +1447,7 @@ function test_grow_04() result(exitflag)
     Y = (/1,1,1,1,1,0,0,0,0,0/)
     X(:,1) = (/0.1_dp,0.2_dp,0.3_dp,0.4_dp,0.5_dp,0.6_dp,0.7_dp,0.8_dp,0.9_dp,1.0_dp/)
 
-    fittedtree = grow(Y, X, min_node_obs, max_depth)
+    fittedtree => grow(Y, X, min_node_obs, max_depth)
 
 
     ! test for failure conditions
@@ -1464,7 +1468,7 @@ function test_grow_05() result(exitflag)
     integer :: Y(N)
     real(dp) :: X(N,P)
     integer :: min_node_obs, max_depth
-    type (node) :: fittedtree
+    type (node), pointer :: fittedtree
 
     integer :: exitflag
 
@@ -1484,7 +1488,7 @@ function test_grow_05() result(exitflag)
     Y = (/1,1,1,1,1,0,0,0,0,0/)
     X(:,1) = (/0.1_dp,0.2_dp,0.3_dp,0.4_dp,0.5_dp,0.6_dp,0.7_dp,0.8_dp,0.9_dp,1.0_dp/)
 
-    fittedtree = grow(Y, X, min_node_obs, max_depth, opt_splittable=(/.false./))
+    fittedtree => grow(Y, X, min_node_obs, max_depth, opt_splittable=(/.false./))
 
 
     ! test for failure conditions

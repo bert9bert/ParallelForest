@@ -6,7 +6,7 @@
 library(ParallelForest)
 
 
-PERFORM_TREE_TESTS = TRUE
+PERFORM_TREE_TESTS = FALSE
 PERFORM_FOREST_TESTS = TRUE
 
 
@@ -61,7 +61,7 @@ if(PERFORM_TREE_TESTS){
 
 ##### TESTS ON GROWING AND PREDICTING FORESTS #####
 if(PERFORM_FOREST_TESTS){
-    numsamps=90
+    numsamps=150
     numvars=1
     numboots=20
 

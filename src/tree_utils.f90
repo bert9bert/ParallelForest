@@ -1,5 +1,5 @@
 !------------------------------------------------------------------------------
-!   Module of tree utilities.
+!   Module of tree (and forest) utilities.
 !   Copyright (C) 2014  Bertram Ieong
 !------------------------------------------------------------------------------
 
@@ -22,7 +22,12 @@ type node
     type (node), pointer :: leftnode, rightnode
     integer :: splitvarnum
     real(dp) :: splitvalue
-end type
+end type node
+
+
+type node_ptr
+    type (node), pointer :: t
+end type node_ptr
 
 
 contains
@@ -205,6 +210,7 @@ recursive function flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
     !--- fill in this node ---
 
     ! find the index for this tag
+    idx = -1
     do i=1,numnodes
         if(tag(i)==thistag) then
             idx=i
