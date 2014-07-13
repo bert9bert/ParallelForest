@@ -15,9 +15,12 @@ subroutine init_random_seed()
 
     implicit none
     integer, allocatable :: seed(:)
-    integer :: i, n, un, istat, dt(8), pid
+    integer :: i, n, un, istat, read_iostat, dt(8), pid
     integer :: getpid  ! function return types
     integer(intdp) :: t
+    logical :: fallback
+
+    fallback = .false.
 
     call random_seed(size = n)
     allocate(seed(n))
@@ -25,9 +28,14 @@ subroutine init_random_seed()
     open(unit=newunit(un), file="/dev/urandom", access="stream", &
          form="unformatted", action="read", status="old", iostat=istat)
     if (istat == 0) then
-       read(un) seed
-       close(un)
+      read(un, iostat=read_iostat) seed
+      if(read_iostat /= 0) fallback = .true.
+      close(un)
     else
+      fallback = .true.
+    endif
+
+    if(fallback) then
        ! Fallback to XOR:ing the current time and pid. The PID is
        ! useful in case one launches multiple instances of the same
        ! program in parallel.
@@ -40,7 +48,7 @@ subroutine init_random_seed()
                + dt(5) * 60 * 60 * 1000 &
                + dt(6) * 60 * 1000 + dt(7) * 1000 &
                + dt(8)
-       end if
+       endif
        pid = getpid()
        t = ieor(t, int(pid, kind(t)))
        do i = 1, n

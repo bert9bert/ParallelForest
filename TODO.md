@@ -14,7 +14,7 @@ Feature Expansions
 Performance Improvements
 ------------------------
 * **Fix warnings with `-Wall` compilation**
-* **Have random number generator seed passed from R to Fortran**
+* Have random number generator seed passed from R to Fortran
 * Implement more memory friendly way to pass tree/forest from compiled Fortran to R
 * In `classification.f90:365-368`, investigate whether memory will build up in the stack because of the many allocations of `Xleft`, etc.
 * Review and fix any bad pointer practices
