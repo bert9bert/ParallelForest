@@ -412,7 +412,6 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
     !$OMP END PARALLEL DO
 
 
-    !$OMP PARALLEL DO
     do treenum=1,numboots
         ! store the forest as an array of nodes as opposed to 
         ! an array of node pointers
@@ -428,8 +427,9 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
         fittedforest(treenum)%leftnode => fittedforest_ptrarr(treenum)%t%leftnode
         fittedforest(treenum)%rightnode => fittedforest_ptrarr(treenum)%t%rightnode
 
+        fittedforest(treenum)%parentnode => null()
+
     enddo
-    !$OMP END PARALLEL DO
 
 
     if(verbose) then

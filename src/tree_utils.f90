@@ -157,7 +157,7 @@ recursive function flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
     opt_thistag) result(tree)
 
     !--- variable declarations ---
-    type (node), target :: tree
+    type (node), pointer :: tree
 
     ! tree descriptors
     integer, intent(in) :: tag(:), tagparent(:), tagleft(:), tagright(:)
@@ -181,6 +181,10 @@ recursive function flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
 
     ! counting and indexing variables
     integer :: idx, i
+
+
+    !--- Allocate memory for this (sub)tree ---
+    allocate(tree)
 
 
     !--- Find the number of nodes in this tree ---
@@ -231,11 +235,11 @@ recursive function flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
         allocate(tree%leftnode)
         allocate(tree%rightnode)
 
-        tree%leftnode = flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
+        tree%leftnode => flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
             depth, majority, has_subnodes, splitvarnum, splitvalue, &
             tagleft(idx))
 
-        tree%rightnode = flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
+        tree%rightnode => flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
             depth, majority, has_subnodes, splitvarnum, splitvalue, &
             tagright(idx))
 
@@ -361,7 +365,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
     integer :: exitflag
 
     type (node), target :: tree, tree_left, tree_right, tree_right_left, tree_right_right
-    type (node) :: tree_unflattened
+    type (node), pointer :: tree_unflattened
 
     integer :: max_depth
 
@@ -465,7 +469,7 @@ function test_tree2flat_flat2tree_01() result(exitflag)
 
 
     !--- turn this flattened tree back into a tree ---
-    tree_unflattened = flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
+    tree_unflattened => flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
         depth, majority, has_subnodes, splitvarnum, splitvalue)
 
 

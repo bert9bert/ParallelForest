@@ -38,9 +38,10 @@ subroutine predict_forest_wrapper( &
     integer, intent(out) :: Ynew_pred(N)
 
     ! private variables
-    type (node) :: forest(numboots)
+    type (node) :: fittedforest(numboots)
+    type (node_ptr) :: fittedforest_ptrarr(numboots)
 
-    integer :: this_treenum
+    integer :: treenum
     integer :: begidx, endidx
 
 
@@ -49,8 +50,8 @@ subroutine predict_forest_wrapper( &
     begidx = 1
     endidx = numnodes(1)
 
-    do this_treenum=1,numboots
-        forest(this_treenum) = flat2tree( &
+    do treenum=1,numboots
+        fittedforest_ptrarr(treenum)%t => flat2tree( &
             tag(begidx:endidx), &
             tagparent(begidx:endidx), tagleft(begidx:endidx), tagright(begidx:endidx), &
             is_topnode(begidx:endidx), &
@@ -58,15 +59,33 @@ subroutine predict_forest_wrapper( &
             splitvarnum(begidx:endidx), splitvalue(begidx:endidx) &
             )
 
-        if(this_treenum /= numboots) then
+        if(treenum /= numboots) then
             begidx = endidx + 1
-            endidx = begidx + numnodes(this_treenum+1) - 1
+            endidx = begidx + numnodes(treenum+1) - 1
         endif
     enddo
 
+    do treenum=1,numboots
+        ! store the forest as an array of nodes as opposed to 
+        ! an array of node pointers
+
+        fittedforest(treenum)%depth = fittedforest_ptrarr(treenum)%t%depth
+        fittedforest(treenum)%majority = fittedforest_ptrarr(treenum)%t%majority
+        fittedforest(treenum)%has_subnodes = fittedforest_ptrarr(treenum)%t%has_subnodes
+        fittedforest(treenum)%tag = fittedforest_ptrarr(treenum)%t%tag
+
+        fittedforest(treenum)%splitvarnum = fittedforest_ptrarr(treenum)%t%splitvarnum
+        fittedforest(treenum)%splitvalue = fittedforest_ptrarr(treenum)%t%splitvalue
+
+        fittedforest(treenum)%leftnode => fittedforest_ptrarr(treenum)%t%leftnode
+        fittedforest(treenum)%rightnode => fittedforest_ptrarr(treenum)%t%rightnode
+
+        fittedforest(treenum)%parentnode => null()
+
+    enddo
 
     ! get forest prediction
-    Ynew_pred = predict_forest(forest, Xnew)
+    Ynew_pred = predict_forest(fittedforest, Xnew)
 
     
 end subroutine

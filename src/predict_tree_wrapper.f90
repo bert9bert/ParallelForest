@@ -34,12 +34,12 @@ subroutine predict_tree_wrapper(tag, tagparent, tagleft, tagright, is_topnode, &
     integer, intent(out) :: Ynew_pred(N)
 
     ! private variables
-    type (node) :: tree
+    type (node), pointer :: tree
 
 
 
     !--- predict with inputted flattened tree ---
-    tree = flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
+    tree => flat2tree(tag, tagparent, tagleft, tagright, is_topnode, &
             depth, majority, has_subnodes, splitvarnum, splitvalue)
 
     Ynew_pred = predict(tree, Xnew)
