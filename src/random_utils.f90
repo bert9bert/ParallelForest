@@ -16,7 +16,7 @@ subroutine init_random_seed()
     implicit none
     integer, allocatable :: seed(:)
     integer :: i, n, un, istat, read_iostat, dt(8), pid
-    integer :: getpid  ! function return types
+    integer(kind=4) :: getpid  ! function return types
     integer(intdp) :: t
     logical :: fallback
 
