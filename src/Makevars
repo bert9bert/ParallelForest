@@ -21,49 +21,27 @@ all: $(SHLIB)
 
 #####  Declare dependencies and make instructions for objects  #####
 
-random_utils.o: utils.o \
-random_utils.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  random_utils.f90 -o random_utils.o
+random_utils.o: utils.o
 
-tree_utils.o: utils.o \
-tree_utils.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  tree_utils.f90 -o tree_utils.o
+tree_utils.o: utils.o
 
-sort_utils.o: utils.o \
-sort_utils.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  sort_utils.f90 -o sort_utils.o
+sort_utils.o: utils.o
 
-impurity_measures.o: utils.o \
-impurity_measures.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  impurity_measures.f90 -o impurity_measures.o
+impurity_measures.o: utils.o
 
-classification.o: utils.o tree_utils.o sort_utils.o impurity_measures.o \
-classification.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  classification.f90 -o classification.o
+classification.o: utils.o tree_utils.o sort_utils.o impurity_measures.o
 
-forest_parallel.o: utils.o random_utils.o tree_utils.o sort_utils.o impurity_measures.o classification.o \
-forest_parallel.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  forest_parallel.f90 -o forest_parallel.o
+forest_parallel.o: utils.o random_utils.o tree_utils.o sort_utils.o impurity_measures.o classification.o
 
-grow_tree_wrapper.o: utils.o tree_utils.o classification.o \
-grow_tree_wrapper.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  grow_tree_wrapper.f90 -o grow_tree_wrapper.o
+grow_tree_wrapper.o: utils.o tree_utils.o classification.o
 
-predict_tree_wrapper.o: utils.o tree_utils.o classification.o \
-predict_tree_wrapper.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  predict_tree_wrapper.f90 -o predict_tree_wrapper.o
+predict_tree_wrapper.o: utils.o tree_utils.o classification.o
 
-grow_forest_wrapper.o: utils.o tree_utils.o classification.o forest_parallel.o \
-grow_forest_wrapper.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  grow_forest_wrapper.f90 -o grow_forest_wrapper.o
+grow_forest_wrapper.o: utils.o tree_utils.o classification.o forest_parallel.o
 
-predict_forest_wrapper.o: utils.o tree_utils.o classification.o forest_parallel.o \
-predict_forest_wrapper.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  predict_forest_wrapper.f90 -o predict_forest_wrapper.o
+predict_forest_wrapper.o: utils.o tree_utils.o classification.o forest_parallel.o
 
-fortran_unit_tests_wrapper.o: random_utils.o forest_parallel.o classification.o tree_utils.o sort_utils.o \
-fortran_unit_tests_wrapper.f90
-	$(FC) $(PKG_FCFLAGS) $(FCPICFLAGS) $(FCFLAGS) -c  fortran_unit_tests_wrapper.f90 -o fortran_unit_tests_wrapper.o
+fortran_unit_tests_wrapper.o: random_utils.o forest_parallel.o classification.o tree_utils.o sort_utils.o
 
 #####  Clean target  #####
 clean:
