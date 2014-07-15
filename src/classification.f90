@@ -49,8 +49,8 @@ function grow(Y, X, min_node_obs, max_depth, opt_splittable) result(fittedtree)
     
     ! fit decision tree classifier
     fittedtree => splitnode(Y, X, P, N, &
-        min_node_obs, max_depth, &
-        TOP_NODE_NUM, .true., &
+        min_node_obs, max_depth, TOP_NODE_NUM, &
+        .true., &
         opt_splittable=splittable)
 
 
@@ -131,9 +131,9 @@ recursive function splitnode(Y, X, P, N, &
 
     !----- Variable Declarations -----
     ! input variables
+    integer, intent(in) :: N, P
     integer, intent(in) :: Y(N)
     real(dp), intent(in) :: X(N,P)
-    integer, intent(in) :: P, N
     integer, intent(in) :: min_node_obs, max_depth, thisdepth
     logical, optional :: opt_build_tree
     type (node), target, optional :: opt_parentnode
