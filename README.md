@@ -4,7 +4,7 @@ This is an R package implementing random forest classification using parallel co
 ```r
 install.packages("ParallelForest")
 ```
-for Windows, Mac OS X Mavericks, and Linux.
+for Windows, Mac OS X, and Linux.
 
 For this package's page on CRAN, please see:
 http://cran.r-project.org/web/packages/ParallelForest/
