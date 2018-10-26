@@ -1,9 +1,11 @@
-useDynLib(ParallelForest)
+useDynLib(ParallelForest, .registration = TRUE)
 
 import(methods)
+importFrom("stats", "model.frame")
 
 export(grow.forest)
 export(predict.forest)
+S3method(predict, forest)
 exportClasses(forest)
 
 exportMethods(predict)

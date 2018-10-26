@@ -4,8 +4,8 @@
 #   Copyright (C) 2014  Bertram Ieong
 #------------------------------------------------------------------------------
 
-## source the functions that need to be tested
-source("../R/2_prep.depvar.r")
+library(ParallelForest)
+
 
 ## define various dependent vectors to check, some should work and some should fail
 yint01  = as.integer(c(1,1,1,0,0,1))  # should work
@@ -46,8 +46,8 @@ yord2but3 = as.ordered(c("bob","adam","adam","bob","adam","adam",  # should work
 
 # define testing functions
 shouldwork.test = function(x) {
-    retlist = prep.depvar.in(x)
-    x.back = do.call(prep.depvar.out,retlist)
+    retlist = ParallelForest:::prep.depvar.in(x)
+    x.back = do.call(ParallelForest:::prep.depvar.out, retlist)
     if(!identical(x,x.back)) stop("Doesn't work, but should work!")
 }
 
@@ -55,7 +55,7 @@ shouldfail.test = function(x) {
 
     trycatch.result = tryCatch(
         {
-            retlist = prep.depvar.in(x)
+            retlist = ParallelForest:::prep.depvar.in(x)
             ret = -1
         }, 
         error = function(e) return(0))

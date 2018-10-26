@@ -10,11 +10,12 @@ utils.o random_utils.o tree_utils.o sort_utils.o \
 impurity_measures.o classification.o forest_parallel.o \
 grow_tree_wrapper.o predict_tree_wrapper.o \
 grow_forest_wrapper.o predict_forest_wrapper.o \
-fortran_unit_tests_wrapper.o
+fortran_unit_tests_wrapper.o \
+ParallelForest_init.o
 
 #####  Compiler flags  #####
-PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS)
-PKG_LIBS = $(SHLIB_OPENMP_FCFLAGS)
+PKG_FCFLAGS = $(SHLIB_OPENMP_FFLAGS)
+PKG_LIBS = $(SHLIB_OPENMP_CFLAGS)
 
 #####  Phony target for R's build system to invoke  #####
 all: $(SHLIB)

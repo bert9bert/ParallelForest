@@ -25,15 +25,15 @@ subroutine init_random_seed()
     call random_seed(size = n)
     allocate(seed(n))
     ! First try if the OS provides a random number generator
-    open(unit=newunit(un), file="/dev/urandom", access="stream", &
-         form="unformatted", action="read", status="old", iostat=istat)
-    if (istat == 0) then
-      read(un, iostat=read_iostat) seed
-      if(read_iostat /= 0) fallback = .true.
-      close(un)
-    else
-      fallback = .true.
-    endif
+    ! -- Removed getting random number from OS using Fortran. Can be
+    ! -- re-implemented later by passing random number from OS from R.
+    fallback = .true.  ! for now, always use fallback
+
+
+
+
+
+
 
     if(fallback) then
        ! Fallback to XOR:ing the current time and pid. The PID is
