@@ -8,7 +8,7 @@
 
 grow.forest = function(formula, data, subset, na.action,
     impurity.function = "gini", model = FALSE, x = FALSE, y = FALSE,
-    min_node_obs, max_depth, 
+    min_node_obs, max_depth,
     numsamps, numvars, numboots=5){
 
 
@@ -55,7 +55,7 @@ grow.forest = function(formula, data, subset, na.action,
         max_depth = ceiling(n/20000)
     }
     if(missing(numsamps)){
-        numsamps = ceiling(n/2)
+        numsamps = n
     }
     if(missing(numvars)){
         numvars = ceiling(0.70 * p)
@@ -79,10 +79,19 @@ grow.forest = function(formula, data, subset, na.action,
         stop("Only the Gini impurity function is currently supported.")
     }
 
+    if(!all(ytrain.tof %in% c(0,1))){
+        # Although the functions to fit and predict trees
+        # support multi-class classification by returning the
+        # value of the majority class in the terminal node,
+        # the functions to fit and predict for a forest
+        # currently do not support multi-class classification
+        # due to the way they are currently implemented.
+        stop("Response variable must be 0s and 1s.")
+    }
 
     ### Fit forest with Fortran compiled program ###
 
-    # determine the maximum possible number of nodes with the given max depth for the 
+    # determine the maximum possible number of nodes with the given max depth for the
     # fitted tree, which determines the length of the padded array that the Fortran
     # subroutine should return
     TOP_NODE_NUM = 0
@@ -101,7 +110,7 @@ grow.forest = function(formula, data, subset, na.action,
     ret = .Fortran("grow_forest_wrapper",
         n=as.integer(n), p=as.integer(p),
         xtrain=xtrain.tof, ytrain=ytrain.tof,
-        min_node_obs=as.integer(min_node_obs), max_depth=as.integer(max_depth), 
+        min_node_obs=as.integer(min_node_obs), max_depth=as.integer(max_depth),
         retlen=as.integer(retlen),
         numsamps=as.integer(numsamps),
         numvars=as.integer(numvars),
@@ -153,4 +162,3 @@ grow.forest = function(formula, data, subset, na.action,
     ### Return fitted forest object ###
     return(fitted.forest)
 }
-

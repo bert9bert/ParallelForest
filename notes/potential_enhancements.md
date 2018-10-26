@@ -1,7 +1,6 @@
 
 Feature Expansions
 ------------------
-* have `predict.forest` also return probabilities
 * Implement passing of optional arguments such as the number of threads to use to wrappers
 * Return tree-level measures: variable importance, out-of-bag error
 * Put in more impurity functions

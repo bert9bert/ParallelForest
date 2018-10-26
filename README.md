@@ -22,7 +22,7 @@ The `grow.forest` function is used to grow (fit) a random forest, which returns 
 ```
 
 ## A Simple Example with U.S. Census Data
-A dataset of income and other person-level characteristics based off the U.S. Census Bureau's Current Population Surveys in 1994 and 1995 can be downloaded from the UCI Machine Learning Repository [here](http://archive.ics.uci.edu/ml/datasets/Census-Income+%28KDD%29). The dependent variable is binary and indicates whether the survey-taker's income is under or over $50,000. Seven predictor variables are used: age, wage per hour, capital gains, capital losses, dividends from stocks, number of persons worked for employer, and weeks worked in year. This dataset is split into a training dataset and a testing (hold-out) dataset.
+A dataset of income and other person-level characteristics based off the U.S. Census Bureau's Current Population Surveys in 1994 and 1995 can be downloaded from the UCI Machine Learning Repository [here](http://archive.ics.uci.edu/ml/datasets/Census-Income+%28KDD%29). The dependent variable is binary and indicates whether the survey-taker's income is under or over a certain level. Seven predictor variables are used.
 
 First, load the package into R, then load the training and testing datasets.
 
@@ -41,35 +41,35 @@ fforest = grow.forest(
   Y~.,
   data=low_high_earners,
   min_node_obs = 1000,      # min obs to split node
-  max_depth = 10,           # max tree depth
-  numsamps = 100000,        # num obs to draw for each tree
-  numvars = 5,              # num vars to draw for each tree
-  numboots = 100            # number of trees in the forest
-  )
+  max_depth = 15,           # max tree depth
+  numvars = 3,              # num vars to draw for each tree
+  numboots = 50             # number of trees in the forest
+)
 ```
 
 ### Prediction on the Training Data and on New Data
 
-Then use the fitted forest to get predictions on the training data.
+Then use the fitted forest to get predictions on the training data and testing data. The `predict` function takes an  argument called `type` to specify whether the returned predictions should be continuous probability values between 0 and 1 (by setting `type="response"`) or should have only binary values 0 and 1 based off some threshold (by setting `type="binary_0_1"`). See the help file via `?predict.forest` in R for more details.
 ```{r}
-fforest_train_pred = predict(fforest, low_high_earners)
+# get probability predictions on the training data
+fforest_train_pred = predict(fforest, low_high_earners, type="response")
+
+# get probability predictions on the testing (hold-out) data
+fforest_test_pred = predict(fforest, low_high_earners_test, type="response")
 ```
 
-Now use the fitted forest to get predictions on the testing data.
-```{r}
-fforest_test_pred = predict(fforest, low_high_earners_test)
-```
-
-For both the predictions on the training data and testing data, compute the percentage of observations predicted correctly, the accuracy rate.
+Compute the area under the ROC curve (AUC) for both the predictions on the training data and testing data to evaluate the fitted model's performance.
 ```R
-pctcorrect_train = sum(low_high_earners$Y==fforest_train_pred)/nrow(low_high_earners)
-pctcorrect_test = sum(low_high_earners_test$Y==fforest_test_pred)/nrow(low_high_earners_test)
+library(pROC)  # install the pROC package with `install.packages("pROC")` if needed
 
-print(paste0("Model accuracy on the training data is ", round(pctcorrect_train, digits=3)*100, "%."))
-print(paste0("Model accuracy on the test (hold-out) data is ", round(pctcorrect_test, digits=3)*100, "%."))
+fforest_train_roc = pROC::roc(response=low_high_earners$Y, predictor=fforest_train_pred)
+fforest_test_roc = pROC::roc(response=low_high_earners_test$Y, predictor=fforest_test_pred)
+
+print(paste0("AUC on the training data is ", round(fforest_train_roc$auc, digits=3)*100, "%."))
+print(paste0("AUC on the testing (hold-out) data is ", round(fforest_test_roc$auc, digits=3)*100, "%."))
 ```
-> Model accuracy on the training data is 72.5%.  
-> Model accuracy on the test (hold-out) data is 71.8%.
+> AUC on the training data is 88.7%.  
+> AUC on the testing (hold-out) data is 88.5%.
 
 ## Exploring the Source Code
 
@@ -79,4 +79,4 @@ Source code is located in two places:
 
 ## Notes
 
-The use of this packages comes with no warranty and no support.
+The use of this package comes with no warranty and no support.

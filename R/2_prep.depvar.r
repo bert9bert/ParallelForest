@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 
 prep.depvar.in = function(y) {
-    # Given the dependent variable vector with two classes, this function 
+    # Given the dependent variable vector with two classes, this function
     # returns a list that contains the dependent variable vector expressed
     # with only integer 0s and 1s and information needed to convert it back.
     # This will be a helper function to any grow functions.
@@ -59,6 +59,19 @@ prep.depvar.in = function(y) {
 prep.depvar.out = function(y.prepped, y.underlying, factor.levels, is.ordered.factor) {
     # Undos what prep.depvar.in would do. This will be a helper function to any
     # predict functions.
+
+    # Important Note: Starting with version 1.1.2, the Fortran functions
+    #                 will now return probabilities between 0 and 1 [0,1]
+    #                 instead of the final prediction of either 0 or 1 {0,1}.
+    #
+    #                 Until this function is re-written to support returned
+    #                 probabilities, its use will be commented out (sub-note 1)
+    #                 and the grow.forest function will only take {0,1}.
+    #
+    # Sub-note 1: See `predict_forest.r` line 62 for comment out
+    #             and line 63 for stopgap replacement.
+    #
+    # Sub-note 2: See `grow.forest.r` lines 82-90 for stopgap assertion.
 
     # if original had only 0s and 1s
     if(missing(y.underlying)) return(y.prepped)

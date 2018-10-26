@@ -6,7 +6,18 @@
 #------------------------------------------------------------------------------
 
 # method to be used for predict function in forest S4 class
-predict.forest = function(object, newdata, ...){
+predict.forest = function(object, newdata, type="binary_0_1", decision_threshold=0.5, ...){
+
+    ## set debugging variables
+    verbose = FALSE
+
+    ## validate input options ###
+    if(!(type %in% c("binary_0_1","response"))){
+      stop("type argument needs to be either binary_0_1 or response")
+    }
+
+    stopifnot(decision_threshold >= 0)
+    stopifnot(decision_threshold <= 1)
 
     ### Create design matrix ###
     fmla.str = deparse(object@fmla)
@@ -44,12 +55,31 @@ predict.forest = function(object, newdata, ...){
         n.new,
         p,
         xtest.tof,
-        ynew_pred_01=integer(n.new)
+        ynew_pred_01=double(n.new)
         )
 
-    ### Return vector with forest prediction ###
+    ### debugging output
+    if (verbose) {
+        cat("\nPredicted outputs that Fortran gives to R: \n")
+        cat(paste(retpred$ynew_pred_01, collapse=", "))
+        cat("\n")
+    }
 
-    ynew_pred = do.call(prep.depvar.out, append(list(retpred$ynew_pred_01), object@depvar.restore.info))
+    ### get vector with forest prediction in the probability space ###
+    #ynew_pred = do.call(prep.depvar.out, append(list(retpred$ynew_pred_01), object@depvar.restore.info))
+    ynew_pred = retpred$ynew_pred_01
+
+
+
+    ### apply decision rule if needed ###
+    if (type=="binary_0_1") {
+        ynew_pred = as.integer(ynew_pred > decision_threshold)
+    }
+
+    ### return ###
+    stopifnot(ynew_pred >= 0)
+    stopifnot(ynew_pred <= 1)
+
     return(ynew_pred)
 }
 

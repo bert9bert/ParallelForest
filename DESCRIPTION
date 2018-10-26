@@ -1,5 +1,5 @@
 Package: ParallelForest
-Version: 1.1.1
+Version: 1.1.2
 Date: 2018-10-25
 Title: Random Forest Classification with Parallel Computing
 Authors@R: c(person("Bertram", "Ieong", role=c("aut","cre","cph"), email="contactme@bertramieong.com"))

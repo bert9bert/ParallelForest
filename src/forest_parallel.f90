@@ -6,6 +6,7 @@
 
 module forest_parallel
 
+use iso_fortran_env
 
 use utils
 use random_utils
@@ -153,7 +154,7 @@ subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, op
         num_Yunique = size(Yunique)
     else
         allocate(tmp_int_arr_1d_no1(N))
-        allocate(tmp_int_arr_1d_no2(N))  ! this is needed because of how this sort works, 
+        allocate(tmp_int_arr_1d_no2(N))  ! this is needed because of how this sort works,
                                          ! may be able to discard when sort is replaced
                                          ! with another sort
         allocate(tmp_dbl_arr_1d_no1(N))  ! same comment as above
@@ -234,7 +235,7 @@ subroutine bootstrap_balanced(Y, X, in_numsamps, Y_boot, X_boot, opt_Yunique, op
         do j=1,N
             if(Y(j) == Yunique(i)) then
                 Ydata_unique(ctr,i) = Y(j)
-                Xdata_unique(ctr,:,i) = X(j,:)                
+                Xdata_unique(ctr,:,i) = X(j,:)
 
                 ctr=ctr+1
             endif
@@ -402,7 +403,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
         ! -- fit tree to the bootstrapped data and select variables --
         fittedforest_ptrarr(treenum)%t => grow(Y_boot, X_boot, min_node_obs, max_depth, &
-            opt_splittable=variables_selected)     
+            opt_splittable=variables_selected)
 
         deallocate(Y_boot)
         deallocate(X_boot)
@@ -413,7 +414,7 @@ function grow_forest(Y, X, min_node_obs, max_depth, &
 
 
     do treenum=1,numboots
-        ! store the forest as an array of nodes as opposed to 
+        ! store the forest as an array of nodes as opposed to
         ! an array of node pointers
 
         fittedforest(treenum)%depth = fittedforest_ptrarr(treenum)%t%depth
@@ -448,14 +449,17 @@ function predict_forest(fittedforest, X) result(Ypred)
     ! Input/Output variables
     type (node), intent(in) :: fittedforest(:)
     real(dp), intent(in) :: X(:,:)
-    integer, allocatable :: Ypred(:)
+    real(dp), allocatable :: Ypred(:)
 
     ! Private variables
     integer, allocatable :: Ypred_trees(:,:)
-    integer :: N, P
+    integer(kind=int64) :: N
+    integer :: P
 
     ! Counting variables
-    integer :: i, j, num1
+    integer(kind=int64) :: i
+    integer :: j
+    integer :: num_pos
 
     ! Debugging variables
     logical, parameter :: verbose = .false.
@@ -486,23 +490,29 @@ function predict_forest(fittedforest, X) result(Ypred)
 
         print *, "Prediction for each tree:"
         do i=1,size(Ypred_trees,1)
-            print *, (Ypred_trees(i,j), j=1,size(Ypred_trees,2))
+            print *, "Obs ", i, ": ", (Ypred_trees(i,j), j=1,size(Ypred_trees,2))
         enddo
     endif
 
 
     ! --- create ensemble prediction ---
+    if(verbose) then
+        print *, "Num positive trees:"
+    endif
+
     !$OMP PARALLEL DO &
-    !$OMP       PRIVATE(i,j,num1)
+    !$OMP       PRIVATE(i,j,num_pos)
     do i=1,N
-        num1 = 0
+        num_pos = 0
         do j=1,size(fittedforest)
-            if(Ypred_trees(i,j)==1) num1=num1+1
-            if(Ypred_trees(i,j)==0) num1=num1-1
+            if(Ypred_trees(i,j)==1) num_pos = num_pos + 1
         enddo
 
-        if(num1 >= 0) Ypred(i) = 1
-        if(num1 <  0) Ypred(i) = 0
+        Ypred(i) = real(num_pos, dp) / real(size(fittedforest), dp)
+
+        if(verbose) then
+            print *, "Obs ", i, ": ", num_pos, " positive trees (", Ypred(i), " frac)"
+        endif
     enddo
     !$OMP END PARALLEL DO
 

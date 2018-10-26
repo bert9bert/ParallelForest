@@ -7,7 +7,7 @@
 set PATH=%PATH%;c:\Rtools\bin;c:\Rtools\MinGW_64\bin;C:\Program Files\R\R-3.5.1\bin
 
 echo Removing old files...
-del ParallelForest_1.1.1.zip
+del ParallelForest_1.1.2.zip
 
 echo Build and compile a Windows binary package for current version of R...
-R CMD INSTALL --build ParallelForest_1.1.1.tar.gz
+R CMD INSTALL --build ParallelForest_1.1.2.tar.gz

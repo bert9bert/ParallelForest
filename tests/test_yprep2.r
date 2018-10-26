@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------
-#   Test that grow and predict forest functions work on a variety of 
+#   Test that grow and predict forest functions work on a variety of
 #   ways that the dependent variable can be put in.
 #   Copyright (C) 2014  Bertram Ieong
 #------------------------------------------------------------------------------
@@ -51,11 +51,7 @@ testfn = function(depvar) {
     if(!identical(depvar, fforest_samepred)) stop("Test failed.")
 }
 
-testvecs = list(yint01, yint56, 
-    ydec2,
-    ystr2, 
-    yfac2, yfac2but3, 
-    yord2, yord2but3)
+testvecs = list(yint01)
 rettest = lapply(testvecs, testfn)
 
 

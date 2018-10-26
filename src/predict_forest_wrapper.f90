@@ -9,6 +9,7 @@ subroutine predict_forest_wrapper( &
     numboots, &
     N, P, Xnew, Ynew_pred)
 
+    use iso_fortran_env
 
     use utils
     use tree_utils
@@ -35,7 +36,7 @@ subroutine predict_forest_wrapper( &
     real(dp), intent(in) :: Xnew(N,P)
 
     ! output variables
-    integer, intent(out) :: Ynew_pred(N)
+    real(dp), intent(out) :: Ynew_pred(N)
 
     ! private variables
     type (node) :: fittedforest(numboots)
@@ -43,6 +44,12 @@ subroutine predict_forest_wrapper( &
 
     integer :: treenum
     integer :: begidx, endidx
+
+    ! Counting variables
+    integer(kind=int64) :: i
+
+    ! Debugging variables
+    logical, parameter :: verbose = .false.
 
 
     !--- predict with inputted flattened forest ---
@@ -66,7 +73,7 @@ subroutine predict_forest_wrapper( &
     enddo
 
     do treenum=1,numboots
-        ! store the forest as an array of nodes as opposed to 
+        ! store the forest as an array of nodes as opposed to
         ! an array of node pointers
 
         fittedforest(treenum)%depth = fittedforest_ptrarr(treenum)%t%depth
@@ -87,5 +94,11 @@ subroutine predict_forest_wrapper( &
     ! get forest prediction
     Ynew_pred = predict_forest(fittedforest, Xnew)
 
-    
+    if(verbose) then
+        print *, "Predicted outputs given to predict_forest_wrapper upon calling predict_forest:"
+        do i=1,N
+            print *, "Obs ", i, ":", Ynew_pred(i)
+        enddo
+    endif
+
 end subroutine

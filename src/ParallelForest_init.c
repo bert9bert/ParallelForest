@@ -2,10 +2,6 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-/* FIXME: 
-   Check these declarations against the C/Fortran source code.
-*/
-
 /* .Fortran calls */
 extern void F77_NAME(grow_forest_wrapper)(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void F77_NAME(grow_tree_wrapper)(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -28,3 +24,7 @@ void R_init_ParallelForest(DllInfo *dll)
     R_useDynamicSymbols(dll, FALSE);
 }
 
+/* Note:
+Generate this C code by running in R in the package folder
+tools::package_native_routine_registration_skeleton(".")
+*/
