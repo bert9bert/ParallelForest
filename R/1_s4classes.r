@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 #   This file defines S4 classes that are used in this package, as well as
 #   get and set functions.
-#   Copyright (C) 2014  Bertram Ieong
+#   Copyright (C) 2014
 #------------------------------------------------------------------------------
 
 setOldClass("data.frame")

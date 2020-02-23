@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 #   Defines a predict method for the class forest to make predictions on
 #       fitted forests.
-#   Copyright (C) 2014  Bertram Ieong
+#   Copyright (C) 2014
 #   No warranty provided.
 #------------------------------------------------------------------------------
 

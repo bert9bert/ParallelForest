@@ -1,7 +1,7 @@
 !------------------------------------------------------------------------------
 !   Module for fitting and predicting on a random forest classifier using
 !       parallel computing.
-!   Copyright (C) 2014  Bertram Ieong
+!   Copyright (C) 2014
 !------------------------------------------------------------------------------
 
 module forest_parallel

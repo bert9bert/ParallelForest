@@ -1,7 +1,7 @@
 !------------------------------------------------------------------------------
 !   This is a wrapper for R to call that will run all the unit tests that
 !       are written in Fortran.
-!   Copyright (C) 2014  Bertram Ieong
+!   Copyright (C) 2014
 !------------------------------------------------------------------------------
 
 subroutine fortran_unit_tests_wrapper(exitflag)

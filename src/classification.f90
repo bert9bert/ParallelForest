@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 !   Module for fitting and predicting on a classification tree.
-!   Copyright (C) 2014  Bertram Ieong
+!   Copyright (C) 2014
 !------------------------------------------------------------------------------
 
 module classification

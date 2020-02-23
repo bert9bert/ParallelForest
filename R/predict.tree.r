@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 #   Defines a predict method for the class tree to make predictions on
 #       fitted tree.
-#   Copyright (C) 2014  Bertram Ieong
+#   Copyright (C) 2014
 #   No warranty provided.
 #------------------------------------------------------------------------------
 

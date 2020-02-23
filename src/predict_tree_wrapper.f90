@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 !   Fortran subroutine to be used as wrapper to predict tree in R.
-!   Copyright (C) 2014  Bertram Ieong
+!   Copyright (C) 2014
 !------------------------------------------------------------------------------
 
 

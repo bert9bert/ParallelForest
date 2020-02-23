@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 #   Test that the functions to prepare the dependent variable to send and
 #   receive to the Fortran programs work.
-#   Copyright (C) 2014  Bertram Ieong
+#   Copyright (C) 2014
 #------------------------------------------------------------------------------
 
 library(ParallelForest)

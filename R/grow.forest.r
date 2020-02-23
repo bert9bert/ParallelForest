@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 #   Defines an R function to grow a forest with the compiled underlying
 #       Fortran base. Returns an object of class forest.
-#   Copyright (C) 2014  Bertram Ieong
+#   Copyright (C) 2014
 #   No warranty provided.
 #------------------------------------------------------------------------------
 

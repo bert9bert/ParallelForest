@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 !   Fortran subroutine to be used as wrapper to predict forest in R.
-!   Copyright (C) 2014  Bertram Ieong
+!   Copyright (C) 2014
 !------------------------------------------------------------------------------
 
 subroutine predict_forest_wrapper( &

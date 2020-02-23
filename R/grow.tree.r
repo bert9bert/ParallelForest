@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 #   Defines an R function to grow a tree with the compiled underlying
 #       Fortran base. Returns an object of class tree.
-#   Copyright (C) 2014  Bertram Ieong
+#   Copyright (C) 2014
 #   No warranty provided.
 #------------------------------------------------------------------------------
 

@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 #   Test that grow and predict forest functions work on a variety of
 #   ways that the dependent variable can be put in.
-#   Copyright (C) 2014  Bertram Ieong
+#   Copyright (C) 2014
 #------------------------------------------------------------------------------
 
 library(ParallelForest)
